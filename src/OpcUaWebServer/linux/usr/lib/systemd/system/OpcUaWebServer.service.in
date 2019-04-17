@@ -1,0 +1,10 @@
+[Unit]
+Description=opc ua web server
+
+[Service]
+Environment="LD_LIBRARY_PATH=/usr/lib/OpcUaStack:${LD_LIBRARY_PATH}"
+ExecStart=/usr/bin/OpcUaServer@OPCUASTACK_VERSION_MAJOR@ /etc/OpcUaStack/OpcUaWebServer/OpcUaServer.xml
+Restart=on-failure
+
+[Install]
+WantedBy=multi-user.target
