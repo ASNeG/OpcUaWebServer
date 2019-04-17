@@ -353,8 +353,8 @@ build_docker()
 {    
     echo "build docker start"
 
-    sudo docker build -t asneg/unknown:latest .
-    sudo docker push asneg/unknown:latest
+    sudo docker build -t asneg/OpcUaWebServer:latest .
+    sudo docker push asneg/OpcUaWebServer:latest
 }
 
 
