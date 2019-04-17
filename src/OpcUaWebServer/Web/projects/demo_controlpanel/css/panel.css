@@ -1,0 +1,42 @@
+.connection_status {
+	float: right;
+	margin: 2px 25px 2px 2px;
+	width: 100px;
+	height: 97px;
+}
+
+.connection_logo {
+	width:70px; 
+	height:70px; 
+	margin-top: 10px; 
+	margin-left: 0px;
+}
+
+#logo {
+	float:right; 
+	width:195px; 
+	margin:2px;
+}
+
+#varlist li a { 
+	display: block;
+	font: bold 120% Arial, Helvetica, sans-serif;
+	padding: 5px;
+	text-decoration: none;
+}
+
+#varlist li a:hover {
+	background: #cbfcc7;
+}
+
+#varlist a em { 
+	color: #333;
+	display: block;
+	font: normal 85% Verdana, Helvetica, sans-serif;
+	line-height: 125%; 
+}
+
+#varlist a span {
+	font: normal 70% Verdana, Helvetica, sans-serif;
+	line-height: 150%;
+}

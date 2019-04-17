@@ -1,5 +1,5 @@
 /*
-   Copyright 2015-2019 Kai Huebl (kai@huebl-sgh.de)
+   Copyright 2015-2017 Kai Huebl (kai@huebl-sgh.de)
 
    Lizenziert gemäß Apache Licence Version 2.0 (die „Lizenz“); Nutzung dieser
    Datei nur in Übereinstimmung mit der Lizenz erlaubt.
@@ -13,36 +13,40 @@
    im Rahmen der Lizenz finden Sie in der Lizenz.
 
    Autor: Kai Huebl (kai@huebl-sgh.de)
+
  */
 
-#ifndef __OpcUaWebServer_Library_h__
-#define __OpcUaWebServer_Library_h__
+#ifndef __OpcUaWebServer_HttpServer_h__
+#define __OpcUaWebServer_HttpServer_h__
 
-#include "OpcUaStackServer/Application/ApplicationIf.h"
-#include "OpcUaWebServer/WebServer/WebServer.h"
+#include "OpcUaStackCore/Base/ObjectPool.h"
+#include "OpcUaWebServer/WebServer/HttpServerBase.h"
+#include "OpcUaWebServer/WebServer/IPLogger.h"
 
 using namespace OpcUaStackCore;
-using namespace OpcUaStackServer;
 
 namespace OpcUaWebServer
 {
 
-	class Library
-	: public ApplicationIf
+	class HttpServer
+	: public HttpServerBase
 	{
 	  public:
-		Library(void);
-		virtual ~Library(void);
+		typedef boost::shared_ptr<HttpServer> SPtr;
 
-		//- ApplicationIf -----------------------------------------------------
-		virtual bool startup(void);
-		virtual bool shutdown(void);
-		virtual std::string version(void);
-		//- ApplicationIf -----------------------------------------------------
+		HttpServer(HttpConfig* httpConfig);
+		virtual ~HttpServer(void);
+
+		bool startup(void);
+		bool shutdown(void);
 
 	  private:
-		IOThread::SPtr ioThread_;
-		WebServer webServer_;
+		void accept(void);
+		void handleAccept(const boost::system::error_code& error, HttpChannel* httpChannel);
+		void handleAccept1(const boost::system::error_code& error){}
+
+		HttpConfig* httpConfig_;
+		IPLogger ipLogger_;
 	};
 
 }

@@ -1,0 +1,14 @@
+{
+  	"type": "DESIGN",
+  	"id": 0,
+  	"frameDesign": "CHROME",
+	"backgroundColor": "BRUSHED_METAL",
+	"foregroundType": "TYPE1",
+	"pointerColor": "RED",
+	"pointerType": "TYPE1",
+	"lcdColor": "WHITE",
+	"ledColor": "RED_LED",
+	"pointerAvg": "TYPE1",
+	"pointerColorAvg": "BLUE",
+	"valueColor": "BLACK"
+}

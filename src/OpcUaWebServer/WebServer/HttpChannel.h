@@ -13,36 +13,40 @@
    im Rahmen der Lizenz finden Sie in der Lizenz.
 
    Autor: Kai Huebl (kai@huebl-sgh.de)
+
  */
 
-#ifndef __OpcUaWebServer_Library_h__
-#define __OpcUaWebServer_Library_h__
+#ifndef __OpcUaWebServer_HttpChannel_h__
+#define __OpcUaWebServer_HttpChannel_h__
 
-#include "OpcUaStackServer/Application/ApplicationIf.h"
-#include "OpcUaWebServer/WebServer/WebServer.h"
+#include "OpcUaStackCore/Network/TCPConnection.h"
+#include "OpcUaStackCore/Utility/SlotTimer.h"
+#include "OpcUaWebServer/WebServer/HttpRequest.h"
+#include "OpcUaWebServer/WebServer/HttpResponse.h"
 
 using namespace OpcUaStackCore;
-using namespace OpcUaStackServer;
 
 namespace OpcUaWebServer
 {
 
-	class Library
-	: public ApplicationIf
+	class HttpChannel
+	: public TCPConnection
 	{
 	  public:
-		Library(void);
-		virtual ~Library(void);
+		static uint32_t gChannelId_;
 
-		//- ApplicationIf -----------------------------------------------------
-		virtual bool startup(void);
-		virtual bool shutdown(void);
-		virtual std::string version(void);
-		//- ApplicationIf -----------------------------------------------------
+		HttpChannel(boost::asio::io_service& io_service);
+		virtual ~HttpChannel(void);
 
-	  private:
-		IOThread::SPtr ioThread_;
-		WebServer webServer_;
+		OpcUaStackCore::SlotTimerElement::SPtr slotTimerElement_;
+
+		bool timeout_;
+		std::string channelId_;
+		boost::asio::streambuf recvBuffer_;
+		boost::asio::streambuf sendBuffer_;
+		HttpRequest httpRequest_;
+		HttpResponse httpResponse_;
+		boost::asio::ip::tcp::endpoint partner_;
 	};
 
 }

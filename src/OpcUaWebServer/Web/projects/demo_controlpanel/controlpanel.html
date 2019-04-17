@@ -1,0 +1,130 @@
+<!--
+   Copyright 2015 Kai Huebl (kai@huebl-sgh.de)
+
+   Lizenziert gemäß Apache Licence Version 2.0 (die „Lizenz“); Nutzung dieser
+   Datei nur in Übereinstimmung mit der Lizenz erlaubt.
+   Eine Kopie der Lizenz erhalten Sie auf http://www.apache.org/licenses/LICENSE-2.0.
+
+   Sofern nicht gemäß geltendem Recht vorgeschrieben oder schriftlich vereinbart,
+   erfolgt die Bereitstellung der im Rahmen der Lizenz verbreiteten Software OHNE
+   GEWÄHR ODER VORBEHALTE – ganz gleich, ob ausdrücklich oder stillschweigend.
+
+   Informationen über die jeweiligen Bedingungen für Genehmigungen und Einschränkungen
+   im Rahmen der Lizenz finden Sie in der Lizenz.
+
+   Autor: Samuel Huebl (samuel.huebl@asneg.de)
+-->
+
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>OPC UA Control Panel Demo</title>
+        <meta http-equiv="content-type" content="text/html; charset=UTF-8" 
+            name="viewport" content="width=device-width, initial-scale=1">
+
+        <link rel="stylesheet" href="./css/w3.css">
+        <link rel="stylesheet" href="./css/panel.css">
+
+        <script language="javascript" type="text/javascript" src="./js/external/steelseries-min.js"></script>
+        <script language="javascript" type="text/javascript" src="./js/external/tween-min.js"></script>
+        <script language="javascript" type="text/javascript" src="./js/external/Chart.min.js"></script>
+
+        <script language="javascript" type="text/javascript" src="./js/utility/model.js"></script>
+        <script language="javascript" type="text/javascript" src="./js/utility/json.js"></script>
+        <script language="javascript" type="text/javascript" src="./js/utility/logger.js"></script>
+
+        <script language="javascript" type="text/javascript" src="./js/client/asneg-ws-client.js"></script>
+
+        <script language="javascript" type="text/javascript" src="./js/panel/gauge.js"></script>
+        <script language="javascript" type="text/javascript" src="./js/panel/chart.js"></script>
+        <script language="javascript" type="text/javascript" src="./js/panel/toolfactory.js"></script>
+        <script language="javascript" type="text/javascript" src="./js/panel/panel.js"></script>
+        <script language="javascript" type="text/javascript" src="./js/panel/view.js"></script>
+        <script language="javascript" type="text/javascript" src="./js/panel/config.js"></script>
+        <script language="javascript" type="text/javascript" src="./js/panel/parser.js"></script>
+        <script language="javascript" type="text/javascript" src="./js/panel/facade.js"></script>
+        <script language="javascript" type="text/javascript">
+
+            var facade;
+            
+            function init() {       
+                facade = new Facade("id_ul", "id_status_icon", "id_div_board", "id_div_dialog");
+                facade.init();
+            }
+
+            function w3_open() {
+                document.getElementsByClassName("w3-sidenav")[0].style.display = "block";
+            }
+            
+            function w3_close() {
+                document.getElementsByClassName("w3-sidenav")[0].style.display = "none";
+            }
+
+        </script>   
+
+    </head>
+    <body onload="init();">
+
+        <div style="min-width:600px;">
+
+            <!-- Header -->
+            <header class="w3-container w3-green">
+                <a href="http://www.asneg.de/">
+                    <img src="./pics/asneg_web.png" alt="ASNeG Logo" id="logo">
+                </a>
+                <div class="w3-container w3-card-8 connection_status" style="background: #fff;">
+                    <img id="id_status_icon" class="connection_logo" src="./pics/icon_offline.png" alt="Connection Icon"
+                        style="cursor:pointer;" title="connecting...">
+                </div>    
+                <h1>Control Panel Demo</h1>
+                <i class=" w3-opennav w3-margin" onclick="w3_open()">Variablen</i>
+                <a href="./impressum.html" style="margin-left:55px;">Impressum</a>
+                <a href="./../../index.html" style="margin-left:10px;">Zurück</a>
+            </header>
+
+            <!-- Navigation -->
+            <nav class="w3-sidenav w3-white w3-card-2" style="display:none; height:85%;">
+                <a href="javascript:void(0)" 
+                    onclick="w3_close()"
+                    class="w3-closenav w3-large">Close ×</a>
+                <div id="varlist">
+                    <ul class="w3-ul" id="id_ul"></ul>
+                </div>       
+            </nav>
+
+            <!-- Dialog -->
+            <div id="id_div_dialog" class="w3-modal">
+                <div class="w3-modal-dialog">
+                    <div class="w3-modal-content w3-card-8">
+                        <div id="id_div_dialog_header">
+                        </div> 
+                        <div id="id_div_dialog_content" class="w3-container">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Container -->
+            <div class="w3-container">
+                <div id="id_div_board" class="w3-container"></div>
+            </div>
+
+            <!-- Footer -->
+            <footer class="w3-container w3-green w3-text-white-opacity" style="width:215px; float:right; margin-bottom:25px;">
+                <h5>Links</h5>
+                <div style="margin-left:25px; margin-bottom:10px;">
+                <a href="http://asneg.de/" style="text-decoration: none;"><b>ASNeG.de</b></a> <br />
+                <a href="https://github.com/HanSolo/SteelSeries-Canvas" style="text-decoration: none;"><b>Steelseries</b></a> <br />
+                <a href="http://chartjs.org/" style="text-decoration: none;"><b>Chart.js</b></a> <br />
+                <a href="http://www.w3schools.com/w3css/" style="text-decoration: none;"><b>W3.css</b></a> <br />
+                </div>
+            </footer> 
+
+        </div>
+
+    </body>
+</html> 
+
+
+
+

@@ -1,0 +1,633 @@
+<!--
+   Copyright 2015 Kai Huebl (kai@huebl-sgh.de)
+
+   Lizenziert gemäß Apache Licence Version 2.0 (die „Lizenz“); Nutzung dieser
+   Datei nur in Übereinstimmung mit der Lizenz erlaubt.
+   Eine Kopie der Lizenz erhalten Sie auf http://www.apache.org/licenses/LICENSE-2.0.
+
+   Sofern nicht gemäß geltendem Recht vorgeschrieben oder schriftlich vereinbart,
+   erfolgt die Bereitstellung der im Rahmen der Lizenz verbreiteten Software OHNE
+   GEWÄHR ODER VORBEHALTE – ganz gleich, ob ausdrücklich oder stillschweigend.
+
+   Informationen über die jeweiligen Bedingungen für Genehmigungen und Einschränkungen
+   im Rahmen der Lizenz finden Sie in der Lizenz.
+
+   Autor: Kai Huebl (kai@huebl-sgh.de)
+-->
+
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>Simple WebSocket Demo</title>
+		<meta http-equiv="content-type" content="text/html; charset=UTF-8" 
+			name="viewport" content="width=device-width, initial-scale=1">
+
+		<style type="text/css">
+			 table, td, th { 
+			 	--border: 1px solid black; 
+			 }
+			 
+			 .series {
+			 		float: right;
+			 		width: 120px;
+			 }
+		
+			.variableName {
+				font-weight: bold;
+				margin-top: 20px;
+			}
+			
+			.monitorButton {
+				width: 120px;
+			}
+			
+			.readButton {
+				width: 120px;
+			}
+			
+			.writeButton {
+				width: 120px;
+			}
+			
+			.writeInput {
+				width: 120px;
+			}
+			
+			
+		</style>
+
+		<script language="javascript" type="text/javascript">
+
+			var valueInfo = {};
+		
+			function websocket_send(msg)
+			{
+				console.log('Send WebSocket Data: ' + msg);
+				ws.send(msg);
+			}
+		
+			function webSocket_onopen()
+			{
+				console.log('WebSocket Verbindung geoeffnet');
+				console.log('Sende Nachricht');
+				websocket_status();
+				
+				sendValueList();
+			}
+			
+			function webSocket_onerror(event) 
+			{
+				websocket_status();
+			
+				var reason = event.reason;
+				var code = event.code;
+				console.log('WebSocket Fehler: ' + reason + '(' + code + ')');
+			}
+			
+			function websocket_onmessage(message) 
+			{
+				websocket_status();
+			
+				console.log('Receive WebSocket Data: ' + message.data);
+			
+				var data = JSON.parse(message.data);
+				console.log('WebSocket Data: ' + data);
+				console.log('ClienHanlde: ' + data.Header.ClientHandle);
+				
+				if (data.Header.MessageType == "READ_RESPONSE") {
+					var readElementId = data.Header.ClientHandle + "_Read";
+					var readElementStatusId = data.Header.ClientHandle + "_ReadStatus";
+				
+					var readElementStatus = document.getElementById(readElementStatusId);
+
+					if (data.Header.StatusCode != undefined) {
+						readElementStatus.innerHTML = data.Header.StatusCode;
+						readElementStatus.style.color = "Red";
+						return;
+					}
+		
+					if (data.Header.StatusCode != undefined) {
+						readElementStatus.innerHTML = data.Body.StatusCode;
+						readElementStatus.style.color = "Red";
+						return;
+					}
+					else {
+						readElementStatus.innerHTML = "Success";
+						readElementStatus.style.color = "Green";
+					}
+					
+					setValue(data, "Read");
+				}
+				else if (data.Header.MessageType == "WRITE_RESPONSE") {
+					var writeElementStatusId = data.Header.ClientHandle + "_WriteStatus";
+					var writeElementStatus = document.getElementById(writeElementStatusId);
+					
+					if (data.Header.StatusCode != undefined) {
+						writeElementStatus.innerHTML = data.Header.StatusCode;
+						writeElementStatus.style.color = "Red";
+						return;
+					}
+		
+					if (data.Header.StatusCode != undefined) {
+						writeElementStatus.innerHTML = data.Body.StatusCode;
+						writeElementStatus.style.color = "Red";
+						return;
+					}
+					else {
+						writeElementStatus.innerHTML = "Success";
+						writeElementStatus.style.color = "Green";
+					}
+				}
+				else if (data.Header.MessageType == "VALUELIST_RESPONSE") {
+				   	if (data.Header.StatusCode != undefined) {
+						ws.close();
+						return;
+					}
+					sendValueInfo(data);
+				}
+				else if (data.Header.MessageType == "VALUEINFO_RESPONSE") {
+				   if (data.Header.StatusCode != undefined) {
+						ws.close();
+						return;
+					}
+					receiveValueInfo(data);
+				}
+				else if (data.Header.MessageType == "MONITORSTART_RESPONSE")
+				{
+					var monitorElementStatusId = data.Header.ClientHandle + "_MonitorStatus";
+					var monitorElementStatus = document.getElementById(monitorElementStatusId);
+					
+					if (data.Header.StatusCode != undefined) {
+						monitorElementStatus.innerHTML = data.Header.StatusCode;
+						monitorElementStatus.style.color = "Red";
+						return;
+					}
+					else {
+						monitorElementStatus.innerHTML = "Success";
+						monitorElementStatus.style.color = "Green";
+						
+						var monitorButtonId = data.Header.ClientHandle + "_MonitorButton";
+						document.getElementById(monitorButtonId).textContent = "Monitor stop";
+					}
+				}
+				else if (data.Header.MessageType == "MONITORSTOP_RESPONSE")
+				{
+					var monitorElementStatusId = data.Header.ClientHandle + "_MonitorStatus";
+					var monitorElementStatus = document.getElementById(monitorElementStatusId);
+					
+					if (data.Header.StatusCode != undefined && data.Header.StatusCode != "BadNoEntryExists") {
+						monitorElementStatus.innerHTML = data.Header.StatusCode;
+						monitorElementStatus.style.color = "Red";
+						return;
+					}
+					else {
+						monitorElementStatus.innerHTML = "Success";
+						monitorElementStatus.style.color = "Green";
+						
+						var monitorButtonId = data.Header.ClientHandle + "_MonitorButton";
+						document.getElementById(monitorButtonId).textContent = "Monitor start";
+					}
+				}
+				else if (data.Header.MessageType == "MONITORUPDATE_MESSAGE") {
+					
+					var monitorElementStatusId = data.Header.ClientHandle + "_MonitorStatus";
+					var monitorElementStatus = document.getElementById(monitorElementStatusId);
+
+					if (data.Header.StatusCode != undefined) {
+						monitorElementStatus.innerHTML = data.Header.StatusCode;
+						monitorElementStatus.style.color = "Red";
+						return;
+					}
+		
+					if (data.Header.StatusCode != undefined) {
+						monitorElementStatus.innerHTML = data.Body.StatusCode;
+						monitorElementStatus.style.color = "Red";
+						return;
+					}
+					else {
+						monitorElementStatus.innerHTML = "Success";
+						monitorElementStatus.style.color = "Green";
+					}
+					
+					setValue(data, "Monitor");
+				}
+				else {
+				    console.log('receive invalid message:');
+				}
+			}
+			
+			function setValue(data, field) 
+			{
+			
+				var elementNode = document.getElementById(data.Header.ClientHandle);
+				var info = valueInfo[data.Header.ClientHandle];
+			
+				if (info.IsArray == "true") {
+					for (var idx=0; idx<3; idx++) {
+						var elementId = data.Header.ClientHandle + "_" + field + idx;
+						document.getElementById(elementId).innerHTML = data2string(info.Type, data.Body.Value[idx]);
+					}
+				}
+				else {
+					var elementId = data.Header.ClientHandle + "_" + field;
+					document.getElementById(elementId).innerHTML = data2string(info.Type, data.Body.Value);
+				}
+			}
+			
+			function data2string(type, data)
+			{
+				var string = data;
+				
+				if (type == "LocalizedText") {			
+					string = data.Locale + ',' + data.Text;
+				}
+				else if (type == "QualifiedName") {			
+					string = data.NamespaceIndex + ',' + data.Name;
+				}
+				return string;
+			}
+			
+			function getValue(name, field)
+			{
+				var info = valueInfo[name];
+			
+				if (info.IsArray == "true") {
+					var array = [];
+					for (var idx=0; idx<3; idx++) {
+						var elementId = name + "_" + field + idx;
+						array[idx] = string2data(info.Type, document.getElementById(elementId).value);
+					}
+					return array;
+				}
+				else {
+					var elementId = name + "_" + field;
+					var value =  document.getElementById(elementId).value;
+					var data = string2data(info.Type, value);
+					return data;
+				}
+			}
+			
+			function string2data(type, string)
+			{
+				if (type == "LocalizedText") {
+					var pos = string.search(",");
+					if (pos != -1) {    
+						var locale = string.substr(0, pos);
+						var text = string.substr(pos+1);
+					
+						return {
+							Locale: locale,
+							Text: text
+						};
+					}
+				}
+				else if (type == "QualifiedName") {
+					var pos = string.search(",");
+					if (pos != -1) {    
+						var namespaceIndex = string.substr(0, pos);
+						var name = string.substr(pos+1);
+					
+						return {
+							NamespaceIndex: namespaceIndex,
+							Name: name
+						};
+					}
+				}
+			
+				return string;
+			}
+			
+			function websocket_onclose(event) 
+			{
+				websocket_status();
+			
+				if (this.readyState == 2) {
+					console.log('Schliesse Verbindung...');
+					console.log('Die Verbindung durchlaeuft den Closing Handshake');
+				}
+				else if (this.readyState == 3) {
+					console.log('Verbindung geschlossen...');
+					console.log('Die Verbindung wurde geschlossen oder konnte nicht aufgebaut werden');
+				}
+				else {
+					console.log('Verbindung geschlossen...');
+					console.log('Nicht behandelter State: ' + this.readyState);
+				}
+			}
+			
+			function websocket_status() 
+			{
+			    var status;
+			    var color;
+				if (ws.readyState == 0) {
+					status = "CONNECTING";
+					color = "Yellow";
+				}
+				else if (ws.readyState == 1) {
+					status = "OPEN";
+					color = "Green";
+				}
+				else if (ws.readyState == 2) {
+					status = "CLOSING";
+					color = "Yellow";
+				}
+				else if (ws.readyState == 3) {
+					status = "CLOSED";
+					color = "Red";
+				}
+				
+				var element = document.getElementById('WebSocketState');
+				element.innerHTML = '<p> WebSocketState: ' + status + '</p>';
+				element.style.color = color;
+			}
+			
+			function readEvent(clientHandle) 
+			{
+				console.log('read event... ClientHandle: ' + clientHandle);
+				
+				var msg = {
+					Header : {
+					    MessageType: 'READ_REQUEST',
+					    ClientHandle: clientHandle
+					},
+					Body : {
+					    Variable: clientHandle,
+					}
+				}
+				
+				websocket_send(JSON.stringify(msg));
+			}
+			
+			function writeEvent(clientHandle) 
+			{
+				var value = getValue(clientHandle, "Write");
+				var msg = {
+					Header : {
+					    MessageType: 'WRITE_REQUEST',
+					    ClientHandle: clientHandle
+					},
+					Body : {
+					    Variable: clientHandle,
+					    Value: value
+					}
+				}
+				
+				websocket_send(JSON.stringify(msg));
+			}
+			
+			function monitorEvent(clientHandle) 
+			{
+				var monitorButtonId = clientHandle + "_MonitorButton";
+				var buttonText = document.getElementById(monitorButtonId).textContent;
+				
+				console.log('monitor event... ClientHandle: ' + clientHandle + " Text: " + buttonText);
+				
+				var msg;
+				if (buttonText == "Monitor start") {
+					msg = {
+						Header : {
+					    	MessageType: 'MONITORSTART_REQUEST',
+					    	ClientHandle: clientHandle
+						},
+						Body : {
+					    	Variable: clientHandle,
+						}
+					}
+				}
+				else {
+					msg = {
+						Header : {
+					    	MessageType: 'MONITORSTOP_REQUEST',
+					    	ClientHandle: clientHandle
+						},
+						Body : {
+					    	Variable: clientHandle,
+						}
+					}
+				}
+				
+				websocket_send(JSON.stringify(msg));
+			}
+			
+			function refreshElement(variableInfo)
+			{
+				var variableName = variableInfo.Variable;
+				var monitorButtonId = variableName + "_MonitorButton";
+				var buttonText = document.getElementById(monitorButtonId).textContent;
+		
+				if (buttonText == "Monitor stop") {
+					document.getElementById(monitorButtonId).textContent = "Monitor start";	
+					monitorEvent(variableName);
+				}
+			}
+			
+			function createElement(wrapperName, variableInfo) {
+			
+				var variableName = variableInfo.Variable;
+				var variableIsArray = variableInfo.IsArray;
+				
+				var elementNode = document.getElementById(variableName);
+				if (elementNode != null) {
+					refreshElement(variableInfo);
+					return;
+				}
+			
+				var valueElementId = variableName + "_Value";
+				var writeElementId = variableName + "_Write";
+				var readElementId = variableName + "_Read";
+				var monitorElementId = variableName + "_Monitor";
+				var writeElementStatusId = variableName + "_WriteStatus";
+				var readElementStatusId = variableName + "_ReadStatus";
+				var monitorElementStatusId = variableName + "_MonitorStatus";
+				var writeElementButtonId = variableName + "_WriteButton";
+				var readElementButtonId = variableName + "_ReadButton";
+				var monitorButtonId = variableName + "_MonitorButton";
+				
+			
+				var element = "";
+				element += "<div id=\"" + variableName + "\" class=\"variableName\">" + variableName + "</div>";
+				element += "<table>";
+				
+				element += "  <tr>"
+				element += "    <th>"
+				element += "      <button id=\"" + monitorButtonId + "\" onClick=\"monitorEvent('" + variableName + "')\" class=\"monitorButton\">Monitor start</button>"
+				element += "    </th>"
+				element += "    <th>"
+				if (variableIsArray == "true") {
+					for (var idx=0; idx<3; idx++) {
+						element += "	  <div id=\"" + monitorElementId + idx + "\" class=\"series\">unknown</div>" 
+					}
+				}
+				else {
+					element += "	  <div id=\"" + monitorElementId + "\">unknown</div>" 
+				}
+				element += "    </th>"
+				element += "    <th>"
+				element += "	  <div id=\"" + monitorElementStatusId + "\">unknown</div>" 
+				element += "    </th>"
+				element += "  </tr>"
+				
+				element += "  <tr>"
+				element += "    <th>"
+				element += "      <button onClick=\"readEvent('" + variableName + "')\" class=\"readButton\">Read</button>"
+				element += "    </th>"
+				element += "    <th>"
+				if (variableIsArray == "true") {
+					for (var idx=0; idx<3; idx++) {
+						element += "	  <div id=\"" + readElementId + idx + "\"class=\"series\">unknown</div>"
+					} 
+				}
+				else {
+					element += "	  <div id=\"" + readElementId + "\">unknown</div>"
+				} 
+				element += "    </th>"
+				element += "    <th>"
+				element += "	  <div id=\"" + readElementStatusId + "\">unknown</div>" 
+				element += "    </th>"
+				element += "  </tr>"
+				
+				element += "  <tr>"
+				element += "    <th>"
+				element += "      <button onClick=\"writeEvent('" + variableName + "')\" class=\"writeButton\">Write</button>"
+				element += "    </th>"
+				element += "    <th>"
+				if (variableIsArray == "true") {
+					for (var idx=0; idx<3; idx++) {
+						element += "      <input id=\"" + writeElementId + idx + "\" class=\"writeInput\">";
+					}
+				}
+				else {
+					element += "      <input id=\"" + writeElementId + "\" class=\"writeInput\">";
+				}
+				element += "    </th>"
+				element += "    <th>"
+				element += "	  <div id=\"" + writeElementStatusId + "\">unknown</div>" 
+				element += "    </th>"
+				element += "  </tr>"
+				
+				element += "</table>";
+				
+				
+				var newdiv = document.createElement('div');
+				newdiv.setAttribute('class', 'variable');
+				newdiv.innerHTML = element;
+				
+				var parent = document.getElementById(wrapperName);
+				parent.appendChild(newdiv);
+				
+				var elementNode = document.getElementById(variableName);
+				valueInfo[variableName] = variableInfo;
+			}
+			
+			function myTimer() 
+			{
+			    if (ws.readyState == 3) {
+			    	connect();
+			    	return;
+			    }
+			    
+    			if (ws.readyState != 1) return;
+    			console.log('timer');
+			}
+			
+			function sendValueList()
+			{
+				
+				var msg = {
+					Header : {
+					    MessageType: 'VALUELIST_REQUEST',
+					    ClientHandle: 'VALUELIST'
+					},
+					Body : {
+					}
+				}
+				
+				websocket_send(JSON.stringify(msg));
+			}
+			
+			function receiveValueList(data)
+			{
+				console.log('WebSocket ValueList: ' + data);
+				sendValueInfo(data);
+			}
+			
+			function sendValueInfo(variables)
+			{
+			 	console.log('send value info...' + variables );
+			 	
+				var msg = {
+					Header : {
+					    MessageType: 'VALUEINFO_REQUEST',
+					    ClientHandle: 'VALUEINFO'
+					},
+					Body : {
+						Variables: variables.Body.Variables
+					}
+				}
+				
+				websocket_send(JSON.stringify(msg));
+			}
+			
+			function receiveValueInfo(data)
+			{
+				console.log('WebSocket ValueInfo: ' + data.Body.Variables.length);
+				
+				 for (var idx = 0; idx < data.Body.Variables.length; ++idx) { 
+				 	var variable = data.Body.Variables[idx].Variable;
+				 	var type = data.Body.Variables[idx].Type;
+				 	var isArray = data.Body.Variables[idx].IsArray;
+				 
+					console.log('Variable: ' + variable); 
+					console.log('Type: ' + type); 
+					console.log('IsArray: ' + isArray); 
+					
+					createElement("VariableList", data.Body.Variables[idx]);
+				 }
+				
+				
+			}
+
+			function connect() {
+				var ip;
+				if (location.hostname == null || location.hostname == "") {
+					ip = "ws://127.0.0.1:8081";
+				} else {
+					ip = "ws://" + location.hostname  + ":8081";
+				}
+
+				ws = new WebSocket(ip, "json");
+			    ws.onopen = webSocket_onopen;
+			    ws.onerror = webSocket_onerror;
+				ws.onmessage = websocket_onmessage;
+				ws.onclose = websocket_onclose;
+			}
+			
+			var ws;
+
+			function startup() {
+				//createElement("VariableList", "Int32");
+				//createElement("VariableList", "UInt32");
+			
+				connect();
+			
+				var myVar = setInterval(function () {myTimer()}, 1000);
+			}
+
+		</script>		
+
+	</head>
+	<body onload="startup();">
+		<h1>Websocket Demo</h1>
+		<a href="./../../index.html">Zurück</a>
+   		<div style="width:650px;">
+			<div id="WebSocketState"></div>
+			<p></p>				   	
+			<div id="VariableList"></div>
+		</div>
+	</body>
+</html> 
+
+
+
+
+ 

@@ -17,6 +17,7 @@
 
 #include "OpcUaStackCore/Base/os.h"
 #include "OpcUaStackCore/Base/Log.h"
+#include "OpcUaStackCore/Base/ConfigXml.h"
 #include "OpcUaWebServer/Library/Library.h"
 #include "OpcUaStackServer/ServiceSetApplication/ApplicationService.h"
 #include "OpcUaStackServer/ServiceSetApplication/NodeReferenceApplication.h"
@@ -28,6 +29,7 @@ namespace OpcUaWebServer
 
 	Library::Library(void)
 	: ApplicationIf()
+	, webServer_()
 	{
 	}
 
@@ -39,6 +41,25 @@ namespace OpcUaWebServer
 	Library::startup(void)
 	{
 		Log(Debug, "Library::startup");
+
+		ioThread_ = constructSPtr<IOThread>();
+		if (!ioThread_->startup()) {
+			return false;
+		}
+
+		// read web socket configuration file
+		ConfigXml configXml;
+		Config config;
+		if (!configXml.parse(applicationInfo()->configFileName(), &config)) {
+			Log(Error, "parse configuration file error")
+				.parameter("ConfigFileName", applicationInfo()->configFileName())
+				.parameter("Reason", configXml.errorMessage());
+			return false;
+		}
+
+		// start web server components
+		if (!webServer_.startup(&config, ioThread_)) return false;
+
 		return true;
 	}
 
@@ -46,6 +67,12 @@ namespace OpcUaWebServer
 	Library::shutdown(void)
 	{
 		Log(Debug, "Library::shutdown");
+
+		if (!ioThread_->shutdown()) return false;
+		ioThread_.reset();
+
+		if (!webServer_.shutdown()) return false;
+
 		return true;
 	}
 

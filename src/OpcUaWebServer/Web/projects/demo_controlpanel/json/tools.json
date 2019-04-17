@@ -1,0 +1,331 @@
+{
+  "type": "TOOLS_CONFIG",
+  "tools": [
+    {
+      "toolType": "COMPASS",
+      "params": [
+        {
+          "id": "toolid_compass_1",
+          "description": "Compass",
+          "icon": "compass.jpg",
+          "height": 200,
+          "width": 200,
+          "rotateFace": true
+        }
+      ]
+    },
+    {
+      "toolType": "DISPLAY_MULTI",
+      "params": [
+        {
+          "id": "toolid_display_multi_1",
+          "description": "Multi-Display",
+          "icon": "display_multi.jpg",
+          "height": 125,
+          "width": 250,
+          "unitString": "unit",
+          "unitStringVisible": true,
+          "headerString": "header",
+          "headerStringVisible": true,
+          "detailString": "detail ",
+          "detailStringVisible": true,
+          "linkOldValue": false,
+          "oldValue": 99.9
+        }
+      ]
+    },
+    {
+      "toolType": "DISPLAY_SINGLE",
+      "params": [
+        {
+          "id": "toolid_display_single_1",
+          "description": "Single-Display",
+          "icon": "display_single.jpg",
+          "height": 125,
+          "width": 250,
+          "autoScroll": true,
+          "valuesNumeric": false,
+          "unitString": "unit",
+          "unitStringVisible": true,
+          "headerString": "header",
+          "headerStringVisible": true
+        }
+      ]
+    },
+    {
+      "toolType": "LED",
+      "params": [
+        {
+          "id": "toolid_led_1",
+          "description": "Led",
+          "icon": "led.jpg",
+          "height": 75,
+          "width": 75,
+          "blink": false
+        }
+      ]
+    },
+    {
+      "toolType": "LEVEL",
+      "params": [
+        {
+          "id": "toolid_level_1",
+          "description": "Level",
+          "icon": "level.jpg",
+          "height": 200,
+          "width": 200,
+          "decimalsVisible": false
+        }
+      ]
+    },
+    {
+      "toolType": "LIGHTBLUB",
+      "params": [
+        {
+          "id": "toolid_lightblub_1",
+          "description": "Lightblub",
+          "icon": "lightblub.jpg",
+          "height": 200,
+          "width": 150,
+          "color": "rgb(255, 255, 0)"
+        }
+      ]
+    },
+    {
+      "toolType": "LINE",
+      "params": [
+        {
+          "id": "toolid_line_1",
+          "description": "Line",
+          "icon": "line.jpg",
+          "height": 250,
+          "width": 600,
+          "fillColor": "rgba(151,187,205,0.2)",
+          "strokeColor": "rgba(151,187,205,1)",
+          "pointColor": "rgba(151,187,205,1)",
+          "pointStrokeColor": "#fff",
+          "animationSteps": 1,
+          "scaleShowGridLines": true,
+          "trigger": 1000,
+          "modulo": 5,
+          "amount": 100
+        }
+      ]
+    },
+    {
+      "toolType": "LINEAR",
+      "params": [
+        {
+          "id": "toolid_linear_1",
+          "description": "Linear 2",
+          "icon": "linear2.jpg",
+          "height": 125,
+          "width": 250,
+          "minValue": null,
+          "maxValue": null,
+          "titleString": "title",
+          "unitString": "unit",
+          "threshold": 50,
+          "lcdVisible": true,
+          "gaugeType": "TYPE2",
+          "section": null,
+          "valueGradient": null,
+          "useValueGradient": false
+        },
+        {
+          "id": "toolid_linear_2",
+          "description": "Linear 3",
+          "icon": "linear3.jpg",
+          "height": 125,
+          "width": 250,
+          "minValue": null,
+          "maxValue": null,
+          "titleString": "title",
+          "unitString": "unit",
+          "threshold": 50,
+          "lcdVisible": true,
+          "gaugeType": "TYPE1",
+          "section": null,
+          "valueGradient": null,
+          "useValueGradient": false
+        }
+      ]
+    },
+    {
+      "toolType": "LINEAR_BARGRAPH",
+      "params": [
+        {
+          "id": "toolid_linear_bargraph_1",
+          "description": "Linear 1",
+          "icon": "linear1.jpg",
+          "height": 125,
+          "width": 250,
+          "minValue": null,
+          "maxValue": null,
+          "titleString": "title",
+          "unitString": "unit",
+          "threshold": 50,
+          "lcdVisible": true,
+          "valueGradient": null,
+          "useValueGradient": null,
+          "section": null
+        }
+      ]
+    },
+    {
+      "toolType": "RADIAL",
+      "params": [
+        {
+          "id": "toolid_radial_1",
+          "description": "Radial 1",
+          "icon": "radial2.jpg",
+          "height": 200,
+          "width": 200,
+          "minValue": null,
+          "maxValue": null,
+          "gaugeType": "TYPE4",
+          "titleString": "",
+          "unitString": "",
+          "threshold": 50,
+          "lcdVisible": true,
+          "lcdDecimals": 1,
+          "useOdometer": false,
+          "odometerParams": null,
+          "section": null,
+          "area": null
+        },
+        {
+          "id": "toolid_radial_2",
+          "description": "Radial 2",
+          "icon": "radial3.jpg",
+          "height": 200,
+          "width": 200,
+          "minValue": null,
+          "maxValue": null,
+          "gaugeType": "TYPE4",
+          "titleString": "",
+          "unitString": "",
+          "threshold": 50,
+          "lcdVisible": true,
+          "lcdDecimals": 1,
+          "useOdometer": true,
+          "odometerParams": "{digits: 5, value: odoValue}",
+          "section": null,
+          "area": null
+        }
+      ]
+    },
+    {
+      "toolType": "RADIAL_BARGRAPH",
+      "params": [
+        {
+          "id": "toolid_radial_bargraph_1",
+          "description": "Radial Bargraph",
+          "icon": "radial1.jpg",
+          "height": 200,
+          "width": 200,
+          "minValue": null,
+          "maxValue": null,
+          "gaugeType": "TYPE4",
+          "titleString": "title",
+          "unitString": "unit",
+          "lcdVisible": true,
+          "section": null,
+          "useSectionColors": null,
+          "valueGradient": null,
+          "useValueGradient": null
+        }
+      ]
+    },
+    {
+      "toolType": "RADIAL_VERTICAL",
+      "params": [
+        {
+          "id": "toolid_radial_vertical_1",
+          "description": "Radial Vertical",
+          "icon": "radial_vertical.jpg",
+          "height": 200,
+          "width": 200,
+          "minValue": null,
+          "maxValue": null,
+          "titleString": "title",
+          "unitString": "unit",
+          "orientation": "NORTH"
+        }
+      ]
+    },
+    {
+      "toolType": "WINDDIRECTION",
+      "params": [
+        {
+          "id": "toolid_winddirection_1",
+          "description": "Winddirection",
+          "icon": "winddirection.jpg",
+          "height": 200,
+          "width": 200,
+          "lcdVisible": true,
+          "degreeScaleHalf": true,
+          "pointSymbolsVisible": false
+        }
+      ]
+    },
+    {
+      "toolType": "ODOMETER",
+      "params": [
+        {
+          "id": "toolid_odometer_1",
+          "description": "Odometer",
+          "icon": "odometer.jpg",
+          "height": 120,
+          "width": 200
+        }
+      ]
+    },
+    {
+      "toolType": "HORIZON",
+      "params": [
+        {
+          "id": "toolid_horizon_1",
+          "description": "Horizon",
+          "icon": "horizon.jpg",
+          "height": 200,
+          "width": 200
+        }
+      ]
+    },
+    {
+      "toolType": "BATTERY",
+      "params": [
+        {
+          "id": "toolid_battery_1",
+          "description": "Battery",
+          "icon": "battery.jpg",
+          "height": 125,
+          "width": 200
+        }
+      ]
+    },
+    {
+      "toolType": "ALTIMETER",
+      "params": [
+        {
+          "id": "toolid_altimeter_1",
+          "description": "Altimeter",
+          "icon": "altimeter.jpg",
+          "height": 200,
+          "width": 200
+        }
+      ]
+    },
+    {
+      "toolType": "TABLE",
+      "params": [
+        {
+          "id": "toolid_table_1",
+          "description": "Control Table",
+          "icon": "table.jpg"
+        }
+      ]
+    }
+  ]
+}

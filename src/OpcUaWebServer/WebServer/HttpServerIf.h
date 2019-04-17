@@ -1,5 +1,5 @@
 /*
-   Copyright 2015-2019 Kai Huebl (kai@huebl-sgh.de)
+   Copyright 2015 Kai Huebl (kai@huebl-sgh.de)
 
    Lizenziert gemäß Apache Licence Version 2.0 (die „Lizenz“); Nutzung dieser
    Datei nur in Übereinstimmung mit der Lizenz erlaubt.
@@ -13,36 +13,24 @@
    im Rahmen der Lizenz finden Sie in der Lizenz.
 
    Autor: Kai Huebl (kai@huebl-sgh.de)
+
  */
 
-#ifndef __OpcUaWebServer_Library_h__
-#define __OpcUaWebServer_Library_h__
+#ifndef __OpcUaWebServer_HttpServerBaseIf_h__
+#define __OpcUaWebServer_HttpServerBaseIf_h__
 
-#include "OpcUaStackServer/Application/ApplicationIf.h"
-#include "OpcUaWebServer/WebServer/WebServer.h"
-
-using namespace OpcUaStackCore;
-using namespace OpcUaStackServer;
+#include "OpcUaWebServer/WebServer/HttpRequest.h"
+#include "OpcUaWebServer/WebServer/HttpResponse.h"
 
 namespace OpcUaWebServer
 {
 
-	class Library
-	: public ApplicationIf
+	class HttpServerIf
 	{
-	  public:
-		Library(void);
-		virtual ~Library(void);
+      public:
+		virtual ~HttpServerIf(void) {}
 
-		//- ApplicationIf -----------------------------------------------------
-		virtual bool startup(void);
-		virtual bool shutdown(void);
-		virtual std::string version(void);
-		//- ApplicationIf -----------------------------------------------------
-
-	  private:
-		IOThread::SPtr ioThread_;
-		WebServer webServer_;
+		virtual void request(HttpRequest& httpRequest, HttpResponse& httpResponse) = 0;
 	};
 
 }

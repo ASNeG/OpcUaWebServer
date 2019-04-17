@@ -1,0 +1,20 @@
+{
+  "type": "SETTINGS",
+  "defaultTools": [
+    {
+      "valueName": "Int16",
+      "toolids": [
+        "toolid_table_1",
+        "toolid_radial_1",
+        "toolid_line_1"
+      ]
+    },
+    {
+      "valueName": "Int32",
+      "toolids": [
+        "toolid_table_1",
+        "toolid_compass_1"
+      ]
+    }
+  ]
+}

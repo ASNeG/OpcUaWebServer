@@ -1,5 +1,5 @@
 /*
-   Copyright 2015-2019 Kai Huebl (kai@huebl-sgh.de)
+   Copyright 2015 Kai Huebl (kai@huebl-sgh.de)
 
    Lizenziert gemäß Apache Licence Version 2.0 (die „Lizenz“); Nutzung dieser
    Datei nur in Übereinstimmung mit der Lizenz erlaubt.
@@ -13,36 +13,42 @@
    im Rahmen der Lizenz finden Sie in der Lizenz.
 
    Autor: Kai Huebl (kai@huebl-sgh.de)
+
  */
 
-#ifndef __OpcUaWebServer_Library_h__
-#define __OpcUaWebServer_Library_h__
+#ifndef __OpcUaWebServer_WebServer_h__
+#define __OpcUaWebServer_WebServer_h__
 
-#include "OpcUaStackServer/Application/ApplicationIf.h"
-#include "OpcUaWebServer/WebServer/WebServer.h"
+#include "OpcUaStackCore/Base/IOService.h"
+#include "OpcUaStackCore/Base/Config.h"
+#include "OpcUaStackCore/Utility/IOThread.h"
+#include "OpcUaStackServer/Application/ApplicationInfo.h"
+#include "OpcUaWebServer/WebServer/HttpServer.h"
+#include "OpcUaWebServer/WebServer/HttpConfig.h"
+#include "OpcUaWebServer/WebServer/HttpContent.h"
 
 using namespace OpcUaStackCore;
-using namespace OpcUaStackServer;
 
 namespace OpcUaWebServer
 {
 
-	class Library
-	: public ApplicationIf
+	class WebServer
 	{
 	  public:
-		Library(void);
-		virtual ~Library(void);
+		WebServer(void);
+		~WebServer(void);
 
-		//- ApplicationIf -----------------------------------------------------
-		virtual bool startup(void);
-		virtual bool shutdown(void);
-		virtual std::string version(void);
-		//- ApplicationIf -----------------------------------------------------
+		bool startup(Config* config, const IOThread::SPtr& ioThread);
+		bool shutdown(void);
 
 	  private:
+		bool getHttpConfig(Config* config);
+		bool getIPLoggerConfig(Config* config);
+
+		HttpServer::SPtr httpServer_;
+		HttpContent::SPtr httpContent_;
+		HttpConfig httpConfig_;
 		IOThread::SPtr ioThread_;
-		WebServer webServer_;
 	};
 
 }

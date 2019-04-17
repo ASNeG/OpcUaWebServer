@@ -1,0 +1,376 @@
+<!--
+   Copyright 2015 Kai Huebl (kai@huebl-sgh.de)
+
+   Lizenziert gemäß Apache Licence Version 2.0 (die „Lizenz“); Nutzung dieser
+   Datei nur in Übereinstimmung mit der Lizenz erlaubt.
+   Eine Kopie der Lizenz erhalten Sie auf http://www.apache.org/licenses/LICENSE-2.0.
+
+   Sofern nicht gemäß geltendem Recht vorgeschrieben oder schriftlich vereinbart,
+   erfolgt die Bereitstellung der im Rahmen der Lizenz verbreiteten Software OHNE
+   GEWÄHR ODER VORBEHALTE – ganz gleich, ob ausdrücklich oder stillschweigend.
+
+   Informationen über die jeweiligen Bedingungen für Genehmigungen und Einschränkungen
+   im Rahmen der Lizenz finden Sie in der Lizenz.
+
+   Autor: Kai Huebl (kai@huebl-sgh.de)
+-->
+
+<?xml version="1.0" encoding="utf-8"?>
+<OpcUaClient Name="ASNeG-Demo_1" xmlns="http://ASNeG/OpcUaClient.xsd">
+
+	<Endpoint>
+	    <ServerUri>opc.tcp://127.0.0.1:8889</ServerUri>
+	</Endpoint>
+	
+	<NamespaceUri>
+		<Uri>http://ASNeG-Demo.de/Test-Server-Lib/</Uri>
+	</NamespaceUri>
+	
+	<NodeList>
+	    <Node ValueName="TimerInterval_1" NodeId="ns=1;i=3" NodeType="UInt32">
+	    	<MetaData>
+				<DisplayName>TimerInterval</DisplayName>
+			</MetaData>
+		</Node>
+	    <Node ValueName="Boolean_1" NodeId="ns=1;i=220" NodeType="Boolean">
+			<MetaData>
+				<DisplayName>Switch</DisplayName>
+				<Limits>
+			    	<Min>0</Min>
+			    	<Max>1</Max>
+			    </Limits>
+			</MetaData>
+		</Node>
+		<Node ValueName="BooleanArray_1" NodeId="ns=1;i=221" NodeType="Boolean" Array="1"/>
+		<Node ValueName="Int16_1" NodeId="ns=1;i=204" NodeType="Int16">
+			<MetaData>
+				<DisplayName>Temperatur</DisplayName>
+				<Limits>
+			    	<Min>-50</Min>
+			    	<Max>100</Max>
+			    </Limits>
+			    <Info>
+			    	<Header>Temperatur</Header>
+			    	<Unit>C</Unit>
+			    	<Detail></Detail>
+			    </Info>
+			    <Section>
+			    	<Low>
+			    		<Min>-50</Min>
+			    		<Max>0</Max>
+			    		<Color>BLUE</Color>
+			    	</Low>
+			    	<Normal>
+			    		<Min>0</Min>
+			    		<Max>35</Max>
+			    		<Color>GREEN</Color>
+			    	</Normal>
+			    	<High>
+			    		<Min>35</Min>
+			    		<Max>100</Max>
+			    		<Color>YELLOW</Color>
+			    	</High>
+			    </Section>
+			    <ValGrad>
+			    	<Low>BLUE</Low>
+			    	<Medium>TEAL</Medium>
+			    	<Normal>GREEN</Normal>
+			    	<High>RED</High>
+			    </ValGrad>
+			</MetaData>
+		</Node>
+		<Node ValueName="Int16Array_1" NodeId="ns=1;i=205" NodeType="Int16" Array="1"/> 
+		<Node ValueName="UInt16_1" NodeId="ns=1;i=206" NodeType="UInt16">
+	    	<MetaData>
+				<DisplayName>Niederschlagsmenge</DisplayName>
+				<Limits>
+			    	<Min>0</Min>
+			    	<Max>100</Max>
+			    </Limits>
+			    <Info>
+			    	<Header>Niederschlag</Header>
+			    	<Unit>%</Unit>
+			    	<Detail></Detail>
+			    </Info>
+			    <Section>
+			    	<Low>
+			    		<Min>0</Min>
+			    		<Max>5</Max>
+			    		<Color>BLUE</Color>
+			    	</Low>
+			    	<Normal>
+			    		<Min>10</Min>
+			    		<Max>20</Max>
+			    		<Color>GREEN</Color>
+			    	</Normal>
+			    	<High>
+			    		<Min>80</Min>
+			    		<Max>100</Max>
+			    		<Color>YELLOW</Color>
+			    	</High>
+			    </Section>
+			    <ValGrad>
+			    	<Low>BLUE</Low>
+			    	<Medium>TEAL</Medium>
+			    	<Normal>GREEN</Normal>
+			    	<High>RED</High>
+			    </ValGrad>
+			</MetaData>
+		</Node>
+	    <Node ValueName="UInt16Array_1" NodeId="ns=1;i=207" NodeType="UInt16" Array="1"/> 
+		<Node ValueName="Int32_1" NodeId="ns=1;i=208" NodeType="Int32">
+	    	<MetaData>
+				<DisplayName>Wind</DisplayName>
+				<Limits>
+			    	<Min>0</Min>
+			    	<Max>360</Max>
+			    </Limits>
+			</MetaData>
+		</Node>
+	    <Node ValueName="Int32Array_1" NodeId="ns=1;i=209" NodeType="Int32" Array="1"/>
+		<Node ValueName="UInt32_1" NodeId="ns=1;i=210" NodeType="UInt32">
+			<MetaData>
+				<DisplayName>Wind</DisplayName>
+				<Limits>
+			    	<Min>0</Min>
+			    	<Max>360</Max>
+			    </Limits>
+			</MetaData>
+		</Node>
+	    <Node ValueName="UInt32Array_1" NodeId="ns=1;i=211" NodeType="UInt32" Array="1"/>
+		<Node ValueName="Int64_1" NodeId="ns=1;i=212" NodeType="Int64">
+			<MetaData>
+				<DisplayName>Int64</DisplayName>
+				<Limits>
+			    	<Min>-1000</Min>
+			    	<Max>1000</Max>
+			    </Limits>
+			    <Info>
+			    	<Header>Header</Header>
+			    	<Unit>Unit</Unit>
+			    	<Detail>Detail</Detail>
+			    </Info>
+			    <Section>
+			    	<Low>
+			    		<Min>-1000</Min>
+			    		<Max>-500</Max>
+			    		<Color>BLUE</Color>
+			    	</Low>
+			    	<Normal>
+			    		<Min>-250</Min>
+			    		<Max>250</Max>
+			    		<Color>GREEN</Color>
+			    	</Normal>
+			    	<High>
+			    		<Min>500</Min>
+			    		<Max>1000</Max>
+			    		<Color>RED</Color>
+			    	</High>
+			    </Section>
+			    <ValGrad>
+			    	<Low>BLUE</Low>
+			    	<Medium>TEAL</Medium>
+			    	<Normal>GREEN</Normal>
+			    	<High>RED</High>
+			    </ValGrad>
+			</MetaData>
+		</Node>
+		<Node ValueName="Int64Array_1" NodeId="ns=1;i=213" NodeType="Int64" Array="1"/>
+		<Node ValueName="UInt64_1" NodeId="ns=1;i=214" NodeType="UInt64">
+			<MetaData>
+				<DisplayName>UInt64</DisplayName>
+				<Limits>
+			    	<Min>0</Min>
+			    	<Max>3000</Max>
+			    </Limits>
+			    <Info>
+			    	<Header>Header</Header>
+			    	<Unit>Unit</Unit>
+			    	<Detail>Detail</Detail>
+			    </Info>
+			    <Section>
+			    	<Low>
+			    		<Min>0</Min>
+			    		<Max>500</Max>
+			    		<Color>BLUE</Color>
+			    	</Low>
+			    	<Normal>
+			    		<Min>500</Min>
+			    		<Max>1000</Max>
+			    		<Color>GREEN</Color>
+			    	</Normal>
+			    	<High>
+			    		<Min>2000</Min>
+			    		<Max>3000</Max>
+			    		<Color>RED</Color>
+			    	</High>
+			    </Section>
+			    <ValGrad>
+			    	<Low>BLUE</Low>
+			    	<Medium>TEAL</Medium>
+			    	<Normal>GREEN</Normal>
+			    	<High>RED</High>
+			    </ValGrad>
+			</MetaData>
+		</Node>
+		<Node ValueName="UInt64Array_1" NodeId="ns=1;i=215" NodeType="UInt64" Array="1"/>
+		<Node ValueName="Float_1" NodeId="ns=1;i=216" NodeType="Float">
+			<MetaData>
+				<DisplayName>Float</DisplayName>
+				<Limits>
+			    	<Min>0</Min>
+			    	<Max>1000</Max>
+			    </Limits>
+			    <Info>
+			    	<Header>Header</Header>
+			    	<Unit>Unit</Unit>
+			    	<Detail>Detail</Detail>
+			    </Info>
+			    <Section>
+			    	<Low>
+			    		<Min>0</Min>
+			    		<Max>250</Max>
+			    		<Color>BLUE</Color>
+			    	</Low>
+			    	<Normal>
+			    		<Min>250</Min>
+			    		<Max>750</Max>
+			    		<Color>GREEN</Color>
+			    	</Normal>
+			    	<High>
+			    		<Min>750</Min>
+			    		<Max>1000</Max>
+			    		<Color>RED</Color>
+			    	</High>
+			    </Section>
+			    <ValGrad>
+			    	<Low>BLUE</Low>
+			    	<Medium>TEAL</Medium>
+			    	<Normal>GREEN</Normal>
+			    	<High>RED</High>
+			    </ValGrad>
+			</MetaData>
+		</Node>
+		<Node ValueName="FloatArray_1" NodeId="ns=1;i=217" NodeType="Float" Array="1"/>
+		<Node ValueName="Double_1" NodeId="ns=1;i=218" NodeType="Double">
+			<MetaData>
+				<DisplayName>Double</DisplayName>
+				<Limits>
+			    	<Min>0</Min>
+			    	<Max>1000</Max>
+			    </Limits>
+			    <Info>
+			    	<Header>Header</Header>
+			    	<Unit>Unit</Unit>
+			    	<Detail>Detail</Detail>
+			    </Info>
+			    <Section>
+			    	<Low>
+			    		<Min>0</Min>
+			    		<Max>250</Max>
+			    		<Color>BLUE</Color>
+			    	</Low>
+			    	<Normal>
+			    		<Min>250</Min>
+			    		<Max>750</Max>
+			    		<Color>GREEN</Color>
+			    	</Normal>
+			    	<High>
+			    		<Min>750</Min>
+			    		<Max>1000</Max>
+			    		<Color>RED</Color>
+			    	</High>
+			    </Section>
+			    <ValGrad>
+			    	<Low>BLUE</Low>
+			    	<Medium>TEAL</Medium>
+			    	<Normal>GREEN</Normal>
+			    	<High>RED</High>
+			    </ValGrad>
+			</MetaData>
+		</Node>
+		<Node ValueName="DoubleArray_1" NodeId="ns=1;i=219" NodeType="Double" Array="1"/>
+		<Node ValueName="SByte_1" NodeId="ns=1;i=200" NodeType="SByte">
+			<MetaData>
+				<DisplayName>SByte</DisplayName>
+			</MetaData>
+		</Node>
+		<Node ValueName="SByteArray_1" NodeId="ns=1;i=201" NodeType="SByte" Array="1"/>
+		<Node ValueName="Byte_1" NodeId="ns=1;i=202" NodeType="Byte">
+			<MetaData>
+				<DisplayName>Byte</DisplayName>
+				<Limits>
+			    	<Min>0</Min>
+			    	<Max>64</Max>
+			    </Limits>
+			    <Section>
+			    	<Low>
+			    		<Min>0</Min>
+			    		<Max>20</Max>
+			    		<Color>BLUE</Color>
+			    	</Low>
+			    	<Normal>
+			    		<Min>20</Min>
+			    		<Max>40</Max>
+			    		<Color>GREEN</Color>
+			    	</Normal>
+			    	<High>
+			    		<Min>40</Min>
+			    		<Max>64</Max>
+			    		<Color>RED</Color>
+			    	</High>
+			    </Section>
+			    <ValGrad>
+			    	<Low>BLUE</Low>
+			    	<Medium>TEAL</Medium>
+			    	<Normal>GREEN</Normal>
+			    	<High>RED</High>
+			    </ValGrad>
+			</MetaData>
+		</Node>
+		<Node ValueName="ByteArray_1" NodeId="ns=1;i=203" NodeType="Byte" Array="1"/>
+		<Node ValueName="String_1" NodeId="ns=1;i=222" NodeType="String">
+			<MetaData>
+				<DisplayName>String</DisplayName>
+			</MetaData>
+		</Node>
+		<Node ValueName="StringArray_1" NodeId="ns=1;i=223" NodeType="String" Array="1"/>	
+		<Node ValueName="ByteString_1" NodeId="ns=1;i=224" NodeType="ByteString">
+			<MetaData>
+				<DisplayName>ByteString</DisplayName>
+			</MetaData>
+		</Node>
+		<Node ValueName="ByteStringArray_1" NodeId="ns=1;i=225" NodeType="ByteString" Array="1"/>
+		<Node ValueName="LocalizedText_1" NodeId="ns=1;i=226" NodeType="LocalizedText">
+			<MetaData>
+				<DisplayName>LocalizedText</DisplayName>
+			</MetaData>
+		</Node>
+		<Node ValueName="LocalizedTextArray_1" NodeId="ns=1;i=227" NodeType="LocalizedText" Array="1"/>
+		<Node ValueName="DateTime_1" NodeId="ns=1;i=228" NodeType="DateTime">
+			<MetaData>
+				<DisplayName>DateTime</DisplayName>
+			</MetaData>
+		</Node>
+		<Node ValueName="DateTimeArray_1" NodeId="ns=1;i=229" NodeType="DateTime" Array="1"/>
+		<Node ValueName="Guid_1" NodeId="ns=1;i=230" NodeType="Guid">
+			<MetaData>
+				<DisplayName>Guid</DisplayName>
+			</MetaData>
+		</Node>
+		<Node ValueName="GuidArray_1" NodeId="ns=1;i=231" NodeType="Guid" Array="1"/>
+		<Node ValueName="NodeId_1" NodeId="ns=1;i=232" NodeType="NodeId">
+			<MetaData>
+				<DisplayName>NodeId</DisplayName>
+			</MetaData>
+		</Node>
+		<Node ValueName="NodeIdArray_1" NodeId="ns=1;i=233" NodeType="NodeId" Array="1"/>
+		<Node ValueName="QualifiedName_1" NodeId="ns=1;i=234" NodeType="QualifiedName">
+			<MetaData>
+				<DisplayName>QualifiedName</DisplayName>
+			</MetaData>
+		</Node>
+		<Node ValueName="QualifiedNameArray_1" NodeId="ns=1;i=235" NodeType="QualifiedName" Array="1"/> 
+	</NodeList>
+
+</OpcUaClient>

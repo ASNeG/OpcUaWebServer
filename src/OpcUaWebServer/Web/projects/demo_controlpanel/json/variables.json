@@ -1,0 +1,223 @@
+{
+  "type": "VARIABLE_CONFIG",
+  "variables": [
+    {
+      "valueName": "Boolean",
+      "toolids": [
+        "toolid_table_1",
+        "toolid_display_single_1",
+        "toolid_led_1",
+        "toolid_lightblub_1"
+      ]
+    },
+    {
+      "valueName": "Byte",
+      "toolids": [
+        "toolid_table_1",
+        "toolid_display_single_1",
+        "toolid_display_multi_1",
+        "toolid_odometer_1",
+        "toolid_radial_1",
+        "toolid_radial_2",
+        "toolid_radial_bargraph_1",
+        "toolid_radial_vertical_1",
+        "toolid_line_1"
+      ]
+    },
+    {
+      "valueName": "ByteString",
+      "toolids": [
+        "toolid_table_1",
+        "toolid_display_single_1"
+      ]
+    },
+    {
+      "valueName": "DateTime",
+      "toolids": [
+        "toolid_display_single_1"
+      ]
+    },
+    {
+      "valueName": "Double",
+      "toolids": [
+        "toolid_table_1",
+        "toolid_display_single_1",
+        "toolid_display_multi_1",
+        "toolid_odometer_1",
+        "toolid_radial_1",
+        "toolid_radial_2",
+        "toolid_radial_bargraph_1",
+        "toolid_radial_vertical_1",
+        "toolid_line_1"
+      ]
+    },
+    {
+      "valueName": "Float",
+      "toolids": [
+        "toolid_table_1",
+        "toolid_display_single_1",
+        "toolid_display_multi_1",
+        "toolid_odometer_1",
+        "toolid_radial_1",
+        "toolid_radial_2",
+        "toolid_radial_bargraph_1",
+        "toolid_radial_vertical_1",
+        "toolid_line_1"
+      ]
+    },
+    {
+      "valueName": "Guid",
+      "toolids": [
+        "toolid_display_single_1"
+      ]
+    },
+    {
+      "valueName": "Int16",
+      "toolids": [
+        "toolid_table_1",
+        "toolid_linear_1",
+        "toolid_linear_2",
+        "toolid_linear_bargraph_1",
+        "toolid_display_single_1",
+        "toolid_display_multi_1",
+        "toolid_odometer_1",
+        "toolid_radial_1",
+        "toolid_radial_2",
+        "toolid_radial_bargraph_1",
+        "toolid_radial_vertical_1",
+        "toolid_line_1"
+      ]
+    },
+    {
+      "valueName": "Int16_1",
+      "toolids": [
+        "toolid_table_1",
+        "toolid_linear_1",
+        "toolid_linear_2",
+        "toolid_linear_bargraph_1",
+        "toolid_display_single_1",
+        "toolid_display_multi_1",
+        "toolid_odometer_1",
+        "toolid_radial_1",
+        "toolid_radial_2",
+        "toolid_radial_bargraph_1",
+        "toolid_radial_vertical_1",
+        "toolid_line_1"
+      ]
+    },
+    {
+      "valueName": "Int32",
+      "toolids": [
+        "toolid_table_1",
+        "toolid_compass_1",
+        "toolid_level_1",
+        "toolid_display_single_1",
+        "toolid_display_multi_1",
+        "toolid_odometer_1",
+        "toolid_radial_1",
+        "toolid_radial_2",
+        "toolid_radial_bargraph_1",
+        "toolid_radial_vertical_1",
+        "toolid_line_1"
+      ]
+    },
+    {
+      "valueName": "Int64",
+      "toolids": [
+        "toolid_table_1",
+        "toolid_display_single_1",
+        "toolid_radial_1",
+        "toolid_radial_bargraph_1",
+        "toolid_radial_vertical_1",
+        "toolid_line_1"
+      ]
+    },
+    {
+      "valueName": "LocalizedText",
+      "toolids": [
+        "toolid_display_single_1"
+      ]
+    },
+    {
+      "valueName": "NodeId",
+      "toolids": [
+        "toolid_display_single_1"
+      ]
+    },
+    {
+      "valueName": "QualifiedName",
+      "toolids": [
+        "toolid_display_single_1"
+      ]
+    },
+    {
+      "valueName": "SByte",
+      "toolids": [
+        "toolid_table_1",
+        "toolid_display_single_1"
+      ]
+    },
+    {
+      "valueName": "String",
+      "toolids": [
+        "toolid_table_1",
+        "toolid_display_single_1"
+      ]
+    },
+    {
+      "valueName": "TimerInterval",
+      "toolids": [
+        "toolid_table_1",
+        "toolid_display_single_1"
+      ]
+    },
+    {
+      "valueName": "UInt16",
+      "toolids": [
+        "toolid_table_1",
+        "toolid_altimeter_1",
+        "toolid_battery_1",
+        "toolid_linear_1",
+        "toolid_linear_2",
+        "toolid_linear_bargraph_1",
+        "toolid_display_single_1",
+        "toolid_display_multi_1",
+        "toolid_odometer_1",
+        "toolid_radial_1",
+        "toolid_radial_2",
+        "toolid_radial_bargraph_1",
+        "toolid_radial_vertical_1",
+        "toolid_line_1"
+      ]
+    },
+    {
+      "valueName": "UInt32",
+      "toolids": [
+        "toolid_table_1",
+        "toolid_compass_1",
+        "toolid_level_1",
+        "toolid_display_single_1",
+        "toolid_display_multi_1",
+        "toolid_odometer_1",
+        "toolid_radial_1",
+        "toolid_radial_2",
+        "toolid_radial_bargraph_1",
+        "toolid_radial_vertical_1",
+        "toolid_line_1"
+      ]
+    },
+    {
+      "valueName": "UInt64",
+      "toolids": [
+        "toolid_table_1",
+        "toolid_display_single_1",
+        "toolid_odometer_1",
+        "toolid_radial_1",
+        "toolid_radial_2",
+        "toolid_radial_bargraph_1",
+        "toolid_radial_vertical_1",
+        "toolid_line_1"
+      ]
+    }
+  ]
+}
