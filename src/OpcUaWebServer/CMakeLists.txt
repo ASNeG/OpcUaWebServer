@@ -70,6 +70,18 @@ target_link_libraries(
 # -----------------------------------------------------------------------------
 # -----------------------------------------------------------------------------
 
+# WebServer
+file(GLOB DEPLOY_FILES_AND_DIRS ${PROJECT_SOURCE_DIR}/OpcUaWebServer/Web/*)
+foreach(ITEM ${DEPLOY_FILES_AND_DIRS})
+    IF(IS_DIRECTORY ${ITEM})
+        LIST(APPEND DIRS_TO_DEPLOY ${ITEM})
+    ELSE()
+        LIST(APPEND FILES_TO_DEPLOY ${ITEM})
+    ENDIF()
+endforeach()
+install(FILES ${FILES_TO_DEPLOY} DESTINATION /var/www/OpcUaWebServer)
+install(DIRECTORY ${DIRS_TO_DEPLOY} DESTINATION /var/www/OpcUaWebServer)
+
 file (GLOB CONFIG_FILES ${PROJECT_SOURCE_DIR}/OpcUaWebServer/Config/*.xml)
 install(TARGETS OpcUaWebServer DESTINATION ${INSTALL_PREFIX}/lib)
 
