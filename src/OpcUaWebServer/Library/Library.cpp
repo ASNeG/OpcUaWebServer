@@ -30,6 +30,10 @@ namespace OpcUaWebServer
 	Library::Library(void)
 	: ApplicationIf()
 	, webServer_()
+	, webSocket_()
+	, messageServer_()
+	, opcUaClientManager_()
+	, ioThread_()
 	{
 	}
 
@@ -59,6 +63,9 @@ namespace OpcUaWebServer
 
 		// start web server components
 		if (!webServer_.startup(&config, ioThread_)) return false;
+		if (!webSocket_.startup(&config, ioThread_, this)) return false;
+		if (!messageServer_.startup(&config, this)) return false;
+		if (!opcUaClientManager_.startup(&config, this, ioThread_)) return false;
 
 		return true;
 	}
@@ -71,6 +78,9 @@ namespace OpcUaWebServer
 		if (!ioThread_->shutdown()) return false;
 		ioThread_.reset();
 
+		if (!opcUaClientManager_.shutdown()) return false;
+		if (!messageServer_.shutdown()) return false;
+		if (!webSocket_.shutdown()) return false;
 		if (!webServer_.shutdown()) return false;
 
 		return true;
@@ -83,6 +93,56 @@ namespace OpcUaWebServer
 
 		version << LIBRARY_VERSION_MAJOR << "." << LIBRARY_VERSION_MINOR << "." << LIBRARY_VERSION_PATCH;
 		return version.str();
+	}
+
+	// ------------------------------------------------------------------------
+	// ------------------------------------------------------------------------
+	//
+	// WebSocketServerIf
+	//
+	// ------------------------------------------------------------------------
+	// ------------------------------------------------------------------------
+	void
+	Library::webSocketMessage(WebSocketMessage& webSocketMessage)
+	{
+		std::cout << "WebSocketMessage: " << webSocketMessage.message_ << std::endl;
+
+		messageServer_.receiveMessage(webSocketMessage.channelId_, webSocketMessage.message_);
+	}
+
+	// ------------------------------------------------------------------------
+	// ------------------------------------------------------------------------
+	//
+	// MessageServerIf
+	//
+	// ------------------------------------------------------------------------
+	// ------------------------------------------------------------------------
+	void
+	Library::messageServerMessage(Message::SPtr& message)
+	{
+		opcUaClientManager_.receiveMessage(message);
+	}
+
+	void
+	Library::messageServerMessage(uint32_t channelId, const std::string& message)
+	{
+		WebSocketMessage webSocketMessage;
+		webSocketMessage.channelId_ = channelId;
+		webSocketMessage.message_ = message;
+		webSocket_.sendMessage(webSocketMessage);
+	}
+
+	// ------------------------------------------------------------------------
+	// ------------------------------------------------------------------------
+	//
+	// ClientManagerIf
+	//
+	// ------------------------------------------------------------------------
+	// ------------------------------------------------------------------------
+	void
+	Library::clientManagerMessage(Message::SPtr& message)
+	{
+		messageServer_.receiveMessage(message);
 	}
 
 }

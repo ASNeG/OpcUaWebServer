@@ -48,7 +48,11 @@ namespace OpcUaWebServer
 	}
 
 	bool
-	OpcUaClientManager::startup(Config* config, OpcUaClientManagerIf* opcUaClientManagerIf, IOThread::SPtr ioThread)
+	OpcUaClientManager::startup(
+		Config* config,
+		OpcUaClientManagerIf* opcUaClientManagerIf,
+		IOThread::SPtr ioThread
+	)
 	{
 		config_ = config;
 		opcUaClientManagerIf_ = opcUaClientManagerIf;

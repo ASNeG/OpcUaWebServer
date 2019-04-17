@@ -20,6 +20,9 @@
 
 #include "OpcUaStackServer/Application/ApplicationIf.h"
 #include "OpcUaWebServer/WebServer/WebServer.h"
+#include "OpcUaWebServer/WebSocket/WebSocket.h"
+#include "OpcUaWebServer/MessageServer/MessageServer.h"
+#include "OpcUaWebServer/OpcUaClient/OpcUaClientManager.h"
 
 using namespace OpcUaStackCore;
 using namespace OpcUaStackServer;
@@ -29,6 +32,9 @@ namespace OpcUaWebServer
 
 	class Library
 	: public ApplicationIf
+	, public WebSocketServerIf
+	, public MessageServerIf
+	, public OpcUaClientManagerIf
 	{
 	  public:
 		Library(void);
@@ -40,9 +46,25 @@ namespace OpcUaWebServer
 		virtual std::string version(void);
 		//- ApplicationIf -----------------------------------------------------
 
+		//- WebSocketServerIf -------------------------------------------------
+		void webSocketMessage(WebSocketMessage& webSocketMessage);
+		//- WebSocketServerIf -------------------------------------------------
+
+		//- MessageServerIf ---------------------------------------------------
+		void messageServerMessage(Message::SPtr& message);
+		void messageServerMessage(uint32_t channelId, const std::string& message);
+		//- MessageServerIf ---------------------------------------------------
+
+		//- OpcUaClientManagerIf ----------------------------------------------
+		void clientManagerMessage(Message::SPtr& message);
+		//- OpcUaClientManagerIf ----------------------------------------------
+
 	  private:
 		IOThread::SPtr ioThread_;
 		WebServer webServer_;
+		WebSocket webSocket_;
+		MessageServer messageServer_;
+		OpcUaClientManager opcUaClientManager_;
 	};
 
 }
