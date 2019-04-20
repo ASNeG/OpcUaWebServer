@@ -1,4 +1,4 @@
-FROM asneg/opcuastack:release-4.1.0
+FROM asneg/opcuastack:release-4.0.0
 
 # Prepare workdir
 ADD / /tmp
@@ -12,4 +12,4 @@ RUN make install
 
 # Start OpcUaWebServer
 EXPOSE 8890 4840
-CMD ["OpcUaServer3", "/etc/OpcUaStack/OpcUaWebServer/OpcUaServer.xml"]
+CMD ["OpcUaServer4", "/etc/OpcUaStack/OpcUaWebServer/OpcUaServer.xml"]
