@@ -1,4 +1,4 @@
-FROM asneg/opcuastack:release-4.0.0
+FROM asneg/opcuastack:release-4
 
 # Prepare workdir
 ADD / /tmp
