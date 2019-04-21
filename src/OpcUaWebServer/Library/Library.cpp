@@ -65,7 +65,7 @@ namespace OpcUaWebServer
 		if (!webServer_.startup(&config, ioThread_)) return false;
 		if (!webSocket_.startup(&config, ioThread_, this)) return false;
 		if (!messageServer_.startup(&config, this)) return false;
-		if (!opcUaClientManager_.startup(&config, this, ioThread_)) return false;
+		if (!opcUaClientManager_.startup(&config, this, ioThread_, cryptoManager())) return false;
 
 		return true;
 	}

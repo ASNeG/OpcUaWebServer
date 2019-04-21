@@ -70,7 +70,11 @@ namespace OpcUaWebServer
 	}
 
 	bool
-	OpcUaClient::startup(const OpcUaClient::SPtr& opcUaClient, IOThread::SPtr ioThread)
+	OpcUaClient::startup(
+		const OpcUaClient::SPtr& opcUaClient,
+		IOThread::SPtr ioThread,
+		CryptoManager::SPtr& cryptoManager
+	)
 	{
 		std::cout << "client startup " << opcUaClientConfig_->opcUaClientEndpoint_.serverUri_ << std::endl;
 
@@ -89,6 +93,7 @@ namespace OpcUaWebServer
 			sessionStateUpdate(session, sessionState);
 		};
 		sessionServiceConfig.secureChannelClient_->endpointUrl(opcUaClientConfig_->opcUaClientEndpoint_.serverUri_);
+		sessionServiceConfig.secureChannelClient_->cryptoManager(cryptoManager);
 		sessionServiceConfig.session_->sessionName("ASNeGWebServer");
 		sessionServiceConfig.session_->reconnectTimeout(5000);
 		serviceSetManager_.sessionService(sessionServiceConfig);

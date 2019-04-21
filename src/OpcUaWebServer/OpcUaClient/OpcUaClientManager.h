@@ -38,7 +38,12 @@ namespace OpcUaWebServer
 		OpcUaClientManager(void);
 		~OpcUaClientManager(void);
 
-		bool startup(Config* config, OpcUaClientManagerIf* opcUaClientManagerIf, IOThread::SPtr ioThread);
+		bool startup(
+			Config* config,
+			OpcUaClientManagerIf* opcUaClientManagerIf,
+			IOThread::SPtr ioThread,
+			CryptoManager::SPtr& cryptoManager
+		);
 		bool shutdown(void);
 
 		void receiveMessage(Message::SPtr& requestMessage);
@@ -61,6 +66,7 @@ namespace OpcUaWebServer
 
 		Config* config_;
 		IOThread::SPtr ioThread_;
+		CryptoManager::SPtr cryptoManager_;
 
 		OpcUaClientManagerIf* opcUaClientManagerIf_;
 		OpcUaClientConfig::Map opcUaClientConfigMap_;

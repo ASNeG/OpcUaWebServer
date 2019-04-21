@@ -60,7 +60,11 @@ namespace OpcUaWebServer
 		OpcUaClient(void);
 		~OpcUaClient(void);
 
-		bool startup(const OpcUaClient::SPtr& opcUaClient, IOThread::SPtr ioThread);
+		bool startup(
+			const OpcUaClient::SPtr& opcUaClient,
+			IOThread::SPtr ioThread,
+			CryptoManager::SPtr& cryptoManager
+		);
 		bool shutdown(void);
 
 		void config(Config* config);

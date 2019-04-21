@@ -40,6 +40,7 @@ namespace OpcUaWebServer
 	, opcUaClientConfigMap_()
 	, opcUaClientMap_()
 	, valueInfoEntryMap_()
+	, cryptoManager_()
 	{
 	}
 
@@ -51,12 +52,14 @@ namespace OpcUaWebServer
 	OpcUaClientManager::startup(
 		Config* config,
 		OpcUaClientManagerIf* opcUaClientManagerIf,
-		IOThread::SPtr ioThread
+		IOThread::SPtr ioThread,
+		CryptoManager::SPtr& cryptoManager
 	)
 	{
 		config_ = config;
 		opcUaClientManagerIf_ = opcUaClientManagerIf;
 		ioThread_ = ioThread;
+		cryptoManager_ = cryptoManager;
 
 		if (!readClientConfig()) return false;
 		if (!startupClient()) return false;
@@ -502,7 +505,7 @@ namespace OpcUaWebServer
 			opcUaClient->opcUaClientConfig(it1->second);
 			opcUaClient->opcUaClientIf(this);
 
-			if (!opcUaClient->startup(opcUaClient, ioThread_)) return false;
+			if (!opcUaClient->startup(opcUaClient, ioThread_, cryptoManager_)) return false;
 
 			opcUaClientMap_.insert(std::make_pair(it1->first, opcUaClient));
 
