@@ -459,5 +459,6 @@ function ASNeG_Client(ip, format, callbackReveiceFromServer, callbackASNeGClient
 		var code = event.code;
 		logger_.log("webSocket_onerror", "WebSocketError: " + reason + "(" + code + ")");
 	}
+	
 }
 

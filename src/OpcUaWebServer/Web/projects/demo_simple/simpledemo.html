@@ -59,6 +59,87 @@
 		<script language="javascript" type="text/javascript">
 
 			var valueInfo = {};
+			
+			function typeStringToId(typeString) {
+				if (typeString == 'Boolean') {
+					return 1;
+				}
+				else if (typeString == 'SByte') {
+					return 2;
+				}
+				else if (typeString == 'Byte') {
+		    		return 3;
+				}
+				else if (typeString == 'Int16') {
+					return 4;
+				}
+				else if (typeString == 'UInt16') {
+		    		return 5;
+				}
+				else if (typeString == 'Int32') {
+					return 6;
+				}
+				else if (typeString == 'UInt32') {
+		    		return 7;
+				}
+				else if (typeString == 'Int64') {
+					return 8;
+				}
+				else if (typeString == 'UInt64') {
+		    		return 9;
+				}
+				else if (typeString == 'Float') {
+		    		return 10;
+				}
+				else if (typeString == 'Double') {
+		    		return 11;
+				}
+				else if (typeString == 'String') {
+		    		return 12;
+				}
+				else if (typeString == 'DateTime') {
+		    		return 13;
+				}
+				else if (typeString == 'Guid') {
+		    		return 14;
+				}
+				else if (typeString == 'ByteString') {
+		    		return 15;
+				}
+				else if (typeString == 'XmlElement') {
+		    		return 16;
+				}
+				else if (typeString == 'NodeId') {
+		    		return 17;
+				}
+				else if (typeString == 'ExpandedNodeId') {
+		    		return 18;
+				}
+				else if (typeString == 'StatusCode') {
+		    		return 19;
+				}
+				else if (typeString == 'QualifiedName') {
+		    		return 20;
+				}
+				else if (typeString == 'LocalizedText') {
+		    		return 21;
+				}
+				else if (typeString == 'ExtensionObject') {
+		    		return 22;
+				}
+				else if (typeString == 'DataValue') {
+		    		return 23;
+				}	
+				else if (typeString == 'Variant') {
+		    		return 24;
+				}
+				else if (typeString == 'DiagnosticInfo') {
+		   	 		return 25;
+				}
+				else {
+		    		return 0;
+				}
+			}
 		
 			function websocket_send(msg)
 			{
@@ -225,12 +306,12 @@
 				if (info.IsArray == "true") {
 					for (var idx=0; idx<3; idx++) {
 						var elementId = data.Header.ClientHandle + "_" + field + idx;
-						document.getElementById(elementId).innerHTML = data2string(info.Type, data.Body.Value[idx]);
+						document.getElementById(elementId).innerHTML = data2string(info.Type, data.Body.Value.Body[idx]);
 					}
 				}
 				else {
 					var elementId = data.Header.ClientHandle + "_" + field;
-					document.getElementById(elementId).innerHTML = data2string(info.Type, data.Body.Value);
+					document.getElementById(elementId).innerHTML = data2string(info.Type, data.Body.Value.Body);
 				}
 			}
 			
@@ -358,8 +439,9 @@
 				websocket_send(JSON.stringify(msg));
 			}
 			
-			function writeEvent(clientHandle) 
+			function writeEvent(clientHandle, variableType) 
 			{
+			    var typeId = typeStringToId(variableType);
 				var value = getValue(clientHandle, "Write");
 				var msg = {
 					Header : {
@@ -368,7 +450,10 @@
 					},
 					Body : {
 					    Variable: clientHandle,
-					    Value: value
+					    Value: {
+					        Type: typeId,
+					        Body: value
+					    }
 					}
 				}
 				
@@ -423,6 +508,7 @@
 			
 			function createElement(wrapperName, variableInfo) {
 			
+				var variableType = variableInfo.Type;
 				var variableName = variableInfo.Variable;
 				var variableIsArray = variableInfo.IsArray;
 				
@@ -488,7 +574,7 @@
 				
 				element += "  <tr>"
 				element += "    <th>"
-				element += "      <button onClick=\"writeEvent('" + variableName + "')\" class=\"writeButton\">Write</button>"
+				element += "      <button onClick=\"writeEvent('" + variableName + "', '" + variableType + "')\" class=\"writeButton\">Write</button>"
 				element += "    </th>"
 				element += "    <th>"
 				if (variableIsArray == "true") {

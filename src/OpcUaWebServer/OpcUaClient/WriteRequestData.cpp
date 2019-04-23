@@ -87,14 +87,13 @@ namespace OpcUaWebServer
 	bool
 	WriteRequestData::jsonDecode(boost::property_tree::ptree& pt)
 	{
-#if 0
 		// read value
-		OpcUaBuildInType type = valueInfoEntry_->type_;
-		bool isArray = valueInfoEntry_->array_;
+		//OpcUaBuildInType type = valueInfoEntry_->type_;
+		//bool isArray = valueInfoEntry_->array_;
 
 		try {
 			dataValue_ = constructSPtr<OpcUaDataValue>();
-			if (!dataValue_->jsonDecode(pt, type, isArray)) {
+			if (!dataValue_->jsonDecode(pt, "Value")) {
 				Log(Error, "data value error in write request");
 				return false;
 			}
@@ -102,7 +101,6 @@ namespace OpcUaWebServer
 		catch (...) {
 			return false;
 		}
-#endif
 
 		return true;
 	}
