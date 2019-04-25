@@ -1,5 +1,5 @@
 /*
-   Copyright 2015-2017 Kai Huebl (kai@huebl-sgh.de)
+   Copyright 2015-2019 Kai Huebl (kai@huebl-sgh.de)
 
    Lizenziert gemäß Apache Licence Version 2.0 (die „Lizenz“); Nutzung dieser
    Datei nur in Übereinstimmung mit der Lizenz erlaubt.
@@ -64,6 +64,7 @@ namespace OpcUaWebServer
 		// start web server components
 		if (!webServer_.startup(&config, ioThread_)) return false;
 		if (!webSocket_.startup(&config, ioThread_, this)) return false;
+		if (!webGateway_.startup(&config, ioThread_, cryptoManager()))
 		if (!messageServer_.startup(&config, this)) return false;
 		if (!opcUaClientManager_.startup(&config, this, ioThread_, cryptoManager())) return false;
 
@@ -80,6 +81,7 @@ namespace OpcUaWebServer
 
 		if (!opcUaClientManager_.shutdown()) return false;
 		if (!messageServer_.shutdown()) return false;
+		if (!webGareway_.shutdown()) return false;
 		if (!webSocket_.shutdown()) return false;
 		if (!webServer_.shutdown()) return false;
 

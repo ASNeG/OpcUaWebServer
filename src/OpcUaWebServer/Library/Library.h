@@ -23,6 +23,7 @@
 #include "OpcUaWebServer/WebSocket/WebSocket.h"
 #include "OpcUaWebServer/MessageServer/MessageServer.h"
 #include "OpcUaWebServer/OpcUaClient/OpcUaClientManager.h"
+#include "OpcUaWebServer/WebGateway/WebGateway.h"
 
 using namespace OpcUaStackCore;
 using namespace OpcUaStackServer;
@@ -63,6 +64,7 @@ namespace OpcUaWebServer
 		IOThread::SPtr ioThread_;
 		WebServer webServer_;
 		WebSocket webSocket_;
+		WebGateway webGateway_;
 		MessageServer messageServer_;
 		OpcUaClientManager opcUaClientManager_;
 	};
