@@ -81,7 +81,7 @@ namespace OpcUaWebServer
 
 		if (!opcUaClientManager_.shutdown()) return false;
 		if (!messageServer_.shutdown()) return false;
-		if (!webGareway_.shutdown()) return false;
+		if (!webGateway_.shutdown()) return false;
 		if (!webSocket_.shutdown()) return false;
 		if (!webServer_.shutdown()) return false;
 

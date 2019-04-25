@@ -13,40 +13,59 @@
    im Rahmen der Lizenz finden Sie in der Lizenz.
 
    Autor: Kai Huebl (kai@huebl-sgh.de)
+
  */
 
-#ifndef __OpcUaWebServer_WebGateway_h__
-#define __OpcUaWebServer_WebGateway_h__
-
-#include "OpcUaStackCore/Base/Config.h"
-#include "OpcUaStackCore/Utility/IOThread.h"
-#include "OpcUaStackCore/Certificate/CryptoManager.h"
 #include "OpcUaWebServer/WebGateway/WebGatewayConfig.h"
-
-using namespace OpcUaStackCore;
 
 namespace OpcUaWebServer
 {
 
-	class WebGateway
+	WebGatewayConfig::WebGatewayConfig(void)
+	: address_("0.0.0.0")
+	, port_(8082)
+	, active_(false)
 	{
-	  public:
-		WebGateway(void);
-		virtual ~WebGateway(void);
+	}
 
-		bool startup(
-			Config* config,
-			IOThread::SPtr ioThread,
-			CryptoManager::SPtr& cryptoManager
-		);
-		bool shutdown(void);
+	WebGatewayConfig::~WebGatewayConfig(void)
+	{
+	}
 
-		bool getWebGatewayConfig(Config* config);
+	void
+	WebGatewayConfig::active(bool active)
+	{
+		active_ = active;
+	}
 
-	  private:
-		WebGatewayConfig webGatewayConfig_;
-	};
+	bool
+	WebGatewayConfig::active(void)
+	{
+		return active_;
+	}
+
+	void
+	WebGatewayConfig::address(const std::string& address)
+	{
+		address_ = address;
+	}
+
+	std::string&
+	WebGatewayConfig::address(void)
+	{
+		return address_;
+	}
+
+	void
+	WebGatewayConfig::port(uint32_t port)
+	{
+		port_ = port;
+	}
+
+	uint32_t
+	WebGatewayConfig::port(void)
+	{
+		return port_;
+	}
 
 }
-
-#endif

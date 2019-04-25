@@ -13,38 +13,34 @@
    im Rahmen der Lizenz finden Sie in der Lizenz.
 
    Autor: Kai Huebl (kai@huebl-sgh.de)
+
  */
 
-#ifndef __OpcUaWebServer_WebGateway_h__
-#define __OpcUaWebServer_WebGateway_h__
+#ifndef __OpcUaWebServer_WebGatewayConfig_h__
+#define __OpcUaWebServer_WebGatewayConfig_h__
 
-#include "OpcUaStackCore/Base/Config.h"
-#include "OpcUaStackCore/Utility/IOThread.h"
-#include "OpcUaStackCore/Certificate/CryptoManager.h"
-#include "OpcUaWebServer/WebGateway/WebGatewayConfig.h"
-
-using namespace OpcUaStackCore;
+#include <string>
 
 namespace OpcUaWebServer
 {
 
-	class WebGateway
+	class WebGatewayConfig
 	{
 	  public:
-		WebGateway(void);
-		virtual ~WebGateway(void);
+		WebGatewayConfig(void);
+		virtual ~WebGatewayConfig(void);
 
-		bool startup(
-			Config* config,
-			IOThread::SPtr ioThread,
-			CryptoManager::SPtr& cryptoManager
-		);
-		bool shutdown(void);
-
-		bool getWebGatewayConfig(Config* config);
+		void active(bool active);
+		bool active(void);
+		void address(const std::string& address);
+		std::string& address(void);
+		void port(uint32_t port);
+		uint32_t port(void);
 
 	  private:
-		WebGatewayConfig webGatewayConfig_;
+		bool active_;
+		std::string address_;
+		uint32_t port_;
 	};
 
 }

@@ -15,6 +15,7 @@
    Autor: Kai Huebl (kai@huebl-sgh.de)
  */
 
+#include <boost/lexical_cast.hpp>
 #include "OpcUaStackCore/Base/Log.h"
 #include "OpcUaWebServer/WebGateway/WebGateway.h"
 
@@ -24,6 +25,7 @@ namespace OpcUaWebServer
 {
 
 	WebGateway::WebGateway(void)
+	: webGatewayConfig_()
 	{
 	}
 
@@ -38,12 +40,68 @@ namespace OpcUaWebServer
 		CryptoManager::SPtr& cryptoManager
 	)
 	{
+		// get gateway configuration from configuration file
+		if (!getWebGatewayConfig(config)) {
+			return false;
+		}
+
 		return true;
 	}
 
 	bool
 	WebGateway::shutdown(void)
 	{
+		return true;
+	}
+
+	bool
+	WebGateway::getWebGatewayConfig(Config* config)
+	{
+		bool success;
+
+		// check if gateway configuration is exist in configuration file. If not, then
+		// the web gateway is diabled.
+		if (!config->exist("OpcUaWebServerModel.WebGateway")) {
+			Log(Info, "web gateway is disabled");
+			webGatewayConfig_.active(false);
+			return true;
+		}
+		webGatewayConfig_.active(true);
+
+		// read ip address
+		std::string address;
+		success = config->getConfigParameter("OpcUaWebServerModel.WebGateway.Address", address);
+		if (!success) {
+			Log(Error, "missing web gateway parameter in configuration file")
+				.parameter("Parameter", "OpcUaWebServerModel.WebGateway.Address")
+				.parameter("ConfigurationFile", config->configFileName());
+			return false;
+		}
+		webGatewayConfig_.address(address);
+
+		// read port
+		std::string portString;
+		success = config->getConfigParameter("OpcUaWebServerModel.WebGateway.Port", portString);
+		if (!success) {
+			Log(Error, "missing web gateway parameter in configuration file")
+				.parameter("Parameter", "OpcUaWebServerModel.WebGateway.Port")
+				.parameter("ConfigurationFile", config->configFileName());
+			return false;
+		}
+
+		uint32_t port;
+		try {
+			port = boost::lexical_cast<uint32_t>(portString);
+		}
+		catch (boost::bad_lexical_cast &) {
+			Log(Error, "invalid web socket parameter in configuration file")
+				.parameter("Port", portString)
+				.parameter("Parameter", "OpcUaWebServerModel.WebSocketServer.Port")
+				.parameter("ConfigurationFileName", config->configFileName());
+			return false;
+		}
+		webGatewayConfig_.port(port);
+
 		return true;
 	}
 
