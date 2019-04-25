@@ -67,6 +67,7 @@ function Facade(html_ul_id, html_status_icon_id, html_board_id, html_dialog_id) 
     }
 
     function callbackReveiceFromServer(responseObj) {
+    
         if (responseObj.connectionStatusCode != null) {
             logger_.error("callbackReveiceFromServer", 
                 responseObj.connectionStatusCode + " by " + responseObj.clientHandle
@@ -119,6 +120,7 @@ function Facade(html_ul_id, html_status_icon_id, html_board_id, html_dialog_id) 
                         if (variable == null || responseObj.value == null) {
                             return;
                         }
+                        console.log(responseObj);
 
                         var i;
                         for (i=0; i<variable.tools.length; i++) {                            

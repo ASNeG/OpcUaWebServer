@@ -427,7 +427,7 @@ function ASNeG_Client(ip, format, callbackReveiceFromServer, callbackASNeGClient
 						responseObj.valueStatusCode = data.Body.StatusCode;
 					} else {
 						responseObj.valueStatusCode = "Success";
-						responseObj.value = data.Body.Value;
+						responseObj.value = data.Body.Value.Body;
 					}
 					break;	
 				case "HISTORICALREAD_RESPONSE" :
