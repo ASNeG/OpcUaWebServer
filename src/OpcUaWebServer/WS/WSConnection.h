@@ -16,25 +16,47 @@
 
  */
 
-#ifndef __OpcUaWebServer_WSServer_h__
-#define __OpcUaWebServer_WSServer_h__
+#ifndef __OpcUaWebServer_WSConnection_h__
+#define __OpcUaWebServer_WSConnection_h__
 
 #include <boost/asio.hpp>
-#include "OpcUaWebServer/WS/WSConfig.h"
-#include "OpcUaWebServer/WS/WSServerBase.h"
+#include <string>
+#include "OpcUaStackCore/Utility/IOThread.h"
+#include "OpcUaWebServer/WS/Id.h"
+
+using namespace OpcUaStackCore;
 
 namespace OpcUaWebServer
 {
 
-	class WSServer
-	: public WSServerBase
+	class WSConnectionCallbacks
 	{
 	  public:
-		WSServer(void);
-		~WSServer(void);
+	};
+
+	class WSConnection
+	: public std::enable_shared_from_this<WSConnection>
+	, public Id
+	{
+	  public:
+		typedef std::shared_ptr<WSConnection> SPtr;
+
+		WSConnection(IOThread::SPtr& ioThread);
+		virtual ~WSConnection(void);
+
+		std::unique_ptr<boost::asio::ip::tcp::socket>& socket(void);
+
+		void disconnect(void);
+
+		void readHandshake(void);
+		void writeHandshake(void);
 
 	  private:
+		IOThread::SPtr ioThread_;
+		std::unique_ptr<boost::asio::ip::tcp::socket> socket_;
+		boost::asio::ip::tcp::endpoint remoteEndpoint_;
 
+		boost::asio::streambuf readBuffer_;
 	};
 
 }

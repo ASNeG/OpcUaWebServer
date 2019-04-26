@@ -16,24 +16,28 @@
 
  */
 
-#ifndef __OpcUaWebServer_WSServer_h__
-#define __OpcUaWebServer_WSServer_h__
+#ifndef __OpcUaWebServer_RequestMessage_h__
+#define __OpcUaWebServer_RequestMessage_h__
 
-#include <boost/asio.hpp>
-#include "OpcUaWebServer/WS/WSConfig.h"
-#include "OpcUaWebServer/WS/WSServerBase.h"
+#include <iostream>
 
 namespace OpcUaWebServer
 {
 
-	class WSServer
-	: public WSServerBase
+	class RequestMessage
 	{
 	  public:
-		WSServer(void);
-		~WSServer(void);
+		RequestMessage(void);
+		~RequestMessage(void);
 
-	  private:
+		static bool parse(
+			std::istream& stream,
+			std::string& method,
+			std::string& path,
+			std::string& query_string,
+			std::string& version
+			//CaseInsensitiveMultimap &header
+		);
 
 	};
 

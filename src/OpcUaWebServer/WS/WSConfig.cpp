@@ -27,6 +27,12 @@ namespace OpcUaWebServer
 	{
 	}
 
+	WSConfig::WSConfig(const WSConfig& wsConfig)
+	: address_(wsConfig.address_)
+	, port_(wsConfig.port_)
+	{
+	}
+
 	WSConfig::~WSConfig(void)
 	{
 	}
@@ -53,6 +59,14 @@ namespace OpcUaWebServer
 	WSConfig::port(void)
 	{
 		return port_;
+	}
+
+	WSConfig&
+	WSConfig::operator= (WSConfig const& rhs)
+	{
+		address_ = rhs.address_;
+		port_ = rhs.port_;
+		return *this;
 	}
 
 }

@@ -20,6 +20,11 @@
 #define __OpcUaWebServer_WSServerBase_h__
 
 #include <boost/asio.hpp>
+#include "OpcUaStackCore/Utility/IOThread.h"
+#include "OpcUaWebServer/WS/WSConfig.h"
+#include "OpcUaWebServer/WS/WSConnection.h"
+
+using namespace OpcUaStackCore;
 
 namespace OpcUaWebServer
 {
@@ -27,12 +32,39 @@ namespace OpcUaWebServer
 	class WSServerBase
 	{
 	  public:
+		enum class State {
+			Up,
+			Shutdown,
+			Down
+		};
+		typedef std::function<void (void)> ShutdownCompleteCallback;
+		typedef std::map<std::string, WSConnection::SPtr> WSConnectionMap;
+
 		WSServerBase(void);
 		~WSServerBase(void);
 
-		bool startup(void);
-		bool shutdown(void);
+		bool startup(
+			const WSConfig& wsConfig,
+			IOThread::SPtr& ioThread
+		);
+		void shutdown(
+			ShutdownCompleteCallback& shutdownCompleteCallback
+		);
 
+	  private:
+		bool bind(void);
+		bool accept(void);
+		void insertConnection(const WSConnection::SPtr& connection);
+		void deleteConnection(const WSConnection::SPtr& connection);
+
+		State state_;
+		boost::mutex mutex_;
+		IOThread::SPtr ioThread_;
+		WSConfig wsConfig_;
+
+		ShutdownCompleteCallback shutdownCompleteCallback_;
+		std::unique_ptr<boost::asio::ip::tcp::acceptor> acceptor_;
+		WSConnectionMap wsConnectionMap_;
 	};
 
 }

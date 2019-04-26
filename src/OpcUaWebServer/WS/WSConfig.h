@@ -19,6 +19,7 @@
 #ifndef __OpcUaWebServer_WSConfig_h__
 #define __OpcUaWebServer_WSConfig_h__
 
+#include <boost/shared_ptr.hpp>
 #include <string>
 
 namespace OpcUaWebServer
@@ -27,13 +28,18 @@ namespace OpcUaWebServer
 	class WSConfig
 	{
 	  public:
+		typedef std::shared_ptr<WSConfig> SPtr;
+
 		WSConfig(void);
+		WSConfig(const WSConfig& wsConfig);
 		virtual ~WSConfig(void);
 
 		void address(const std::string& address);
 		std::string& address(void);
 		void port(uint32_t port);
 		uint32_t port(void);
+
+		WSConfig& operator= (WSConfig const& rhs);
 
 	  private:
 		std::string address_;

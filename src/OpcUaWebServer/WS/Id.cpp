@@ -16,27 +16,35 @@
 
  */
 
-#ifndef __OpcUaWebServer_WSServer_h__
-#define __OpcUaWebServer_WSServer_h__
-
-#include <boost/asio.hpp>
-#include "OpcUaWebServer/WS/WSConfig.h"
-#include "OpcUaWebServer/WS/WSServerBase.h"
+#include "OpcUaWebServer/WS/Id.h"
 
 namespace OpcUaWebServer
 {
 
-	class WSServer
-	: public WSServerBase
+	uint32_t Id::gId_ = 0;
+	boost::mutex Id::mutex_;
+
+	Id::Id(const std::string& identifier)
 	{
-	  public:
-		WSServer(void);
-		~WSServer(void);
+		std::stringstream ss;
 
-	  private:
+		boost::mutex::scoped_lock g(mutex_);
+		gId_++;
+		ss << identifier;
+		if (!identifier.empty()) ss << "-";
+		ss << gId_;
 
-	};
+		id_ = ss.str();
+	}
+
+	Id::~Id(void)
+	{
+	}
+
+	std::string&
+	Id::id(void)
+	{
+		return id_;
+	}
 
 }
-
-#endif
