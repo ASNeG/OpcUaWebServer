@@ -29,6 +29,8 @@ namespace OpcUaWebServer
 
 	, webSocketConfig_()
 	, webSocketServer_()
+
+	, clientManager_()
 	{
 	}
 
@@ -48,18 +50,32 @@ namespace OpcUaWebServer
 			return false;
 		}
 
+		//
 		// startup web socket server instance
+		//
 		webSocketConfig_.address(webGatewayConfig_.address());
 		webSocketConfig_.port(webGatewayConfig_.port());
 		webSocketConfig_.ioThread(ioThread);
 
 		auto receiveMessageCallback = [this](WebSocketMessage& webSocketMessage) {
-			// FIXME: todo
+			clientManager_.receiveMessage(webSocketMessage);
 		};
 
 		webSocketServer_ = constructSPtr<WebSocketServer>(&webSocketConfig_);
 		webSocketServer_->receiveMessageCallback(receiveMessageCallback);
 		if (!webSocketServer_->startup()) {
+			return false;
+		}
+
+		//
+		// startup client manager
+		//
+		auto sendMessageCallback = [this](WebSocketMessage& webSocketMessage) {
+			webSocketServer_->sendMessage(webSocketMessage);
+		};
+
+		clientManager_.sendMessageCallback(sendMessageCallback);
+		if (!clientManager_.startup(ioThread, cryptoManager)) {
 			return false;
 		}
 
@@ -69,6 +85,11 @@ namespace OpcUaWebServer
 	bool
 	WebGateway::shutdown(void)
 	{
+
+		// shutdown client manager
+		clientManager_.shutdown();
+
+		// shutdown web socket server
 		if (webSocketServer_) {
 			webSocketServer_->shutdown();
 		}

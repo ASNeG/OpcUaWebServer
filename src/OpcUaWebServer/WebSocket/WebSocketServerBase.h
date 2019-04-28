@@ -20,7 +20,7 @@
 #include "OpcUaStackCore/Network/TCPConnection.h"
 #include "OpcUaWebServer/WebSocket/WebSocketConfig.h"
 #include "OpcUaWebServer/WebSocket/WebSocketChannel.h"
-#include "OpcUaWebServer/WebSocket/WebSocketServerIf.h"
+#include "OpcUaWebServer/WebSocket/WebSocketMessage.h"
 
 namespace OpcUaWebServer
 {

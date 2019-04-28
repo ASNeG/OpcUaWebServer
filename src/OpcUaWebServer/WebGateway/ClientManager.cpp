@@ -15,47 +15,50 @@
    Autor: Kai Huebl (kai@huebl-sgh.de)
  */
 
-#ifndef __OpcUaWebServer_WebGateway_h__
-#define __OpcUaWebServer_WebGateway_h__
-
 #include "ClientManager.h"
-#include "OpcUaStackCore/Base/Config.h"
-#include "OpcUaStackCore/Utility/IOThread.h"
-#include "OpcUaStackCore/Certificate/CryptoManager.h"
-#include "OpcUaWebServer/WebSocket/WebSocketServer.h"
+#include "OpcUaStackCore/Base/Log.h"
 #include "OpcUaWebServer/WebGateway/ClientManager.h"
-#include "OpcUaWebServer/WebGateway/WebGatewayConfig.h"
 
 using namespace OpcUaStackCore;
 
 namespace OpcUaWebServer
 {
 
-	class WebGateway
+	ClientManager::ClientManager(void)
+	: sendMessageCallback_()
 	{
-	  public:
-		WebGateway(void);
-		virtual ~WebGateway(void);
+	}
 
-		bool startup(
-			Config* config,
-			IOThread::SPtr ioThread,
-			CryptoManager::SPtr& cryptoManager
-		);
-		bool shutdown(void);
+	ClientManager::~ClientManager(void)
+	{
+	}
 
-		bool getWebGatewayConfig(Config* config);
+	bool
+	ClientManager::startup(
+		IOThread::SPtr ioThread,
+		CryptoManager::SPtr& cryptoManager
+	)
+	{
+		return true;
+	}
 
-	  private:
-		WebGatewayConfig webGatewayConfig_;
+	bool
+	ClientManager::shutdown(void)
+	{
+		return true;
+	}
 
-		WebSocketConfig webSocketConfig_;
-		WebSocketServer::SPtr webSocketServer_;
+	void
+	ClientManager::sendMessageCallback(const SendMessageCallback& sendMessageCallback)
+	{
+		sendMessageCallback_ = sendMessageCallback;
+	}
 
-		ClientManager clientManager_;
-
-	};
+	void
+	ClientManager::receiveMessage(WebSocketMessage& webSocketMessage)
+	{
+		// FIXME: todo
+	}
 
 }
 
-#endif

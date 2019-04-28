@@ -1,5 +1,5 @@
 /*
-   Copyright 2015 Kai Huebl (kai@huebl-sgh.de)
+   Copyright 2019 Kai Huebl (kai@huebl-sgh.de)
 
    Lizenziert gemäß Apache Licence Version 2.0 (die „Lizenz“); Nutzung dieser
    Datei nur in Übereinstimmung mit der Lizenz erlaubt.
@@ -13,23 +13,39 @@
    im Rahmen der Lizenz finden Sie in der Lizenz.
 
    Autor: Kai Huebl (kai@huebl-sgh.de)
-
  */
 
-#ifndef __OpcUaWebServer_WebSocketServerBaseIf_h__
-#define __OpcUaWebServer_WebSocketServerBaseIf_h__
+#ifndef __OpcUaWebServer_ClientManager_h__
+#define __OpcUaWebServer_ClientManager_h__
 
+#include "OpcUaStackCore/Utility/IOThread.h"
+#include "OpcUaStackCore/Certificate/CryptoManager.h"
 #include "OpcUaWebServer/WebSocket/WebSocketMessage.h"
+
+using namespace OpcUaStackCore;
 
 namespace OpcUaWebServer
 {
 
-	class WebSocketServerIf
+	class ClientManager
 	{
-      public:
-		virtual ~WebSocketServerIf(void) {}
+	  public:
+		typedef std::function<void (WebSocketMessage& webSocketMessag)> SendMessageCallback;
 
-		virtual void webSocketMessage(WebSocketMessage& webSocketMessage) = 0;
+		ClientManager(void);
+		virtual ~ClientManager(void);
+
+		bool startup(
+			IOThread::SPtr ioThread,
+			CryptoManager::SPtr& cryptoManager
+		);
+		bool shutdown(void);
+
+		void sendMessageCallback(const SendMessageCallback& sendMessageCallback);
+		void receiveMessage(WebSocketMessage& webSocketMessag);
+
+	  private:
+		SendMessageCallback sendMessageCallback_;
 	};
 
 }
