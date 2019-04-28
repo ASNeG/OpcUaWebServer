@@ -73,7 +73,11 @@ namespace OpcUaWebServer
 			}
 		);
 		if (!rc) return false;
-		if (!webGateway_.startup(&config, ioThread_, cryptoManager())) return false;
+		rc = webGateway_.startup(
+			&config, ioThread_,
+			cryptoManager()
+		);
+		if (!rc) return false;
 		if (!messageServer_.startup(&config, this)) return false;
 		if (!opcUaClientManager_.startup(&config, this, ioThread_, cryptoManager())) return false;
 

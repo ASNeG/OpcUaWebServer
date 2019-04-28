@@ -22,6 +22,7 @@
 #include "OpcUaStackCore/Utility/IOThread.h"
 #include "OpcUaStackCore/Certificate/CryptoManager.h"
 #include "OpcUaWebServer/WebGateway/WebGatewayConfig.h"
+#include "OpcUaWebServer/WebSocket/WebSocketServer.h"
 
 using namespace OpcUaStackCore;
 
@@ -45,6 +46,10 @@ namespace OpcUaWebServer
 
 	  private:
 		WebGatewayConfig webGatewayConfig_;
+
+		WebSocketConfig webSocketConfig_;
+		WebSocketServer::SPtr webSocketServer_;
+
 	};
 
 }
