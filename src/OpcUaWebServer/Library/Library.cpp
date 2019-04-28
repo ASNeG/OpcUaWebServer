@@ -44,6 +44,7 @@ namespace OpcUaWebServer
 	bool
 	Library::startup(void)
 	{
+		bool rc;
 		Log(Debug, "Library::startup");
 
 		ioThread_ = constructSPtr<IOThread>();
@@ -63,8 +64,16 @@ namespace OpcUaWebServer
 
 		// start web server components
 		if (!webServer_.startup(&config, ioThread_)) return false;
-		if (!webSocket_.startup(&config, ioThread_, this)) return false;
-		if (!webGateway_.startup(&config, ioThread_, cryptoManager()))
+		rc = webSocket_.startup(
+			&config,
+			ioThread_,
+			[this](WebSocketMessage& webSocketMessage) {
+				std::cout << "WebSocketMessage: " << webSocketMessage.message_ << std::endl;
+				messageServer_.receiveMessage(webSocketMessage.channelId_, webSocketMessage.message_);
+			}
+		);
+		if (!rc) return false;
+		if (!webGateway_.startup(&config, ioThread_, cryptoManager())) return false;
 		if (!messageServer_.startup(&config, this)) return false;
 		if (!opcUaClientManager_.startup(&config, this, ioThread_, cryptoManager())) return false;
 
@@ -95,21 +104,6 @@ namespace OpcUaWebServer
 
 		version << LIBRARY_VERSION_MAJOR << "." << LIBRARY_VERSION_MINOR << "." << LIBRARY_VERSION_PATCH;
 		return version.str();
-	}
-
-	// ------------------------------------------------------------------------
-	// ------------------------------------------------------------------------
-	//
-	// WebSocketServerIf
-	//
-	// ------------------------------------------------------------------------
-	// ------------------------------------------------------------------------
-	void
-	Library::webSocketMessage(WebSocketMessage& webSocketMessage)
-	{
-		std::cout << "WebSocketMessage: " << webSocketMessage.message_ << std::endl;
-
-		messageServer_.receiveMessage(webSocketMessage.channelId_, webSocketMessage.message_);
 	}
 
 	// ------------------------------------------------------------------------

@@ -36,10 +36,12 @@ namespace OpcUaWebServer
 			OP_PING_FRAME = 9
 		} OpCode;
 
+		typedef std::function<void (WebSocketMessage& webSocketMessag)> ReceiveMessageCallback;
+
 		WebSocketServerBase(WebSocketConfig* webSocketConfig);
 		virtual ~WebSocketServerBase(void);
 
-		bool addWebSocketServerIf(WebSocketServerIf* webSocketServerIf);
+		void receiveMessageCallback(const ReceiveMessageCallback& receiveMessageCallback);
 		bool sendMessage(WebSocketMessage& webSocketMessage);
 
 	  protected:
@@ -88,9 +90,8 @@ namespace OpcUaWebServer
 
 		WebSocketConfig* webSocketConfig_;
 		TCPAcceptor tcpAcceptor_;
-		boost::asio::streambuf recvBuffer_;
 
-		WebSocketServerIf* webSocketServerIf_;
+		ReceiveMessageCallback receiveMessageCallback_;
 
 		boost::mutex mutex_;
 		uint32_t channelId_;

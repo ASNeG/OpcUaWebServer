@@ -33,7 +33,6 @@ namespace OpcUaWebServer
 
 	class Library
 	: public ApplicationIf
-	, public WebSocketServerIf
 	, public MessageServerIf
 	, public OpcUaClientManagerIf
 	{
@@ -46,10 +45,6 @@ namespace OpcUaWebServer
 		virtual bool shutdown(void);
 		virtual std::string version(void);
 		//- ApplicationIf -----------------------------------------------------
-
-		//- WebSocketServerIf -------------------------------------------------
-		void webSocketMessage(WebSocketMessage& webSocketMessage);
-		//- WebSocketServerIf -------------------------------------------------
 
 		//- MessageServerIf ---------------------------------------------------
 		void messageServerMessage(Message::SPtr& message);

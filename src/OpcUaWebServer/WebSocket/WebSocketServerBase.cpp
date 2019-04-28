@@ -1,5 +1,5 @@
 /*
-   Copyright 2015 Kai Huebl (kai@huebl-sgh.de)
+   Copyright 2015-2019 Kai Huebl (kai@huebl-sgh.de)
 
    Lizenziert gemäß Apache Licence Version 2.0 (die „Lizenz“); Nutzung dieser
    Datei nur in Übereinstimmung mit der Lizenz erlaubt.
@@ -34,7 +34,7 @@ namespace OpcUaWebServer
 	WebSocketServerBase::WebSocketServerBase(WebSocketConfig* webSocketConfig)
 	: webSocketConfig_(webSocketConfig)
 	, tcpAcceptor_(webSocketConfig->ioThread()->ioService()->io_service(), webSocketConfig->address(), webSocketConfig->port())
-	, webSocketServerIf_(NULL)
+	, receiveMessageCallback_()
 	, webSocketChannelMap_()
 	, channelId_(0)
 	, mutex_()
@@ -45,11 +45,12 @@ namespace OpcUaWebServer
 	{
 	}
 
-	bool
-	WebSocketServerBase::addWebSocketServerIf(WebSocketServerIf* webSocketServerIf)
+	void
+	WebSocketServerBase::receiveMessageCallback(
+		const ReceiveMessageCallback& receiveMessageCallback
+	)
 	{
-		webSocketServerIf_ = webSocketServerIf;
-		return true;
+		receiveMessageCallback_ = receiveMessageCallback;
 	}
 
 	bool
@@ -85,7 +86,7 @@ namespace OpcUaWebServer
 		WebSocketMessage webSocketMessage;
 		webSocketMessage.channelId_ = webSocketChannel->id_;
 		webSocketMessage.message_ = "{\"Header\":{\"MessageType\": \"CHANNELCLOSE_MESSAGE\",\"ClientHandle\": \"---\"},\"Body\":{}}";
-		if (webSocketServerIf_ != NULL) webSocketServerIf_->webSocketMessage(webSocketMessage);
+		if (receiveMessageCallback_) receiveMessageCallback_(webSocketMessage);
 
 		// close and delete channel
 		webSocketChannel->close();
@@ -610,7 +611,7 @@ namespace OpcUaWebServer
 			webSocketMessage.message_.append(buffer, bufferLen);
 		}
 
-		if (webSocketServerIf_ != NULL) webSocketServerIf_->webSocketMessage(webSocketMessage);
+		if (receiveMessageCallback_) receiveMessageCallback_(webSocketMessage);
 		receiveMessage(webSocketChannel);
 	}
 
