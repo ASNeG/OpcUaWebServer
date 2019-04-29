@@ -45,6 +45,8 @@ namespace OpcUaWebServer
 		void receiveMessage(WebSocketMessage& webSocketMessag);
 
 	  private:
+		void sendErrorResponse(uint32_t channelId, OpcUaStatusCode statusCode);
+
 		SendMessageCallback sendMessageCallback_;
 	};
 

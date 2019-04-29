@@ -15,7 +15,8 @@
    Autor: Kai Huebl (kai@huebl-sgh.de)
  */
 
-#include "ClientManager.h"
+#include <boost/property_tree/ptree.hpp>
+#include <boost/property_tree/json_parser.hpp>
 #include "OpcUaStackCore/Base/Log.h"
 #include "OpcUaWebServer/WebGateway/ClientManager.h"
 
@@ -56,6 +57,40 @@ namespace OpcUaWebServer
 
 	void
 	ClientManager::receiveMessage(WebSocketMessage& webSocketMessage)
+	{
+		std::cout << "Command=" << webSocketMessage.command_ << std::endl;
+		std::cout << "ChannelId=" << webSocketMessage.channelId_ << std::endl;
+		std::cout << "ReceivedMessage=" << webSocketMessage.message_ << std::endl;
+
+		boost::property_tree::ptree pt;
+		std::stringstream ss;
+
+		std::string errorMessage = "";
+		bool error = false;
+
+		// parse json message
+		ss << webSocketMessage.message_;
+		try {
+			boost::property_tree::read_json(ss, pt);
+		}
+		catch (const boost::property_tree::json_parser_error& e)
+		{
+			errorMessage = std::string(e.what());
+			error = true;
+		}
+
+		if (error) {
+			Log(Error, "json parser error")
+			    .parameter("Error", errorMessage);
+			return;
+		}
+
+		// get command from json message
+
+	}
+
+	void
+	ClientManager::sendErrorResponse(uint32_t channelId, OpcUaStatusCode statusCode)
 	{
 		// FIXME: todo
 	}

@@ -45,7 +45,9 @@ namespace OpcUaWebServer
 		CryptoManager::SPtr& cryptoManager
 	)
 	{
+		//
 		// get gateway configuration from configuration file
+		//
 		if (!getWebGatewayConfig(config)) {
 			return false;
 		}
