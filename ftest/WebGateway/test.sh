@@ -63,6 +63,8 @@ echo ""
 
 if [ ${TEST_SCRIPT_FAILED} -eq 0 ]; then
     echo -e "${GREEN}TEST SUCCESS${NC}"
+    exit 0
 else
     echo -e "${RED}TEST FAILED${NC}"
+    exit 1
 fi
