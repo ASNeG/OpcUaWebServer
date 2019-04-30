@@ -49,18 +49,19 @@ namespace OpcUaWebServer
 	{
 		WebSocketChannel* webSocketChannel;
 
-		boost::mutex::scoped_lock g(mutex_);
+		{
+			boost::mutex::scoped_lock g(mutex_);
 
-		// get web socket channel
-		auto it = webSocketChannelMap_.find(channelId);
-		if (it == webSocketChannelMap_.end()) {
-			Log(Error, "web socket channel not exist - ignore disconnect")
-				.parameter("ChannelId", channelId);
-			return;
+			// get web socket channel
+			auto it = webSocketChannelMap_.find(channelId);
+			if (it == webSocketChannelMap_.end()) {
+				Log(Error, "web socket channel not exist - ignore disconnect")
+					.parameter("ChannelId", channelId);
+				return;
+			}
+			webSocketChannel = it->second;
+			webSocketChannel->socket().close();
 		}
-		webSocketChannel = it->second;
-
-		closeWebSocketChannel(webSocketChannel);
 	}
 
 	void

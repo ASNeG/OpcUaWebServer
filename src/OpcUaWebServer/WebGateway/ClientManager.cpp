@@ -107,6 +107,12 @@ namespace OpcUaWebServer
 			return;
 		}
 
+		if (requestHeader.messageType() == "CHANNELCLOSE_MESSAGE") {
+			return;
+		}
+
+		// FIXME: todo
+
 		sendErrorResponse(webSocketMessage.channelId_, requestHeader, BadServiceUnsupported);
 	}
 
