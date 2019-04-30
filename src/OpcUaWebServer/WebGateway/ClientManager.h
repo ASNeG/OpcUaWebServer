@@ -38,7 +38,7 @@ namespace OpcUaWebServer
 		virtual ~ClientManager(void);
 
 		bool startup(
-			IOThread::SPtr ioThread,
+			IOThread::SPtr& ioThread,
 			CryptoManager::SPtr& cryptoManager
 		);
 		bool shutdown(void);
@@ -48,6 +48,26 @@ namespace OpcUaWebServer
 		void receiveMessage(WebSocketMessage& webSocketMessag);
 
 	  private:
+		void handleChannelClose(
+			uint32_t channelId,
+			RequestHeader requestHeader,
+			boost::property_tree::ptree& body
+		);
+		void handleLogin(
+			uint32_t channelId,
+			RequestHeader requestHeader,
+			boost::property_tree::ptree& body
+		);
+		void handleLogout(
+			uint32_t channelId,
+			RequestHeader requestHeader,
+			boost::property_tree::ptree& body
+		);
+		void handleRequest(
+			uint32_t channelId,
+			RequestHeader requestHeader,
+			boost::property_tree::ptree& body
+		);
 		void sendResponse(
 			uint32_t channelId,
 			RequestHeader& requestHeader,
@@ -61,6 +81,9 @@ namespace OpcUaWebServer
 
 		DisconnectChannelCallback disconnectChannelCallback_;
 		SendMessageCallback sendMessageCallback_;
+
+		IOThread::SPtr ioThread_;
+		CryptoManager::SPtr cryptoManager_;
 	};
 
 }

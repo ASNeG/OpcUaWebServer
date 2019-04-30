@@ -15,44 +15,27 @@
    Autor: Kai Huebl (kai@huebl-sgh.de)
  */
 
-#include <OpcUaWebServer/WebGateway/LoginRequest.h>
-#include "OpcUaStackCore/Base/Log.h"
+#ifndef __OpcUaWebServer_LoginResponse_h__
+#define __OpcUaWebServer_LoginResponse_h__
 
-using namespace OpcUaStackCore;
+#include <boost/property_tree/ptree.hpp>
 
 namespace OpcUaWebServer
 {
 
-	LoginRequest::LoginRequest(void)
-	: discoveryUrl_("")
+	class LoginResponse
 	{
-	}
+	  public:
+		LoginResponse(void);
+		virtual ~LoginResponse(void);
 
-	LoginRequest::~LoginRequest(void)
-	{
-	}
+		bool jsonEncode(boost::property_tree::ptree& pt);
+		bool jsonDecode(boost::property_tree::ptree& pt);
 
-
-	bool
-	LoginRequest::jsonEncode(boost::property_tree::ptree& pt)
-	{
-		pt.put("DiscoveryUrl", discoveryUrl_);
-		return true;
-	}
-
-	bool
-	LoginRequest::jsonDecode(boost::property_tree::ptree& pt)
-	{
-		// get discovery url from json message
-		boost::optional<std::string> discoveryUrl = pt.get_optional<std::string>("DiscoveryUrl");
-		if (!discoveryUrl) {
-			Log(Error, "message body do not contain discovery url");
-			return false;
-		}
-		discoveryUrl_ = *discoveryUrl;
-
-		return true;
-	}
+	  private:
+		std::string sessionId_;
+	};
 
 }
 
+#endif

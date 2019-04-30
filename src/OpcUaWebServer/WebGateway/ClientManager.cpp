@@ -38,10 +38,12 @@ namespace OpcUaWebServer
 
 	bool
 	ClientManager::startup(
-		IOThread::SPtr ioThread,
+		IOThread::SPtr& ioThread,
 		CryptoManager::SPtr& cryptoManager
 	)
 	{
+		ioThread_ = ioThread;
+		cryptoManager_ = cryptoManager;
 		return true;
 	}
 
@@ -107,14 +109,74 @@ namespace OpcUaWebServer
 			return;
 		}
 
-		if (requestHeader.messageType() == "CHANNELCLOSE_MESSAGE") {
-			// FIXME: todo - remove related sessions
+		// get body document from json message
+		boost::optional<boost::property_tree::ptree&> body = pt.get_child_optional("Body");
+		if (!body) {
+			Log(Error, "message do not contain message body");
+			sendErrorResponse(webSocketMessage.channelId_, requestHeader, BadInvalidArgument);
 			return;
 		}
 
-		// FIXME: todo
+		if (requestHeader.messageType() == "CHANNELCLOSE_MESSAGE") {
+			handleChannelClose(webSocketMessage.channelId_, requestHeader);
+			return;
+		}
+
+		else if (requestHeader.messageType() == "GW_LoginRequest") {
+			handleLogin(webSocketMessage.channelId_, requestHeader, *body);
+			return;
+		}
+
+		else if (requestHeader.messageType() == "GW_LogoutRequest") {
+			handleLogout(webSocketMessage.channelId_, requestHeader, *body);
+			return;
+		}
+
+		else {
+			handleRequest(webSocketMessage.channelId_, requestHeader, *body);
+		}
 
 		sendErrorResponse(webSocketMessage.channelId_, requestHeader, BadServiceUnsupported);
+	}
+
+	void
+	ClientManager::handleChannelClose(
+		uint32_t channelId,
+		RequestHeader requestHeader,
+		boost::property_tree::ptree& body
+	)
+	{
+		// FIXME: todo
+	}
+
+	void
+	ClientManager::handleLogin(
+		uint32_t channelId,
+		RequestHeader requestHeader,
+		boost::property_tree::ptree& body
+	)
+	{
+		// FIXME: todo
+	}
+
+	void
+	ClientManager::handleLogout(
+		uint32_t channelId,
+		RequestHeader requestHeader,
+		boost::property_tree::ptree& body
+	)
+	{
+		// FIXME: todo
+	}
+
+	void
+	ClientManager::handleRequest(
+		uint32_t channelId,
+		RequestHeader requestHeader,
+		boost::property_tree::ptree& body
+	)
+	{
+		// FIXME: todo
 	}
 
 	void

@@ -10,15 +10,17 @@ ws = create_connection("ws://127.0.0.1:8082")
 req = {
     "Header" : {
         "MessageType" : "GW_LoginRequest",
+        "ClientHandle" : "client-handle"
      },
      "Body" : {
-         "Variable" : "XXXXX"
+         "DiscoveryUrl" : "opc.tcp://127.0.0.1:8889"
      }
 }
-print("SEND ", req)
+print("SEND: ", req)
 ws.send(json.dumps(req)) 
 
-result = ws.recv()
+result = ws. recv()
+print("RECV: ", result)
 
 
 # close opc ua session

@@ -15,7 +15,7 @@
    Autor: Kai Huebl (kai@huebl-sgh.de)
  */
 
-#include <OpcUaWebServer/WebGateway/LoginRequest.h>
+#include <OpcUaWebServer/WebGateway/LoginResponse.h>
 #include "OpcUaStackCore/Base/Log.h"
 
 using namespace OpcUaStackCore;
@@ -23,33 +23,33 @@ using namespace OpcUaStackCore;
 namespace OpcUaWebServer
 {
 
-	LoginRequest::LoginRequest(void)
-	: discoveryUrl_("")
+	LoginResponse::LoginResponse(void)
+	: sessionId_("")
 	{
 	}
 
-	LoginRequest::~LoginRequest(void)
+	LoginResponse::~LoginResponse(void)
 	{
 	}
 
 
 	bool
-	LoginRequest::jsonEncode(boost::property_tree::ptree& pt)
+	LoginResponse::jsonEncode(boost::property_tree::ptree& pt)
 	{
-		pt.put("DiscoveryUrl", discoveryUrl_);
+		pt.put("SessionId", sessionId_);
 		return true;
 	}
 
 	bool
-	LoginRequest::jsonDecode(boost::property_tree::ptree& pt)
+	LoginResponse::jsonDecode(boost::property_tree::ptree& pt)
 	{
-		// get discovery url from json message
-		boost::optional<std::string> discoveryUrl = pt.get_optional<std::string>("DiscoveryUrl");
-		if (!discoveryUrl) {
-			Log(Error, "message body do not contain discovery url");
+		// get session id from json message
+		boost::optional<std::string> sessionId = pt.get_optional<std::string>("SessionId");
+		if (!sessionId) {
+			Log(Error, "message body do not contain session id");
 			return false;
 		}
-		discoveryUrl_ = *discoveryUrl;
+		sessionId_ = *sessionId;
 
 		return true;
 	}
