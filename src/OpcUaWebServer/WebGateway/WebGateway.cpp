@@ -77,7 +77,7 @@ namespace OpcUaWebServer
 		};
 
 		auto disconnectChannelCallback = [this](uint32_t channelId) {
-			//webSocketServer_->disconnect(channelId);
+			webSocketServer_->disconnect(channelId);
 		};
 
 		clientManager_.sendMessageCallback(sendMessageCallback);

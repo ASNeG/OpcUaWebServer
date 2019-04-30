@@ -41,6 +41,7 @@ namespace OpcUaWebServer
 		WebSocketServerBase(WebSocketConfig* webSocketConfig);
 		virtual ~WebSocketServerBase(void);
 
+		void disconnect(uint32_t channelId);
 		void receiveMessageCallback(const ReceiveMessageCallback& receiveMessageCallback);
 		bool sendMessage(WebSocketMessage& webSocketMessage);
 

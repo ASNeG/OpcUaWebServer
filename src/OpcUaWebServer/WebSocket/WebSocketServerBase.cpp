@@ -46,6 +46,25 @@ namespace OpcUaWebServer
 	}
 
 	void
+	WebSocketServerBase::disconnect(uint32_t channelId)
+	{
+		WebSocketChannel* webSocketChannel;
+
+		boost::mutex::scoped_lock g(mutex_);
+
+		// get web socket channel
+		auto it = webSocketChannelMap_.find(channelId);
+		if (it == webSocketChannelMap_.end()) {
+			Log(Error, "web socket channel not exist")
+				.parameter("ChannelId", channelId);
+			return;
+		}
+		webSocketChannel = it->second;
+
+		closeWebSocketChannel(webSocketChannel);
+	}
+
+	void
 	WebSocketServerBase::receiveMessageCallback(
 		const ReceiveMessageCallback& receiveMessageCallback
 	)
@@ -62,8 +81,7 @@ namespace OpcUaWebServer
 			boost::mutex::scoped_lock g(mutex_);
 
 			// get web socket channel
-			WebSocketChannel::Map::iterator it;
-			it = webSocketChannelMap_.find(webSocketMessage.channelId_);
+			auto it = webSocketChannelMap_.find(webSocketMessage.channelId_);
 			if (it == webSocketChannelMap_.end()) {
 				Log(Error, "web socket channel not exist")
 					.parameter("ChannelId", webSocketMessage.channelId_);

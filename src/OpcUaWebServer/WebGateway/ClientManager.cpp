@@ -107,7 +107,7 @@ namespace OpcUaWebServer
 			return;
 		}
 
-		sendErrorResponse(webSocketMessage.channelId_, requestHeader, BadNotImplemented);
+		sendErrorResponse(webSocketMessage.channelId_, requestHeader, BadServiceUnsupported);
 	}
 
 	void
