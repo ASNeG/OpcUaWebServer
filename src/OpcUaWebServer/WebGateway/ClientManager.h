@@ -18,10 +18,10 @@
 #ifndef __OpcUaWebServer_ClientManager_h__
 #define __OpcUaWebServer_ClientManager_h__
 
-#include <OpcUaWebServer/WebGateway/RequestHeader.h>
 #include "OpcUaStackCore/Utility/IOThread.h"
 #include "OpcUaStackCore/Certificate/CryptoManager.h"
 #include "OpcUaWebServer/WebSocket/WebSocketMessage.h"
+#include "OpcUaWebServer/WebGateway/RequestHeader.h"
 
 using namespace OpcUaStackCore;
 
@@ -32,6 +32,7 @@ namespace OpcUaWebServer
 	{
 	  public:
 		typedef std::function<void (WebSocketMessage& webSocketMessag)> SendMessageCallback;
+		typedef std::function<void (uint32_t channelId)> DisconnectChannelCallback;
 
 		ClientManager(void);
 		virtual ~ClientManager(void);
@@ -43,15 +44,22 @@ namespace OpcUaWebServer
 		bool shutdown(void);
 
 		void sendMessageCallback(const SendMessageCallback& sendMessageCallback);
+		void disconnectChannelCallback(const DisconnectChannelCallback& disconnectChannelCallback);
 		void receiveMessage(WebSocketMessage& webSocketMessag);
 
 	  private:
+		void sendResponse(
+			uint32_t channelId,
+			RequestHeader& requestHeader,
+			std::string& body
+		);
 		void sendErrorResponse(
 			uint32_t channelId,
 			RequestHeader& requestHeader,
 			OpcUaStatusCode statusCode
 		);
 
+		DisconnectChannelCallback disconnectChannelCallback_;
 		SendMessageCallback sendMessageCallback_;
 	};
 

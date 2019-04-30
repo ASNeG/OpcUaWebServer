@@ -76,7 +76,12 @@ namespace OpcUaWebServer
 			webSocketServer_->sendMessage(webSocketMessage);
 		};
 
+		auto disconnectChannelCallback = [this](uint32_t channelId) {
+			//webSocketServer_->disconnect(channelId);
+		};
+
 		clientManager_.sendMessageCallback(sendMessageCallback);
+		clientManager_.disconnectChannelCallback(disconnectChannelCallback);
 		if (!clientManager_.startup(ioThread, cryptoManager)) {
 			return false;
 		}

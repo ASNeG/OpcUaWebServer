@@ -19,6 +19,7 @@
 #include <boost/property_tree/json_parser.hpp>
 #include "OpcUaStackCore/Base/Log.h"
 #include "OpcUaWebServer/WebGateway/ClientManager.h"
+#include "OpcUaWebServer/WebGateway/ResponseHeader.h"
 
 using namespace OpcUaStackCore;
 
@@ -27,6 +28,7 @@ namespace OpcUaWebServer
 
 	ClientManager::ClientManager(void)
 	: sendMessageCallback_()
+	, disconnectChannelCallback_()
 	{
 	}
 
@@ -56,6 +58,12 @@ namespace OpcUaWebServer
 	}
 
 	void
+	ClientManager::disconnectChannelCallback(const DisconnectChannelCallback& disconnectChannelCallback)
+	{
+		disconnectChannelCallback_ = disconnectChannelCallback;
+	}
+
+	void
 	ClientManager::receiveMessage(WebSocketMessage& webSocketMessage)
 	{
 		std::cout << "Command=" << webSocketMessage.command_ << std::endl;
@@ -81,7 +89,11 @@ namespace OpcUaWebServer
 
 		if (error) {
 			Log(Error, "json parser error")
+				.parameter("ChannelId", webSocketMessage.channelId_)
 			    .parameter("Error", errorMessage);
+			if (disconnectChannelCallback_) {
+				disconnectChannelCallback_(webSocketMessage.channelId_);
+			}
 			return;
 		}
 
@@ -89,7 +101,58 @@ namespace OpcUaWebServer
 		RequestHeader requestHeader;
 		if (!requestHeader.jsonDecode(pt)) {
 			Log(Error, "message header error");
+			if (disconnectChannelCallback_) {
+				disconnectChannelCallback_(webSocketMessage.channelId_);
+			}
 			return;
+		}
+
+		sendErrorResponse(webSocketMessage.channelId_, requestHeader, BadNotImplemented);
+	}
+
+	void
+	ClientManager::sendResponse(
+		uint32_t channelId,
+		RequestHeader& requestHeader,
+		std::string& body
+	)
+	{
+		bool error = false;
+		std::string errorMessage;
+		boost::property_tree::ptree pt;
+
+		// create header
+		ResponseHeader responseHeader(requestHeader);
+		responseHeader.jsonEncode(pt);
+
+		// create body
+		pt.put("Body", body);
+
+		// create json message
+		std::stringstream msg;
+		try {
+			boost::property_tree::write_json(msg, pt);
+		}
+		catch (const boost::property_tree::json_parser_error& e)
+		{
+			errorMessage = std::string(e.what());
+			error = true;
+		}
+
+		if (error) {
+			Log(Error, "json parser error")
+			    .parameter("ChannelId", channelId)
+			    .parameter("Error", errorMessage);
+			return;
+		}
+
+		// create web socket message
+		WebSocketMessage webSocketMessage;
+		webSocketMessage.channelId_ = channelId;
+		webSocketMessage.message_ = msg.str();
+
+		if (sendMessageCallback_) {
+			sendMessageCallback_(webSocketMessage);
 		}
 	}
 
@@ -100,19 +163,40 @@ namespace OpcUaWebServer
 		OpcUaStatusCode statusCode
 	)
 	{
+		bool error = false;
+		std::string errorMessage;
 		boost::property_tree::ptree pt;
 
 		// create header
-		RequestHeader responseHeader(requestHeader, true);
+		ResponseHeader responseHeader(requestHeader);
 		responseHeader.jsonEncode(pt);
 
-		// create body
-
 		// create json message
+		std::stringstream msg;
+		try {
+			boost::property_tree::write_json(msg, pt);
+		}
+		catch (const boost::property_tree::json_parser_error& e)
+		{
+			errorMessage = std::string(e.what());
+			error = true;
+		}
+
+		if (error) {
+			Log(Error, "json parser error")
+			    .parameter("ChannelId", channelId)
+			    .parameter("Error", errorMessage);
+			return;
+		}
 
 		// create web socket message
 		WebSocketMessage webSocketMessage;
+		webSocketMessage.channelId_ = channelId;
+		webSocketMessage.message_ = msg.str();
 
+		if (sendMessageCallback_) {
+			sendMessageCallback_(webSocketMessage);
+		}
 	}
 
 }

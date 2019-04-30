@@ -30,13 +30,10 @@ namespace OpcUaWebServer
 	{
 	}
 
-	RequestHeader::RequestHeader(const RequestHeader& RequestHeader, bool response)
+	RequestHeader::RequestHeader(const RequestHeader& RequestHeader)
 	: messageType_(RequestHeader.messageType_)
 	, clientHandle_(RequestHeader.clientHandle_)
 	{
-		if (response) {
-			boost::replace_all(messageType_, "Request", "Response");
-		}
 	}
 
 	RequestHeader::~RequestHeader(void)
@@ -70,7 +67,7 @@ namespace OpcUaWebServer
 	RequestHeader::jsonDecode(boost::property_tree::ptree& pt)
 	{
 		// get message type from json message
-		boost::optional<std::string> messageType = pt.get<std::string>("Header.MessageType");
+		boost::optional<std::string> messageType = pt.get_optional<std::string>("Header.MessageType");
 		if (!messageType) {
 			Log(Error, "message header do not contain message type");
 			return false;
@@ -78,7 +75,7 @@ namespace OpcUaWebServer
 		messageType_ = *messageType;
 
 		// get client handle from json message
-		boost::optional<std::string> clientHandle = pt.get<std::string>("Header.ClientHandle");
+		boost::optional<std::string> clientHandle = pt.get_optional<std::string>("Header.ClientHandle");
 		if (!clientHandle) {
 			Log(Error, "message header do not contain client handle");
 			return false;

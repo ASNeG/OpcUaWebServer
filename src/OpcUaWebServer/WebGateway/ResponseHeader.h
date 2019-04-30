@@ -15,30 +15,32 @@
    Autor: Kai Huebl (kai@huebl-sgh.de)
  */
 
-#ifndef __OpcUaWebServer_RequestHeader_h__
-#define __OpcUaWebServer_RequestHeader_h__
+#ifndef __OpcUaWebServer_ResponseHeader_h__
+#define __OpcUaWebServer_ResponseHeader_h__
 
-#include <boost/property_tree/ptree.hpp>
+#include "OpcUaStackCore/BuildInTypes/OpcUaStatusCode.h"
+#include "OpcUaWebServer/WebGateway/RequestHeader.h"
+
+using namespace OpcUaStackCore;
 
 namespace OpcUaWebServer
 {
 
-	class RequestHeader
+	class ResponseHeader
+	: public RequestHeader
 	{
 	  public:
-		RequestHeader(void);
-		RequestHeader(const RequestHeader& RequestHeader);
-		virtual ~RequestHeader(void);
+		ResponseHeader(void);
+		ResponseHeader(const RequestHeader& RequestHeader);
+		virtual ~ResponseHeader(void);
 
-		std::string& messageType(void);
-		std::string& clientHandle(void);
+		OpcUaStatusCode& statusCode(void);
 
 		bool jsonEncode(boost::property_tree::ptree& pt);
 		bool jsonDecode(boost::property_tree::ptree& pt);
 
 	  private:
-		std::string messageType_;
-		std::string clientHandle_;
+		OpcUaStatusCode statusCode_;
 	};
 
 }
