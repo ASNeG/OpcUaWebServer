@@ -95,7 +95,6 @@ namespace OpcUaWebServer
 		ReceiveMessageCallback receiveMessageCallback_;
 
 		boost::mutex mutex_;
-		uint32_t channelId_;
 		WebSocketChannel::Map webSocketChannelMap_;
 	};
 

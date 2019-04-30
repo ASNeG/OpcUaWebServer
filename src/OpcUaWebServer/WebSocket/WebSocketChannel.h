@@ -41,10 +41,11 @@ namespace OpcUaWebServer
 		WebSocketChannel(boost::asio::io_service& io_service);
 		virtual ~WebSocketChannel(void);
 
+		std::string getId(void);
+
 		OpcUaStackCore::SlotTimerElement::SPtr slotTimerElement_;
 
 		bool timeout_;
-		std::string channelId_;
 		uint32_t id_;
 		boost::asio::streambuf recvBuffer_;
 		boost::asio::streambuf sendBuffer_;

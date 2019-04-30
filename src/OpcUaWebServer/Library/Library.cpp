@@ -64,6 +64,8 @@ namespace OpcUaWebServer
 
 		// start web server components
 		if (!webServer_.startup(&config, ioThread_)) return false;
+		Log(Info, "startup web server");
+
 		rc = webSocket_.startup(
 			&config,
 			ioThread_,
@@ -72,14 +74,21 @@ namespace OpcUaWebServer
 				messageServer_.receiveMessage(webSocketMessage.channelId_, webSocketMessage.message_);
 			}
 		);
+		Log(Info, "startup web socket");
+
 		if (!rc) return false;
 		rc = webGateway_.startup(
 			&config, ioThread_,
 			cryptoManager()
 		);
 		if (!rc) return false;
+		Log(Info, "startup web gateway");
+
 		if (!messageServer_.startup(&config, this)) return false;
+		Log(Info, "startup message server");
+
 		if (!opcUaClientManager_.startup(&config, this, ioThread_, cryptoManager())) return false;
+		Log(Info, "startup opc ua client manager");
 
 		return true;
 	}
@@ -91,12 +100,22 @@ namespace OpcUaWebServer
 
 		if (!ioThread_->shutdown()) return false;
 		ioThread_.reset();
+		Log(Info, "shutdown io thread");
 
 		if (!opcUaClientManager_.shutdown()) return false;
+		Log(Info, "shutdown opc ua client manager");
+
 		if (!messageServer_.shutdown()) return false;
+		Log(Info, "shutdown message server");
+
 		if (!webGateway_.shutdown()) return false;
+		Log(Info, "shutdown web gateway");
+
 		if (!webSocket_.shutdown()) return false;
+		Log(Info, "shutdown web socket");
+
 		if (!webServer_.shutdown()) return false;
+		Log(Info, "shutdown web server");
 
 		return true;
 	}

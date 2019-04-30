@@ -35,14 +35,19 @@ namespace OpcUaWebServer
 		slotTimerElement_ = constructSPtr<SlotTimerElement>();
 
 		gChannelId_++;
-		std::stringstream ss;
 		id_ = gChannelId_;
-		ss << "WebSocket" << gChannelId_;
-		channelId_ = ss.str();
 	}
 
 	WebSocketChannel::~WebSocketChannel(void)
 	{
+	}
+
+	std::string
+	WebSocketChannel::getId(void)
+	{
+		std::stringstream ss;
+		ss << id_;
+		return ss.str();
 	}
 
 }

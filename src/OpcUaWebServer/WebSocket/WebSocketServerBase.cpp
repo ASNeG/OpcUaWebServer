@@ -36,7 +36,6 @@ namespace OpcUaWebServer
 	, tcpAcceptor_(webSocketConfig->ioThread()->ioService()->io_service(), webSocketConfig->address(), webSocketConfig->port())
 	, receiveMessageCallback_()
 	, webSocketChannelMap_()
-	, channelId_(0)
 	, mutex_()
 	{
 	}
@@ -55,7 +54,7 @@ namespace OpcUaWebServer
 		// get web socket channel
 		auto it = webSocketChannelMap_.find(channelId);
 		if (it == webSocketChannelMap_.end()) {
-			Log(Error, "web socket channel not exist")
+			Log(Error, "web socket channel not exist - ignore disconnect")
 				.parameter("ChannelId", channelId);
 			return;
 		}
@@ -83,7 +82,7 @@ namespace OpcUaWebServer
 			// get web socket channel
 			auto it = webSocketChannelMap_.find(webSocketMessage.channelId_);
 			if (it == webSocketChannelMap_.end()) {
-				Log(Error, "web socket channel not exist")
+				Log(Error, "web socket channel not exist - ignore send message")
 					.parameter("ChannelId", webSocketMessage.channelId_);
 				return false;
 			}
@@ -97,6 +96,9 @@ namespace OpcUaWebServer
 	void
 	WebSocketServerBase::closeWebSocketChannel(WebSocketChannel* webSocketChannel)
 	{
+		Log(Info, "close web socket channel")
+			.parameter("ChannelId", webSocketChannel->id_);
+
 		// remove web socket from channel map
 		cleanupWebSocketChannel(webSocketChannel);
 
@@ -123,9 +125,9 @@ namespace OpcUaWebServer
 	{
 		boost::mutex::scoped_lock g(mutex_);
 
-		channelId_++;
-		webSocketChannel->channelId_ = channelId_;
-		webSocketChannelMap_.insert(std::make_pair(channelId_, webSocketChannel));
+		webSocketChannelMap_.insert(std::make_pair(webSocketChannel->id_, webSocketChannel));
+		Log(Debug, "create web socket")
+		    .parameter("ChannelId", webSocketChannel->id_);
 	}
 
 	void
@@ -133,8 +135,9 @@ namespace OpcUaWebServer
 	{
 		boost::mutex::scoped_lock g(mutex_);
 
-		WebSocketChannel::Map::iterator it;
-		it = webSocketChannelMap_.find(webSocketChannel->id_);
+		Log(Debug, "delete web socket")
+		    .parameter("ChannelId", webSocketChannel->id_);
+		auto it = webSocketChannelMap_.find(webSocketChannel->id_);
 		if (it != webSocketChannelMap_.end()) webSocketChannelMap_.erase(it);
 	}
 
@@ -181,7 +184,7 @@ namespace OpcUaWebServer
 			Log(Debug, "WebSocketServer receive request header error; close channel")
 				.parameter("Address", webSocketChannel->partner_.address().to_string())
 				.parameter("Port", webSocketChannel->partner_.port())
-				.parameter("ChannelId", webSocketChannel->channelId_);
+				.parameter("ChannelId", webSocketChannel->id_);
 
 			closeWebSocketChannel(webSocketChannel);
 			return;
@@ -260,7 +263,7 @@ namespace OpcUaWebServer
 			Log(Debug, "WebSocketServer receive request content error; close channel")
 				.parameter("Address", webSocketChannel->partner_.address().to_string())
 				.parameter("Port", webSocketChannel->partner_.port())
-				.parameter("ChannelId", webSocketChannel->channelId_);
+				.parameter("ChannelId", webSocketChannel->id_);
 
 			closeWebSocketChannel(webSocketChannel);
 			return;
@@ -290,7 +293,7 @@ namespace OpcUaWebServer
 			Log(Debug, "WebSocketServer request without parameter Sec-WebSocket-key; close channel")
 				.parameter("Address", webSocketChannel->partner_.address().to_string())
 				.parameter("Port", webSocketChannel->partner_.port())
-				.parameter("ChannelId", webSocketChannel->channelId_);
+				.parameter("ChannelId", webSocketChannel->id_);
 
 			closeWebSocketChannel(webSocketChannel);
 			return;
@@ -334,7 +337,7 @@ namespace OpcUaWebServer
 			Log(Debug, "WebSocketServer send response error; close channel")
 				.parameter("Address", webSocketChannel->partner_.address().to_string())
 				.parameter("Port", webSocketChannel->partner_.port())
-				.parameter("ChannelId", webSocketChannel->channelId_);
+				.parameter("ChannelId", webSocketChannel->id_);
 
 			closeWebSocketChannel(webSocketChannel);
 			return;
@@ -372,7 +375,7 @@ namespace OpcUaWebServer
 			.parameter("Address", webSocketChannel->partner_.address().to_string())
 			.parameter("Port", webSocketChannel->partner_.port())
 			.parameter("Location", location)
-			.parameter("ChannelId", webSocketChannel->channelId_);
+			.parameter("ChannelId", webSocketChannel->id_);
 
 		webSocketChannel->timeout_ = true;
 		webSocketChannel->cancel();
@@ -421,7 +424,7 @@ namespace OpcUaWebServer
 			Log(Debug, "WebSocketServer receive message header error; close channel")
 				.parameter("Address", webSocketChannel->partner_.address().to_string())
 				.parameter("Port", webSocketChannel->partner_.port())
-				.parameter("ChannelId", webSocketChannel->channelId_);
+				.parameter("ChannelId", webSocketChannel->id_);
 
 			closeWebSocketChannel(webSocketChannel);
 			return;
@@ -440,7 +443,7 @@ namespace OpcUaWebServer
 			Log(Debug, "WebSocketServer do not support continuation frame messages; close channel")
 				.parameter("Address", webSocketChannel->partner_.address().to_string())
 				.parameter("Port", webSocketChannel->partner_.port())
-				.parameter("ChannelId", webSocketChannel->channelId_);
+				.parameter("ChannelId", webSocketChannel->id_);
 
 			closeWebSocketChannel(webSocketChannel);
 			return;
@@ -450,7 +453,7 @@ namespace OpcUaWebServer
 			Log(Error, "WebSocketServer do not support binary frame messages; close channel")
 				.parameter("Address", webSocketChannel->partner_.address().to_string())
 				.parameter("Port", webSocketChannel->partner_.port())
-				.parameter("ChannelId", webSocketChannel->channelId_);
+				.parameter("ChannelId", webSocketChannel->id_);
 
 			closeWebSocketChannel(webSocketChannel);
 			return;
@@ -460,7 +463,7 @@ namespace OpcUaWebServer
 			Log(Debug, "WebSocketServer receive close frame messages; close channel")
 				.parameter("Address", webSocketChannel->partner_.address().to_string())
 				.parameter("Port", webSocketChannel->partner_.port())
-				.parameter("ChannelId", webSocketChannel->channelId_);
+				.parameter("ChannelId", webSocketChannel->id_);
 
 			closeWebSocketChannel(webSocketChannel);
 			return;
@@ -470,7 +473,7 @@ namespace OpcUaWebServer
 			Log(Debug, "WebSocketServer do not support continuation ping messages; close channel")
 				.parameter("Address", webSocketChannel->partner_.address().to_string())
 				.parameter("Port", webSocketChannel->partner_.port())
-				.parameter("ChannelId", webSocketChannel->channelId_);
+				.parameter("ChannelId", webSocketChannel->id_);
 
 			closeWebSocketChannel(webSocketChannel);
 			return;
@@ -480,7 +483,7 @@ namespace OpcUaWebServer
 			Log(Debug, "WebSocketServer do not support continuation text messages; close channel")
 				.parameter("Address", webSocketChannel->partner_.address().to_string())
 				.parameter("Port", webSocketChannel->partner_.port())
-				.parameter("ChannelId", webSocketChannel->channelId_);
+				.parameter("ChannelId", webSocketChannel->id_);
 
 			closeWebSocketChannel(webSocketChannel);
 			return;
@@ -518,7 +521,7 @@ namespace OpcUaWebServer
 			Log(Debug, "WebSocketServer do not support 8 byte length field; close channel")
 				.parameter("Address", webSocketChannel->partner_.address().to_string())
 				.parameter("Port", webSocketChannel->partner_.port())
-				.parameter("ChannelId", webSocketChannel->channelId_);
+				.parameter("ChannelId", webSocketChannel->id_);
 
 			closeWebSocketChannel(webSocketChannel);
 			return;
@@ -547,7 +550,7 @@ namespace OpcUaWebServer
 			Log(Debug, "WebSocketServer receive message content2 error; close channel")
 				.parameter("Address", webSocketChannel->partner_.address().to_string())
 				.parameter("Port", webSocketChannel->partner_.port())
-				.parameter("ChannelId", webSocketChannel->channelId_);
+				.parameter("ChannelId", webSocketChannel->id_);
 
 			closeWebSocketChannel(webSocketChannel);
 			return;
@@ -594,7 +597,7 @@ namespace OpcUaWebServer
 			Log(Debug, "WebSocketServer receive message content error; close channel")
 				.parameter("Address", webSocketChannel->partner_.address().to_string())
 				.parameter("Port", webSocketChannel->partner_.port())
-				.parameter("ChannelId", webSocketChannel->channelId_);
+				.parameter("ChannelId", webSocketChannel->id_);
 
 			closeWebSocketChannel(webSocketChannel);
 			return;
@@ -640,7 +643,7 @@ namespace OpcUaWebServer
 			.parameter("Address", webSocketChannel->partner_.address().to_string())
 			.parameter("Port", webSocketChannel->partner_.port())
 			.parameter("Location", location)
-			.parameter("ChannelId", webSocketChannel->channelId_);
+			.parameter("ChannelId", webSocketChannel->id_);
 
 		webSocketChannel->timeout_ = true;
 		webSocketChannel->cancel();
@@ -687,7 +690,7 @@ namespace OpcUaWebServer
 			Log(Debug, "WebSocketServer do not support 8 byte length field; close channel")
 				.parameter("Address", webSocketChannel->partner_.address().to_string())
 				.parameter("Port", webSocketChannel->partner_.port())
-				.parameter("ChannelId", webSocketChannel->channelId_);
+				.parameter("ChannelId", webSocketChannel->id_);
 
 			closeWebSocketChannel(webSocketChannel);
 			return false;
@@ -713,7 +716,7 @@ namespace OpcUaWebServer
 			Log(Debug, "WebSocketServer send response error; close channel")
 				.parameter("Address", webSocketChannel->partner_.address().to_string())
 				.parameter("Port", webSocketChannel->partner_.port())
-				.parameter("ChannelId", webSocketChannel->channelId_);
+				.parameter("ChannelId", webSocketChannel->id_);
 
 			closeWebSocketChannel(webSocketChannel);
 			return;
