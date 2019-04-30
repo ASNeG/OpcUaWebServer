@@ -108,6 +108,7 @@ namespace OpcUaWebServer
 		}
 
 		if (requestHeader.messageType() == "CHANNELCLOSE_MESSAGE") {
+			// FIXME: todo - remove related sessions
 			return;
 		}
 
