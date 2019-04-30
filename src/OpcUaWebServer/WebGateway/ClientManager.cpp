@@ -19,7 +19,6 @@
 #include <boost/property_tree/json_parser.hpp>
 #include "OpcUaStackCore/Base/Log.h"
 #include "OpcUaWebServer/WebGateway/ClientManager.h"
-#include "OpcUaWebServer/WebGateway/MessageHeader.h"
 
 using namespace OpcUaStackCore;
 
@@ -87,22 +86,33 @@ namespace OpcUaWebServer
 		}
 
 		// get header from json message
-		MessageHeader messageHeader;
-		if (!messageHeader.jsonDecode(pt)) {
+		RequestHeader requestHeader;
+		if (!requestHeader.jsonDecode(pt)) {
 			Log(Error, "message header error");
 			return;
 		}
 	}
 
 	void
-	ClientManager::sendErrorResponse(uint32_t channelId, OpcUaStatusCode statusCode)
+	ClientManager::sendErrorResponse(
+		uint32_t channelId,
+		RequestHeader& requestHeader,
+		OpcUaStatusCode statusCode
+	)
 	{
 		boost::property_tree::ptree pt;
 
 		// create header
-		MessageHeader messageHeader;
-		//messageHeader.messageType() = xx;
-		//messageHeader.clientHandle() = xx;
+		RequestHeader responseHeader(requestHeader, true);
+		responseHeader.jsonEncode(pt);
+
+		// create body
+
+		// create json message
+
+		// create web socket message
+		WebSocketMessage webSocketMessage;
+
 	}
 
 }

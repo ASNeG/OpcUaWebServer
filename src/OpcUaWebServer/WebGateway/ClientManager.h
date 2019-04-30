@@ -18,6 +18,7 @@
 #ifndef __OpcUaWebServer_ClientManager_h__
 #define __OpcUaWebServer_ClientManager_h__
 
+#include <OpcUaWebServer/WebGateway/RequestHeader.h>
 #include "OpcUaStackCore/Utility/IOThread.h"
 #include "OpcUaStackCore/Certificate/CryptoManager.h"
 #include "OpcUaWebServer/WebSocket/WebSocketMessage.h"
@@ -45,7 +46,11 @@ namespace OpcUaWebServer
 		void receiveMessage(WebSocketMessage& webSocketMessag);
 
 	  private:
-		void sendErrorResponse(uint32_t channelId, OpcUaStatusCode statusCode);
+		void sendErrorResponse(
+			uint32_t channelId,
+			RequestHeader& requestHeader,
+			OpcUaStatusCode statusCode
+		);
 
 		SendMessageCallback sendMessageCallback_;
 	};

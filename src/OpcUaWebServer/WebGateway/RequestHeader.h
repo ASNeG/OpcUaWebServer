@@ -15,19 +15,20 @@
    Autor: Kai Huebl (kai@huebl-sgh.de)
  */
 
-#ifndef __OpcUaWebServer_MessageHeader_h__
-#define __OpcUaWebServer_MessageHeader_h__
+#ifndef __OpcUaWebServer_RequestHeader_h__
+#define __OpcUaWebServer_RequestHeader_h__
 
 #include <boost/property_tree/ptree.hpp>
 
 namespace OpcUaWebServer
 {
 
-	class MessageHeader
+	class RequestHeader
 	{
 	  public:
-		MessageHeader(void);
-		virtual ~MessageHeader(void);
+		RequestHeader(void);
+		RequestHeader(const RequestHeader& RequestHeader, bool response = false);
+		virtual ~RequestHeader(void);
 
 		std::string& messageType(void);
 		std::string& clientHandle(void);

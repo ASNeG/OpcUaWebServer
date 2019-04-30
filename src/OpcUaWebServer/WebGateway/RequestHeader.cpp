@@ -15,38 +15,48 @@
    Autor: Kai Huebl (kai@huebl-sgh.de)
  */
 
+#include <boost/algorithm/string/replace.hpp>
+#include <OpcUaWebServer/WebGateway/RequestHeader.h>
 #include "OpcUaStackCore/Base/Log.h"
-#include "OpcUaWebServer/WebGateway/MessageHeader.h"
 
 using namespace OpcUaStackCore;
 
 namespace OpcUaWebServer
 {
 
-	MessageHeader::MessageHeader(void)
+	RequestHeader::RequestHeader(void)
 	: messageType_("")
 	, clientHandle_("")
 	{
 	}
 
-	MessageHeader::~MessageHeader(void)
+	RequestHeader::RequestHeader(const RequestHeader& RequestHeader, bool response)
+	: messageType_(RequestHeader.messageType_)
+	, clientHandle_(RequestHeader.clientHandle_)
+	{
+		if (response) {
+			boost::replace_all(messageType_, "Request", "Response");
+		}
+	}
+
+	RequestHeader::~RequestHeader(void)
 	{
 	}
 
 	std::string&
-	MessageHeader::messageType(void)
+	RequestHeader::messageType(void)
 	{
 		return messageType_;
 	}
 
 	std::string&
-	MessageHeader::clientHandle(void)
+	RequestHeader::clientHandle(void)
 	{
 		return clientHandle_;
 	}
 
 	bool
-	MessageHeader::jsonEncode(boost::property_tree::ptree& pt)
+	RequestHeader::jsonEncode(boost::property_tree::ptree& pt)
 	{
 		boost::property_tree::ptree headerElement;
 		headerElement.put("MessageType", messageType_);
@@ -57,7 +67,7 @@ namespace OpcUaWebServer
 	}
 
 	bool
-	MessageHeader::jsonDecode(boost::property_tree::ptree& pt)
+	RequestHeader::jsonDecode(boost::property_tree::ptree& pt)
 	{
 		// get message type from json message
 		boost::optional<std::string> messageType = pt.get<std::string>("Header.MessageType");
