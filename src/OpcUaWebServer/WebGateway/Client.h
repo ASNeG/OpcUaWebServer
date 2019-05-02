@@ -20,8 +20,11 @@
 #define __OpcUaWebServer_Client_h__
 
 #include <boost/shared_ptr.hpp>
+#include "OpcUaStackCore/Utility/IOThread.h"
+#include "OpcUaStackCore/Certificate/CryptoManager.h"
 #include "OpcUaStackClient/ServiceSet/ServiceSetManager.h"
 
+using namespace OpcUaStackCore;
 using namespace OpcUaStackClient;
 
 namespace OpcUaWebServer
@@ -35,8 +38,23 @@ namespace OpcUaWebServer
 		Client(void);
 		virtual ~Client(void);
 
+		uint32_t id(void);
+		void ioThread(IOThread::SPtr& ioThread);
+		void cryptoManager(CryptoManager::SPtr& cryptoManager);
+
+		OpcUaStatusCode login(
+			boost::property_tree::ptree& requestBoy,
+			boost::property_tree::ptree& responseBody
+		);
+
 	  private:
+		static uint32_t gId_;
+		uint32_t id_;
+
+		IOThread::SPtr ioThread_;
+		CryptoManager::SPtr cryptoManager_;
 		ServiceSetManager serviceSetManager_;
+		SessionService::SPtr sessionService_;
 	};
 
 }

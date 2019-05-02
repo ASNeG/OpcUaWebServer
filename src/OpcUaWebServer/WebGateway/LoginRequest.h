@@ -29,6 +29,8 @@ namespace OpcUaWebServer
 		LoginRequest(void);
 		virtual ~LoginRequest(void);
 
+		std::string& discoveryUrl(void);
+
 		bool jsonEncode(boost::property_tree::ptree& pt);
 		bool jsonDecode(boost::property_tree::ptree& pt);
 

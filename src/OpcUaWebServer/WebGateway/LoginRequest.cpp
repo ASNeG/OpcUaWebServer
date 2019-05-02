@@ -32,6 +32,12 @@ namespace OpcUaWebServer
 	{
 	}
 
+	std::string&
+	LoginRequest::discoveryUrl(void)
+	{
+		return discoveryUrl_;
+	}
+
 
 	bool
 	LoginRequest::jsonEncode(boost::property_tree::ptree& pt)

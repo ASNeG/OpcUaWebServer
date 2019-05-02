@@ -17,6 +17,7 @@
 
 #include <boost/property_tree/ptree.hpp>
 #include <boost/property_tree/json_parser.hpp>
+#include <boost/make_shared.hpp>
 #include "OpcUaStackCore/Base/Log.h"
 #include "OpcUaWebServer/WebGateway/ClientManager.h"
 #include "OpcUaWebServer/WebGateway/ResponseHeader.h"
@@ -25,6 +26,8 @@ using namespace OpcUaStackCore;
 
 namespace OpcUaWebServer
 {
+
+
 
 	ClientManager::ClientManager(void)
 	: sendMessageCallback_()
@@ -118,7 +121,7 @@ namespace OpcUaWebServer
 		}
 
 		if (requestHeader.messageType() == "CHANNELCLOSE_MESSAGE") {
-			handleChannelClose(webSocketMessage.channelId_, requestHeader);
+			handleChannelClose(webSocketMessage.channelId_, requestHeader, *body);
 			return;
 		}
 
@@ -153,10 +156,26 @@ namespace OpcUaWebServer
 	ClientManager::handleLogin(
 		uint32_t channelId,
 		RequestHeader requestHeader,
-		boost::property_tree::ptree& body
+		boost::property_tree::ptree& requestBody
 	)
 	{
-		// FIXME: todo
+		// create new opc ua client
+		auto client = boost::make_shared<Client>();
+		client->ioThread(ioThread_);
+		client->cryptoManager(cryptoManager_);
+
+		// create new opc ua client session
+		boost::property_tree::ptree responseBody;
+		auto statusCode = client->login(requestBody, responseBody);
+		if (statusCode != Success) {
+			sendErrorResponse(channelId, requestHeader, statusCode);
+			return;
+		}
+
+		// added client to manager map
+
+		// send login response
+		sendResponse(channelId, requestHeader, responseBody);
 	}
 
 	void
@@ -183,7 +202,7 @@ namespace OpcUaWebServer
 	ClientManager::sendResponse(
 		uint32_t channelId,
 		RequestHeader& requestHeader,
-		std::string& body
+		boost::property_tree::ptree& responseBody
 	)
 	{
 		bool error = false;
@@ -195,7 +214,7 @@ namespace OpcUaWebServer
 		responseHeader.jsonEncode(pt);
 
 		// create body
-		pt.put("Body", body);
+		pt.add_child("Body", responseBody);
 
 		// create json message
 		std::stringstream msg;
