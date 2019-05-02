@@ -26,6 +26,15 @@ ws.send(json.dumps(req))
 str = ws. recv()
 print("RECV: ", str)
 res = json.loads(str)
+sessionId = res['Body']['SessionId']
+
+#
+# receive session status notify
+#
+str = ws. recv()
+print("RECV: ", str)
+res = json.loads(str)
+
 
 
 #
@@ -35,7 +44,7 @@ req = {
     "Header" : {
         "MessageType" : "GW_LogoutRequest",
         "ClientHandle" : "client-handle",
-        "SessionId" : res['Body']['SessionId']
+        "SessionId" : sessionId
     },
     "Body" : {
     }
