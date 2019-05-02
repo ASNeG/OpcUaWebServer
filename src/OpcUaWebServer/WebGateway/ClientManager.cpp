@@ -21,6 +21,7 @@
 #include "OpcUaStackCore/Base/Log.h"
 #include "OpcUaWebServer/WebGateway/ClientManager.h"
 #include "OpcUaWebServer/WebGateway/ResponseHeader.h"
+#include "OpcUaWebServer/WebGateway/SessionStatusNotify.h"
 
 using namespace OpcUaStackCore;
 
@@ -32,6 +33,9 @@ namespace OpcUaWebServer
 	ClientManager::ClientManager(void)
 	: sendMessageCallback_()
 	, disconnectChannelCallback_()
+	, clientMap_()
+	, ioThread_()
+	, cryptoManager_()
 	{
 	}
 
@@ -159,20 +163,42 @@ namespace OpcUaWebServer
 		boost::property_tree::ptree& requestBody
 	)
 	{
+		std::string clientHandle = requestHeader.clientHandle();
+
 		// create new opc ua client
 		auto client = boost::make_shared<Client>();
 		client->ioThread(ioThread_);
 		client->cryptoManager(cryptoManager_);
+		auto sessionId = client->id();
 
 		// create new opc ua client session
+
+		auto sessionStatusCallback = [this, channelId, clientHandle, sessionId](const std::string& sessionStatus) {
+			NotifyHeader notifyHeader("SessionStatusNotify", clientHandle, sessionId);
+
+			SessionStatusNotify sessionStatusNotify;
+			sessionStatusNotify.sessionStatus() = sessionStatus;
+
+			boost::property_tree::ptree notifyBody;
+			sessionStatusNotify.jsonEncode(notifyBody);
+			sendNotify(channelId, notifyHeader, notifyBody);
+		};
+
 		boost::property_tree::ptree responseBody;
-		auto statusCode = client->login(requestBody, responseBody);
+		auto statusCode = client->login(requestBody, responseBody, sessionStatusCallback);
 		if (statusCode != Success) {
 			sendErrorResponse(channelId, requestHeader, statusCode);
 			return;
 		}
 
 		// added client to manager map
+		auto it = clientMap_.insert(std::make_pair(sessionId, client));
+		if (!it.second) {
+			Log(Error, "client session id error")
+				.parameter("Id", sessionId);
+			sendErrorResponse(channelId, requestHeader, BadInternalError);
+			return;
+		}
 
 		// send login response
 		sendResponse(channelId, requestHeader, responseBody);
@@ -182,10 +208,27 @@ namespace OpcUaWebServer
 	ClientManager::handleLogout(
 		uint32_t channelId,
 		RequestHeader requestHeader,
-		boost::property_tree::ptree& body
+		boost::property_tree::ptree& requestBody
 	)
 	{
-		// FIXME: todo
+		// find client
+		auto it = clientMap_.find(requestHeader.sessionId());
+		if (it == clientMap_.end()) {
+			sendErrorResponse(channelId, requestHeader, BadNotFound);
+			return;
+		}
+		auto client = it->second;
+
+		// logout
+		auto loginResponseCallback = [this, channelId, requestHeader](OpcUaStatusCode statusCode, boost::property_tree::ptree& responseBody) mutable {
+			if (statusCode != Success) {
+				sendErrorResponse(channelId, requestHeader, statusCode);
+			}
+			else {
+				sendResponse(channelId, requestHeader, responseBody);
+			}
+		};
+		client->logout(requestBody, loginResponseCallback);
 	}
 
 	void
@@ -195,7 +238,14 @@ namespace OpcUaWebServer
 		boost::property_tree::ptree& body
 	)
 	{
-		// FIXME: todo
+		// find client
+		auto it = clientMap_.find(requestHeader.sessionId());
+		if (it == clientMap_.end()) {
+			sendErrorResponse(channelId, requestHeader, BadNotFound);
+			return;
+		}
+		auto client = it->second;
+
 	}
 
 	void
@@ -215,6 +265,51 @@ namespace OpcUaWebServer
 
 		// create body
 		pt.add_child("Body", responseBody);
+
+		// create json message
+		std::stringstream msg;
+		try {
+			boost::property_tree::write_json(msg, pt);
+		}
+		catch (const boost::property_tree::json_parser_error& e)
+		{
+			errorMessage = std::string(e.what());
+			error = true;
+		}
+
+		if (error) {
+			Log(Error, "json parser error")
+			    .parameter("ChannelId", channelId)
+			    .parameter("Error", errorMessage);
+			return;
+		}
+
+		// create web socket message
+		WebSocketMessage webSocketMessage;
+		webSocketMessage.channelId_ = channelId;
+		webSocketMessage.message_ = msg.str();
+
+		if (sendMessageCallback_) {
+			sendMessageCallback_(webSocketMessage);
+		}
+	}
+
+	void
+	ClientManager::sendNotify(
+		uint32_t channelId,
+		NotifyHeader& notifyHeader,
+		boost::property_tree::ptree& notifyBody
+	)
+	{
+		bool error = false;
+		std::string errorMessage;
+		boost::property_tree::ptree pt;
+
+		// create header
+		notifyHeader.jsonEncode(pt);
+
+		// create body
+		pt.add_child("Body", notifyBody);
 
 		// create json message
 		std::stringstream msg;

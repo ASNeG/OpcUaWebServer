@@ -15,39 +15,50 @@
    Autor: Kai Huebl (kai@huebl-sgh.de)
  */
 
-#ifndef __OpcUaWebServer_ResponseHeader_h__
-#define __OpcUaWebServer_ResponseHeader_h__
-
-#include "OpcUaStackCore/BuildInTypes/OpcUaStatusCode.h"
-#include "OpcUaWebServer/WebGateway/RequestHeader.h"
+#include <OpcUaWebServer/WebGateway/LogoutRequest.h>
+#include "OpcUaStackCore/Base/Log.h"
 
 using namespace OpcUaStackCore;
 
 namespace OpcUaWebServer
 {
 
-	class ResponseHeader
-	: public RequestHeader
+	LogoutRequest::LogoutRequest(void)
+	: sessionId_("")
 	{
-	  public:
-		ResponseHeader(void);
-		ResponseHeader(const RequestHeader& RequestHeader);
-		ResponseHeader(
-		    const std::string& messageType,
-			const std::string& clientHandle,
-			const std::string& sessionId
-		);
-		virtual ~ResponseHeader(void);
+	}
 
-		OpcUaStatusCode& statusCode(void);
+	LogoutRequest::~LogoutRequest(void)
+	{
+	}
 
-		bool jsonEncode(boost::property_tree::ptree& pt);
-		bool jsonDecode(boost::property_tree::ptree& pt);
+	std::string&
+	LogoutRequest::sessionId(void)
+	{
+		return sessionId_;
+	}
 
-	  private:
-		OpcUaStatusCode statusCode_;
-	};
+
+	bool
+	LogoutRequest::jsonEncode(boost::property_tree::ptree& pt)
+	{
+		pt.put("sessionId", sessionId_);
+		return true;
+	}
+
+	bool
+	LogoutRequest::jsonDecode(boost::property_tree::ptree& pt)
+	{
+		// get discovery url from json message
+		boost::optional<std::string> sessionId = pt.get_optional<std::string>("sessionId");
+		if (!sessionId) {
+			Log(Error, "message body do not contain session id");
+			return false;
+		}
+		sessionId_ = *sessionId;
+
+		return true;
+	}
 
 }
 
-#endif

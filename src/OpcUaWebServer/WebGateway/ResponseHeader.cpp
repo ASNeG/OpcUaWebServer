@@ -37,6 +37,16 @@ namespace OpcUaWebServer
 		boost::replace_all(messageType(), "Request", "Response");
 	}
 
+	ResponseHeader::ResponseHeader(
+	    const std::string& messageType,
+		const std::string& clientHandle,
+		const std::string& sessionId
+	)
+	: RequestHeader(messageType, clientHandle, sessionId)
+	, statusCode_(Success)
+	{
+	}
+
 	ResponseHeader::~ResponseHeader(void)
 	{
 	}

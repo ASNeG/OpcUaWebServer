@@ -27,12 +27,25 @@ namespace OpcUaWebServer
 	RequestHeader::RequestHeader(void)
 	: messageType_("")
 	, clientHandle_("")
+	, sessionId_("")
 	{
 	}
 
 	RequestHeader::RequestHeader(const RequestHeader& RequestHeader)
 	: messageType_(RequestHeader.messageType_)
 	, clientHandle_(RequestHeader.clientHandle_)
+	, sessionId_(RequestHeader.sessionId_)
+	{
+	}
+
+	RequestHeader::RequestHeader(
+	    const std::string& messageType,
+		const std::string& clientHandle,
+		const std::string& sessionId
+	)
+	: messageType_(messageType)
+	, clientHandle_(clientHandle)
+	, sessionId_(sessionId)
 	{
 	}
 
@@ -52,12 +65,21 @@ namespace OpcUaWebServer
 		return clientHandle_;
 	}
 
+	std::string&
+	RequestHeader::sessionId(void)
+	{
+		return sessionId_;
+	}
+
 	bool
 	RequestHeader::jsonEncode(boost::property_tree::ptree& pt)
 	{
 		boost::property_tree::ptree headerElement;
 		headerElement.put("MessageType", messageType_);
 		headerElement.put("ClientHandle", clientHandle_);
+		if (!sessionId_.empty()) {
+			headerElement.put("SessionId", sessionId_);
+		}
 		pt.push_back(std::make_pair("Header", headerElement));
 
 		return true;
@@ -81,6 +103,12 @@ namespace OpcUaWebServer
 			return false;
 		}
 		clientHandle_ = *clientHandle;
+
+		// get session id from json message
+		boost::optional<std::string> sessionId = pt.get_optional<std::string>("Header.SessionId");
+		if (sessionId) {
+			sessionId_ = *sessionId;
+		}
 
 		return true;
 	}

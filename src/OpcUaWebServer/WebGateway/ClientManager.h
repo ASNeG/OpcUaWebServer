@@ -22,6 +22,7 @@
 #include "OpcUaStackCore/Certificate/CryptoManager.h"
 #include "OpcUaWebServer/WebSocket/WebSocketMessage.h"
 #include "OpcUaWebServer/WebGateway/RequestHeader.h"
+#include "OpcUaWebServer/WebGateway/NotifyHeader.h"
 #include "OpcUaWebServer/WebGateway/Client.h"
 
 using namespace OpcUaStackCore;
@@ -74,11 +75,18 @@ namespace OpcUaWebServer
 			RequestHeader& requestHeader,
 			boost::property_tree::ptree& responseBody
 		);
+		void sendNotify(
+			uint32_t channelId,
+			NotifyHeader& notifyHeader,
+			boost::property_tree::ptree& notifyBody
+		);
 		void sendErrorResponse(
 			uint32_t channelId,
 			RequestHeader& requestHeader,
 			OpcUaStatusCode statusCode
 		);
+
+		Client::Map clientMap_;
 
 		DisconnectChannelCallback disconnectChannelCallback_;
 		SendMessageCallback sendMessageCallback_;

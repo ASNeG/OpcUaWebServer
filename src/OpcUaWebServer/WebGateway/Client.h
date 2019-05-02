@@ -20,6 +20,7 @@
 #define __OpcUaWebServer_Client_h__
 
 #include <boost/shared_ptr.hpp>
+#include <map>
 #include "OpcUaStackCore/Utility/IOThread.h"
 #include "OpcUaStackCore/Certificate/CryptoManager.h"
 #include "OpcUaStackClient/ServiceSet/ServiceSetManager.h"
@@ -34,22 +35,33 @@ namespace OpcUaWebServer
 	{
 	  public:
 		typedef boost::shared_ptr<Client> SPtr;
+		typedef std::map<std::string, Client::SPtr> Map;
+
+		typedef std::function<void (OpcUaStatusCode statusCode, boost::property_tree::ptree& responseBody)> LogoutResponseCallback;
+		typedef std::function<void (const std::string& sessionStatus)> SessionStatusCallback;
 
 		Client(void);
 		virtual ~Client(void);
 
-		uint32_t id(void);
+		std::string id(void);
 		void ioThread(IOThread::SPtr& ioThread);
 		void cryptoManager(CryptoManager::SPtr& cryptoManager);
 
 		OpcUaStatusCode login(
 			boost::property_tree::ptree& requestBoy,
-			boost::property_tree::ptree& responseBody
+			boost::property_tree::ptree& responseBody,
+			const SessionStatusCallback& sessionStatusCallback
+		);
+		void logout(
+			boost::property_tree::ptree& requestBody,
+			const LogoutResponseCallback& logoutResponseCallback
 		);
 
 	  private:
 		static uint32_t gId_;
 		uint32_t id_;
+
+		SessionStatusCallback sessionStatusCallback_;
 
 		IOThread::SPtr ioThread_;
 		CryptoManager::SPtr cryptoManager_;

@@ -18,6 +18,7 @@
 
 #include "OpcUaWebServer/WebGateway/Client.h"
 #include "OpcUaWebServer/WebGateway/LoginRequest.h"
+#include "OpcUaWebServer/WebGateway/LogoutRequest.h"
 
 namespace OpcUaWebServer
 {
@@ -26,6 +27,7 @@ namespace OpcUaWebServer
 
 	Client::Client(void)
 	: id_(++gId_)
+	, sessionStatusCallback_()
 	, serviceSetManager_()
 	, ioThread_()
 	, cryptoManager_()
@@ -37,10 +39,12 @@ namespace OpcUaWebServer
 	{
 	}
 
-	uint32_t
+	std::string
 	Client::id(void)
 	{
-		return id_;
+		std::stringstream ss;
+		ss << id_;
+		return ss.str();
 	}
 
 
@@ -59,9 +63,12 @@ namespace OpcUaWebServer
 	OpcUaStatusCode
 	Client::login(
 		boost::property_tree::ptree& requestBody,
-		boost::property_tree::ptree& responseBody
+		boost::property_tree::ptree& responseBody,
+		const SessionStatusCallback& sessionStatusCallback
 	)
 	{
+		sessionStatusCallback_ = sessionStatusCallback;
+
 		// parse login request
 		LoginRequest loginRequest;
 		if (!loginRequest.jsonDecode(requestBody)) {
@@ -77,9 +84,11 @@ namespace OpcUaWebServer
 		sessionServiceConfig.session_->sessionName("WebGateway");
 		sessionServiceConfig.sessionServiceChangeHandler_ =
 			[this] (SessionBase& session, SessionServiceStateId sessionState) {
-				if (sessionState == SessionServiceStateId::Established ||
-					sessionState == SessionServiceStateId::Disconnected) {
-					// FIXME:
+				if (sessionState == SessionServiceStateId::Established) {
+					sessionStatusCallback_("Connect");
+				}
+				else if (sessionState == SessionServiceStateId::Disconnected) {
+					sessionStatusCallback_("Disconnect");
 				}
 			};
 
@@ -91,9 +100,33 @@ namespace OpcUaWebServer
 			return BadInvalidArgument;
 		}
 
+		// open a connection to the opc ua server
+		sessionService_->asyncConnect();
+
 		// create response body
 		responseBody.put("SessionId", id_);
 		return Success;
+	}
+
+	void
+	Client::logout(
+		boost::property_tree::ptree& requestBody,
+		const LogoutResponseCallback& logoutResponseCallback
+	)
+	{
+		boost::property_tree::ptree responseBody;
+
+		// parse logout request
+		LogoutRequest logoutRequest;
+		if (!logoutRequest.jsonDecode(requestBody)) {
+			Log(Error, "decode logout request error")
+				.parameter("Id", id_);
+			logoutResponseCallback(BadInvalidArgument, responseBody);
+			return;
+		}
+
+		// FIXME: todo
+		logoutResponseCallback(Success, responseBody);
 	}
 
 }

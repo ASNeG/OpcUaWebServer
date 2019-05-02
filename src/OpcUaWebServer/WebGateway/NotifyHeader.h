@@ -15,37 +15,25 @@
    Autor: Kai Huebl (kai@huebl-sgh.de)
  */
 
-#ifndef __OpcUaWebServer_RequestHeader_h__
-#define __OpcUaWebServer_RequestHeader_h__
+#ifndef __OpcUaWebServer_NotifyHeader_h__
+#define __OpcUaWebServer_NotifyHeader_h__
 
-#include <boost/property_tree/ptree.hpp>
+#include "OpcUaWebServer/WebGateway/RequestHeader.h"
 
 namespace OpcUaWebServer
 {
 
-	class RequestHeader
+	class NotifyHeader
+	: public RequestHeader
 	{
 	  public:
-		RequestHeader(void);
-		RequestHeader(const RequestHeader& RequestHeader);
-		RequestHeader(
+		NotifyHeader(void);
+		NotifyHeader(
 		    const std::string& messageType,
 			const std::string& clientHandle,
 			const std::string& sessionId
 		);
-		virtual ~RequestHeader(void);
-
-		std::string& messageType(void);
-		std::string& clientHandle(void);
-		std::string& sessionId(void);
-
-		bool jsonEncode(boost::property_tree::ptree& pt);
-		bool jsonDecode(boost::property_tree::ptree& pt);
-
-	  private:
-		std::string messageType_;
-		std::string clientHandle_;
-		std::string sessionId_;
+		virtual ~NotifyHeader(void);
 	};
 
 }
