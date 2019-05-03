@@ -2,6 +2,7 @@
 
 from websocket import create_connection
 import json
+import Check as c
 
 #
 # open web socket connection
@@ -26,7 +27,12 @@ ws.send(json.dumps(req))
 str = ws. recv()
 print("RECV: ", str)
 res = json.loads(str)
+c.checkEqual(res['Header']['MessageType'], "GW_LoginResponse")
+c.checkEqual(res['Header']['ClientHandle'], "client-handle")
+c.checkEqual(res['Header']['StatusCode'], "Success")
+c.checkExists(res['Body']['SessionId'])
 sessionId = res['Body']['SessionId']
+
 
 #
 # receive session status notify
@@ -34,11 +40,14 @@ sessionId = res['Body']['SessionId']
 str = ws. recv()
 print("RECV: ", str)
 res = json.loads(str)
-
+c.checkEqual(res['Header']['MessageType'], "GW_SessionStatusNotify")
+c.checkEqual(res['Header']['ClientHandle'], "client-handle")
+c.checkEqual(res['Header']['SessionId'], sessionId)
+c.checkEqual(res['Body']['SessionStatus'], "Connect")
 
 
 #
-# close opc ua session
+# send logout request to close opc ua session
 #
 req = {
     "Header" : {
@@ -50,13 +59,18 @@ req = {
     }
 
 }
-
 print("SEND: ", req)
 ws.send(json.dumps(req)) 
 
 str = ws. recv()
 print("RECV: ", str)
 res = json.loads(str)
+c.checkEqual(res['Header']['MessageType'], "GW_LogoutResponse")
+c.checkEqual(res['Header']['ClientHandle'], "client-handle")
+c.checkEqual(res['Header']['SessionId'], sessionId)
+c.checkEqual(res['Header']['StatusCode'], "Success")
+
+
 
 
 #

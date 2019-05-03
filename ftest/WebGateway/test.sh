@@ -8,7 +8,7 @@ NC='\033[0m'
 #
 # read the list of all python test scripts
 #
-TEST_SCRIPTS=`find . -name \*.py | grep -v python`
+TEST_SCRIPTS=`find . -name \*.py | grep -v Python`
 
 echo "==============================================================="
 echo "==============================================================="
@@ -22,6 +22,9 @@ RESULTS=()
 #
 # ececute all test scripts
 #
+
+export PYTHONPATH=Python
+
 for i in ${TEST_SCRIPTS[@]}; do
     SCRIPT=$i
 

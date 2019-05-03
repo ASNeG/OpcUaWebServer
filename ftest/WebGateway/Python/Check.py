@@ -2,6 +2,20 @@
 import sys, os
 from inspect import currentframe, getframeinfo
 
+def checkExists(first, msg=None):
+    try:
+        first
+    except NameError:
+        first = None
+    if first is None:
+        frameinfo = getframeinfo(currentframe().f_back)
+        print("checkExists error: ", first, "==", second)
+        if msg != None:
+            print("Message:          ", msg)
+        print("Function:         ", frameinfo.filename)
+        print("Line:             ", frameinfo.lineno)
+        os._exit(1)
+
 def checkEqual(first, second, msg=None):
     if first != second:
         frameinfo = getframeinfo(currentframe().f_back)
