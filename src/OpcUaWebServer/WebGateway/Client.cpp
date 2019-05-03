@@ -96,12 +96,13 @@ namespace OpcUaWebServer
 					sessionStatusCallback_("Connect");
 				}
 				else if (sessionState == SessionServiceStateId::Disconnected) {
-					sessionStatusCallback_("Disconnect");
-
 					if (logoutResponseCallback_) {
 						boost::property_tree::ptree responseBody;
 						logoutResponseCallback_(Success, responseBody);
+						return;
 					}
+
+					sessionStatusCallback_("Disconnect");
 				}
 			};
 

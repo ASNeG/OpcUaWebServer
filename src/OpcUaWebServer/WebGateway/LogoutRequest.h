@@ -35,7 +35,6 @@ namespace OpcUaWebServer
 		bool jsonDecode(boost::property_tree::ptree& pt);
 
 	  private:
-		std::string sessionId_;
 	};
 
 }

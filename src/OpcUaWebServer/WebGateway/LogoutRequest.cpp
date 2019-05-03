@@ -24,7 +24,6 @@ namespace OpcUaWebServer
 {
 
 	LogoutRequest::LogoutRequest(void)
-	: sessionId_("")
 	{
 	}
 
@@ -32,31 +31,15 @@ namespace OpcUaWebServer
 	{
 	}
 
-	std::string&
-	LogoutRequest::sessionId(void)
-	{
-		return sessionId_;
-	}
-
-
 	bool
 	LogoutRequest::jsonEncode(boost::property_tree::ptree& pt)
 	{
-		pt.put("sessionId", sessionId_);
 		return true;
 	}
 
 	bool
 	LogoutRequest::jsonDecode(boost::property_tree::ptree& pt)
 	{
-		// get discovery url from json message
-		boost::optional<std::string> sessionId = pt.get_optional<std::string>("sessionId");
-		if (!sessionId) {
-			Log(Error, "message body do not contain session id");
-			return false;
-		}
-		sessionId_ = *sessionId;
-
 		return true;
 	}
 
