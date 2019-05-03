@@ -28,6 +28,7 @@ namespace OpcUaWebServer
 	Client::Client(void)
 	: id_(++gId_)
 	, sessionStatusCallback_()
+	, logoutResponseCallback_()
 	, serviceSetManager_()
 	, ioThread_()
 	, cryptoManager_()
@@ -89,6 +90,11 @@ namespace OpcUaWebServer
 				}
 				else if (sessionState == SessionServiceStateId::Disconnected) {
 					sessionStatusCallback_("Disconnect");
+
+					if (logoutResponseCallback_) {
+						boost::property_tree::ptree responseBody;
+						logoutResponseCallback_(Success, responseBody);
+					}
 				}
 			};
 
@@ -116,6 +122,15 @@ namespace OpcUaWebServer
 	{
 		boost::property_tree::ptree responseBody;
 
+		// check parameter
+		if (logoutResponseCallback_) {
+			Log(Error, "logout function already called")
+				.parameter("Id", id_);
+			logoutResponseCallback(BadInvalidArgument, responseBody);
+			return;
+		}
+		logoutResponseCallback_ = logoutResponseCallback;
+
 		// parse logout request
 		LogoutRequest logoutRequest;
 		if (!logoutRequest.jsonDecode(requestBody)) {
@@ -125,8 +140,8 @@ namespace OpcUaWebServer
 			return;
 		}
 
-		// FIXME: todo
-		logoutResponseCallback(Success, responseBody);
+		// close the connection to the opc ua server
+		sessionService_->asyncDisconnect();
 	}
 
 }

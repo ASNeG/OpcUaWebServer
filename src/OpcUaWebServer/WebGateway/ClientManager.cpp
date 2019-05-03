@@ -174,7 +174,7 @@ namespace OpcUaWebServer
 		// create new opc ua client session
 
 		auto sessionStatusCallback = [this, channelId, clientHandle, sessionId](const std::string& sessionStatus) {
-			NotifyHeader notifyHeader("SessionStatusNotify", clientHandle, sessionId);
+			NotifyHeader notifyHeader("GW_SessionStatusNotify", clientHandle, sessionId);
 
 			SessionStatusNotify sessionStatusNotify;
 			sessionStatusNotify.sessionStatus() = sessionStatus;

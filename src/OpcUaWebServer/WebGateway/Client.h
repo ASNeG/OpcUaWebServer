@@ -62,6 +62,7 @@ namespace OpcUaWebServer
 		uint32_t id_;
 
 		SessionStatusCallback sessionStatusCallback_;
+		LogoutResponseCallback logoutResponseCallback_;
 
 		IOThread::SPtr ioThread_;
 		CryptoManager::SPtr cryptoManager_;
