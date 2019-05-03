@@ -59,7 +59,14 @@ req = {
         "NodesToRead" : [
             {
                 "NodeId" : {
-		    "Id" : "4711"
+                    "Namespace" : "3",
+		    "Id" : "218"
+                }
+            },
+            {
+                "NodeId" : {
+                    "Namespace" : "3",
+		    "Id" : "219"
                 }
             }
 	]         
