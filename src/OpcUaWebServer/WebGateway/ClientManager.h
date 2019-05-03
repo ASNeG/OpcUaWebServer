@@ -58,17 +58,17 @@ namespace OpcUaWebServer
 		void handleLogin(
 			uint32_t channelId,
 			RequestHeader requestHeader,
-			boost::property_tree::ptree& body
+			boost::property_tree::ptree& requestBody
 		);
 		void handleLogout(
 			uint32_t channelId,
 			RequestHeader requestHeader,
-			boost::property_tree::ptree& body
+			boost::property_tree::ptree& requestBody
 		);
 		void handleRequest(
 			uint32_t channelId,
 			RequestHeader requestHeader,
-			boost::property_tree::ptree& body
+			boost::property_tree::ptree& requestBody
 		);
 		void sendResponse(
 			uint32_t channelId,

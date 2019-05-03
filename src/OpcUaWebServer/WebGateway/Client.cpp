@@ -16,9 +16,12 @@
 
  */
 
+#include "OpcUaStackCore/Base/ConfigJson.h"
 #include "OpcUaWebServer/WebGateway/Client.h"
 #include "OpcUaWebServer/WebGateway/LoginRequest.h"
 #include "OpcUaWebServer/WebGateway/LogoutRequest.h"
+
+using namespace OpcUaStackCore;
 
 namespace OpcUaWebServer
 {
@@ -33,6 +36,7 @@ namespace OpcUaWebServer
 	, ioThread_()
 	, cryptoManager_()
 	, sessionService_()
+	, attributeService_()
 	{
 	}
 
@@ -68,6 +72,9 @@ namespace OpcUaWebServer
 		const SessionStatusCallback& sessionStatusCallback
 	)
 	{
+		Log(Debug, "receive login request")
+			.parameter("Id", id_);
+
 		sessionStatusCallback_ = sessionStatusCallback;
 
 		// parse login request
@@ -120,6 +127,9 @@ namespace OpcUaWebServer
 		const LogoutResponseCallback& logoutResponseCallback
 	)
 	{
+		Log(Debug, "receive logout request")
+			.parameter("Id", id_);
+
 		boost::property_tree::ptree responseBody;
 
 		// check parameter
@@ -142,6 +152,99 @@ namespace OpcUaWebServer
 
 		// close the connection to the opc ua server
 		sessionService_->asyncDisconnect();
+	}
+
+	// ----------------------------------------------------------------------
+	// ----------------------------------------------------------------------
+	//
+	// attribute service
+	//
+	// ----------------------------------------------------------------------
+	// ----------------------------------------------------------------------
+	bool
+	Client::initAttributeService(const MessageResponseCallback& messageResponseCallback)
+	{
+		if (!attributeService_) {
+			AttributeServiceConfig attributeServiceConfig;
+			attributeService_ = serviceSetManager_.attributeService(sessionService_, attributeServiceConfig);
+			if (!attributeService_) {
+				Log(Error, "attribute service error")
+					.parameter("Id", id_);
+				boost::property_tree::ptree responseBody;
+				messageResponseCallback(BadResourceUnavailable, responseBody);
+				return false;
+			}
+		}
+		return true;
+	}
+
+	void
+	Client::read(
+		boost::property_tree::ptree& requestBody,
+		const MessageResponseCallback& messageResponseCallback
+	)
+	{
+		Log(Debug, "receive read request")
+			.parameter("Id", id_);
+
+		// create attribute service if not exist
+		if (!initAttributeService(messageResponseCallback)) return;
+
+		// decode read request from web socket
+		auto trx = constructSPtr<ServiceTransactionRead>();
+		auto req = trx->request();
+		if (!req->jsonDecode(requestBody)) {
+			Log(Error, "decode read request error")
+				.parameter("Id", id_);
+			boost::property_tree::ptree responseBody;
+			messageResponseCallback(BadInvalidArgument, responseBody);
+			return;
+		}
+		if (req->readValueIdArray()->size() == 0) {
+			Log(Error, "decode read request error")
+				.parameter("Id", id_);
+			boost::property_tree::ptree responseBody;
+			messageResponseCallback(BadInvalidArgument, responseBody);
+			return;
+		}
+
+		// send read request to opc ua server
+		trx->resultHandler(
+			[this, messageResponseCallback](ServiceTransactionRead::SPtr& trx) {
+				boost::property_tree::ptree responseBody;
+
+				// check status code
+				if (trx->statusCode() != Success) {
+					messageResponseCallback(trx->statusCode(), responseBody);
+					return;
+				}
+
+				// encode request response
+				auto res = trx->response();
+				if (!res->jsonEncode(responseBody)) {
+					messageResponseCallback(BadDeviceFailure, responseBody);
+					return;
+				}
+
+				messageResponseCallback(Success, responseBody);
+			}
+		);
+		attributeService_->asyncSend(trx);
+	}
+
+	void
+	Client::write(
+		boost::property_tree::ptree& requestBody,
+		const MessageResponseCallback& messageResponseCallback
+	)
+	{
+		Log(Debug, "receive write request")
+			.parameter("Id", id_);
+
+		// create attribute service if not exist
+		if (!initAttributeService(messageResponseCallback)) return;
+
+		// FIXME: todo
 	}
 
 }

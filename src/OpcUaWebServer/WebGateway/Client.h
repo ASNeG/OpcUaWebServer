@@ -37,8 +37,9 @@ namespace OpcUaWebServer
 		typedef boost::shared_ptr<Client> SPtr;
 		typedef std::map<std::string, Client::SPtr> Map;
 
-		typedef std::function<void (OpcUaStatusCode statusCode, boost::property_tree::ptree& responseBody)> LogoutResponseCallback;
 		typedef std::function<void (const std::string& sessionStatus)> SessionStatusCallback;
+		typedef std::function<void (OpcUaStatusCode statusCode, boost::property_tree::ptree& responseBody)> LogoutResponseCallback;
+		typedef std::function<void (OpcUaStatusCode statusCode, boost::property_tree::ptree& responseBody)> MessageResponseCallback;
 
 		Client(void);
 		virtual ~Client(void);
@@ -47,6 +48,9 @@ namespace OpcUaWebServer
 		void ioThread(IOThread::SPtr& ioThread);
 		void cryptoManager(CryptoManager::SPtr& cryptoManager);
 
+		//
+		// session service functions
+		//
 		OpcUaStatusCode login(
 			boost::property_tree::ptree& requestBoy,
 			boost::property_tree::ptree& responseBody,
@@ -56,8 +60,22 @@ namespace OpcUaWebServer
 			boost::property_tree::ptree& requestBody,
 			const LogoutResponseCallback& logoutResponseCallback
 		);
+		void read(
+			boost::property_tree::ptree& requestBody,
+			const MessageResponseCallback& messageResponseCallback
+		);
+		void write(
+			boost::property_tree::ptree& requestBody,
+			const MessageResponseCallback& messageResponseCallback
+		);
+
+		//
+		// attribute service functions
+		//
 
 	  private:
+		bool initAttributeService(const MessageResponseCallback& messageResponseCallback);
+
 		static uint32_t gId_;
 		uint32_t id_;
 
@@ -68,6 +86,7 @@ namespace OpcUaWebServer
 		CryptoManager::SPtr cryptoManager_;
 		ServiceSetManager serviceSetManager_;
 		SessionService::SPtr sessionService_;
+		AttributeService::SPtr attributeService_;
 	};
 
 }

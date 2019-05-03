@@ -142,8 +142,6 @@ namespace OpcUaWebServer
 		else {
 			handleRequest(webSocketMessage.channelId_, requestHeader, *body);
 		}
-
-		sendErrorResponse(webSocketMessage.channelId_, requestHeader, BadServiceUnsupported);
 	}
 
 	void
@@ -225,6 +223,7 @@ namespace OpcUaWebServer
 				sendErrorResponse(channelId, requestHeader, statusCode);
 			}
 			else {
+				// FIXME: delete the client from the client map
 				sendResponse(channelId, requestHeader, responseBody);
 			}
 		};
@@ -235,17 +234,35 @@ namespace OpcUaWebServer
 	ClientManager::handleRequest(
 		uint32_t channelId,
 		RequestHeader requestHeader,
-		boost::property_tree::ptree& body
+		boost::property_tree::ptree& requestBody
 	)
 	{
 		// find client
 		auto it = clientMap_.find(requestHeader.sessionId());
 		if (it == clientMap_.end()) {
-			sendErrorResponse(channelId, requestHeader, BadNotFound);
+			sendErrorResponse(channelId, requestHeader, BadSessionClosed);
 			return;
 		}
 		auto client = it->second;
 
+		// handle request
+		auto messageResponseCallback = [this, channelId, requestHeader](OpcUaStatusCode statusCode, boost::property_tree::ptree& responseBody) mutable {
+			if (statusCode != Success) {
+				sendErrorResponse(channelId, requestHeader, statusCode);
+			}
+			else {
+				sendResponse(channelId, requestHeader, responseBody);
+			}
+		};
+		if (requestHeader.messageType() == "GW_ReadRequest") {
+			client->read(requestBody, messageResponseCallback);
+		}
+		else if (requestHeader.messageType() == "GW_WriteRequest") {
+			client->write(requestBody, messageResponseCallback);
+		}
+		else {
+			sendErrorResponse(channelId, requestHeader, BadServiceUnsupported);
+		}
 	}
 
 	void
@@ -261,6 +278,7 @@ namespace OpcUaWebServer
 
 		// create header
 		ResponseHeader responseHeader(requestHeader);
+		responseHeader.statusCode() = Success;
 		responseHeader.jsonEncode(pt);
 
 		// create body
@@ -352,6 +370,7 @@ namespace OpcUaWebServer
 
 		// create header
 		ResponseHeader responseHeader(requestHeader);
+		responseHeader.statusCode() = statusCode;
 		responseHeader.jsonEncode(pt);
 
 		// create json message
