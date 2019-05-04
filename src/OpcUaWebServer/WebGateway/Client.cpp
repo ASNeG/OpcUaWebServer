@@ -245,7 +245,46 @@ namespace OpcUaWebServer
 		// create attribute service if not exist
 		if (!initAttributeService(messageResponseCallback)) return;
 
-		// FIXME: todo
+		// decode write request from web socket
+		auto trx = constructSPtr<ServiceTransactionWrite>();
+		auto req = trx->request();
+		if (!req->jsonDecode(requestBody)) {
+			Log(Error, "decode write request error")
+				.parameter("Id", id_);
+			boost::property_tree::ptree responseBody;
+			messageResponseCallback(BadInvalidArgument, responseBody);
+			return;
+		}
+		if (req->writeValueArray()->size() == 0) {
+			Log(Error, "decode write request error")
+				.parameter("Id", id_);
+			boost::property_tree::ptree responseBody;
+			messageResponseCallback(BadInvalidArgument, responseBody);
+			return;
+		}
+
+		// send write request to opc ua server
+		trx->resultHandler(
+			[this, messageResponseCallback](ServiceTransactionWrite::SPtr& trx) {
+				boost::property_tree::ptree responseBody;
+
+				// check status code
+				if (trx->statusCode() != Success) {
+					messageResponseCallback(trx->statusCode(), responseBody);
+					return;
+				}
+
+				// encode request response
+				auto res = trx->response();
+				if (!res->jsonEncode(responseBody)) {
+					messageResponseCallback(BadDeviceFailure, responseBody);
+					return;
+				}
+
+				messageResponseCallback(Success, responseBody);
+			}
+		);
+		attributeService_->asyncSend(trx);
 	}
 
 }
