@@ -60,6 +60,10 @@ namespace OpcUaWebServer
 			boost::property_tree::ptree& requestBody,
 			const LogoutResponseCallback& logoutResponseCallback
 		);
+
+		//
+		// attribute service functions
+		//
 		void read(
 			boost::property_tree::ptree& requestBody,
 			const MessageResponseCallback& messageResponseCallback
@@ -68,10 +72,10 @@ namespace OpcUaWebServer
 			boost::property_tree::ptree& requestBody,
 			const MessageResponseCallback& messageResponseCallback
 		);
-
-		//
-		// attribute service functions
-		//
+		void historyRead(
+			boost::property_tree::ptree& requestBody,
+			const MessageResponseCallback& messageResponseCallback
+		);
 
 	  private:
 		bool initAttributeService(const MessageResponseCallback& messageResponseCallback);

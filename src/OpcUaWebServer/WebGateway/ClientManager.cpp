@@ -260,6 +260,9 @@ namespace OpcUaWebServer
 		else if (requestHeader.messageType() == "GW_WriteRequest") {
 			client->write(requestBody, messageResponseCallback);
 		}
+		else if (requestHeader.messageType() == "GW_HistoryReadRequest") {
+			client->historyRead(requestBody, messageResponseCallback);
+		}
 		else {
 			sendErrorResponse(channelId, requestHeader, BadServiceUnsupported);
 		}

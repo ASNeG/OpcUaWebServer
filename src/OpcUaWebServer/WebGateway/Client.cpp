@@ -287,4 +287,51 @@ namespace OpcUaWebServer
 		attributeService_->asyncSend(trx);
 	}
 
+	void
+	Client::historyRead(
+		boost::property_tree::ptree& requestBody,
+		const MessageResponseCallback& messageResponseCallback
+	)
+	{
+		Log(Debug, "receive history read request")
+			.parameter("Id", id_);
+
+		// create attribute service if not exist
+		if (!initAttributeService(messageResponseCallback)) return;
+
+		// decode history read request from web socket
+		auto trx = constructSPtr<ServiceTransactionHistoryRead>();
+		auto req = trx->request();
+		if (!req->jsonDecode(requestBody)) {
+			Log(Error, "decode history read request error")
+				.parameter("Id", id_);
+			boost::property_tree::ptree responseBody;
+			messageResponseCallback(BadInvalidArgument, responseBody);
+			return;
+		}
+
+		// send write request to opc ua server
+		trx->resultHandler(
+			[this, messageResponseCallback](ServiceTransactionHistoryRead::SPtr& trx) {
+				boost::property_tree::ptree responseBody;
+
+				// check status code
+				if (trx->statusCode() != Success) {
+					messageResponseCallback(trx->statusCode(), responseBody);
+					return;
+				}
+
+				// encode request response
+				auto res = trx->response();
+				if (!res->jsonEncode(responseBody)) {
+					messageResponseCallback(BadDeviceFailure, responseBody);
+					return;
+				}
+
+				messageResponseCallback(Success, responseBody);
+			}
+		);
+		attributeService_->asyncSend(trx);
+	}
+
 }
