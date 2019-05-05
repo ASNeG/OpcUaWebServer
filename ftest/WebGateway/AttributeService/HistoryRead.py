@@ -93,6 +93,9 @@ c.checkEqual(res['Header']['MessageType'], "GW_HistoryReadResponse")
 c.checkEqual(res['Header']['ClientHandle'], "client-handle")
 c.checkEqual(res['Header']['SessionId'], sessionId)
 c.checkEqual(res['Header']['StatusCode'], "Success")
+c.checkEqual(len(res['Body']['Results']), 1)
+c.checkEqual(len(res['Body']['Results'][0]['HistoryData']['Body']['DataValues']), 10)
+c.checkEqual(res['Body']['Results'][0]['StatusCode'], "Success")
 
 
 #
