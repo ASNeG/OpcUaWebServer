@@ -37,6 +37,7 @@ namespace OpcUaWebServer
 	, cryptoManager_()
 	, sessionService_()
 	, attributeService_()
+	, methodService_()
 	{
 	}
 
@@ -332,6 +333,77 @@ namespace OpcUaWebServer
 			}
 		);
 		attributeService_->asyncSend(trx);
+	}
+
+	// ------------------------------------------------------------------------
+	// ------------------------------------------------------------------------
+	//
+	// method service
+	//
+	// ------------------------------------------------------------------------
+	// ------------------------------------------------------------------------
+	bool
+	Client::initMethodService(const MessageResponseCallback& messageResponseCallback)
+	{
+		if (!methodService_) {
+			MethodServiceConfig methodServiceConfig;
+			methodService_ = serviceSetManager_.methodService(sessionService_, methodServiceConfig);
+			if (!methodService_) {
+				Log(Error, "method service error")
+					.parameter("Id", id_);
+				boost::property_tree::ptree responseBody;
+				messageResponseCallback(BadResourceUnavailable, responseBody);
+				return false;
+			}
+		}
+		return true;
+	}
+
+	void
+	Client::call(
+		boost::property_tree::ptree& requestBody,
+		const MessageResponseCallback& messageResponseCallback
+	)
+	{
+		Log(Debug, "receive call request")
+				.parameter("Id", id_);
+
+		// create method service if not exist
+		if (!initMethodService(messageResponseCallback)) return;
+
+		// decode method request from web socket
+		auto trx = constructSPtr<ServiceTransactionCall>();
+		auto req = trx->request();
+		if (!req->jsonDecode(requestBody)) {
+			Log(Error, "decode call request error")
+				.parameter("Id", id_);
+			boost::property_tree::ptree responseBody;
+			messageResponseCallback(BadInvalidArgument, responseBody);
+			return;
+		}
+
+		// send write request to opc ua server
+		trx->resultHandler(
+			[this, messageResponseCallback](ServiceTransactionCall::SPtr& trx) {
+				boost::property_tree::ptree responseBody;
+
+				// check status code
+				if (trx->statusCode() != Success) {
+					messageResponseCallback(trx->statusCode(), responseBody);
+					return;
+				}
+
+				// encode call response
+				auto res = trx->response();
+				if (!res->jsonEncode(responseBody)) {
+					messageResponseCallback(BadDeviceFailure, responseBody);
+					return;
+				}
+
+				messageResponseCallback(Success, responseBody);
+			}
+		);
+		methodService_->asyncSend(trx);
 	}
 
 }

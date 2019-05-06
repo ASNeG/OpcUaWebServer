@@ -77,8 +77,17 @@ namespace OpcUaWebServer
 			const MessageResponseCallback& messageResponseCallback
 		);
 
+		//
+		// method service
+		//
+		void call(
+			boost::property_tree::ptree& requestBody,
+			const MessageResponseCallback& messageResponseCallback
+		);
+
 	  private:
 		bool initAttributeService(const MessageResponseCallback& messageResponseCallback);
+		bool initMethodService(const MessageResponseCallback& messageResponseCallback);
 
 		static uint32_t gId_;
 		uint32_t id_;
@@ -91,6 +100,7 @@ namespace OpcUaWebServer
 		ServiceSetManager serviceSetManager_;
 		SessionService::SPtr sessionService_;
 		AttributeService::SPtr attributeService_;
+		MethodService::SPtr methodService_;
 	};
 
 }

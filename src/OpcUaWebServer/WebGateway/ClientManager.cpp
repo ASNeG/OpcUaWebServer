@@ -254,6 +254,10 @@ namespace OpcUaWebServer
 				sendResponse(channelId, requestHeader, responseBody);
 			}
 		};
+
+		//
+		// attribute service
+		//
 		if (requestHeader.messageType() == "GW_ReadRequest") {
 			client->read(requestBody, messageResponseCallback);
 		}
@@ -263,6 +267,17 @@ namespace OpcUaWebServer
 		else if (requestHeader.messageType() == "GW_HistoryReadRequest") {
 			client->historyRead(requestBody, messageResponseCallback);
 		}
+
+		//
+		// method service
+		//
+		else if (requestHeader.messageType() == "GW_CallRequest") {
+			client->call(requestBody, messageResponseCallback);
+		}
+
+		//
+		// error
+		//
 		else {
 			sendErrorResponse(channelId, requestHeader, BadServiceUnsupported);
 		}
