@@ -24,6 +24,7 @@
 #include "OpcUaWebServer/WebGateway/ResponseHeader.h"
 #include "OpcUaWebServer/WebGateway/SessionStatusNotify.h"
 #include "OpcUaWebServer/WebGateway/SubscriptionStatusNotify.h"
+#include "OpcUaWebServer/WebGateway/DataChangeNotify.h"
 
 using namespace OpcUaStackCore;
 
@@ -198,11 +199,23 @@ namespace OpcUaWebServer
 
 			boost::property_tree::ptree notifyBody;
 			subscriptionStatusNotify.jsonEncode(notifyBody);
-			sendNotify(channelId, notifyHeader, notifyBody);
+			//sendNotify(channelId, notifyHeader, notifyBody);
 		};
 		client->subscriptionStatusCallback(subscriptionStatusCallback);
 
 		// register data change callback
+		auto dataChangeCallback = [this, channelId, clientHandle, sessionId](uint32_t clientHandleData, const OpcUaDataValue& dataValue) {
+			NotifyHeader notifyHeader("GW_DataChangeNotify", clientHandle, sessionId);
+
+			DataChangeNotify dataChangeNotify;
+			dataChangeNotify.clientHandle() = clientHandleData;
+			dataChangeNotify.dataValue() = dataValue;
+
+			boost::property_tree::ptree notifyBody;
+			dataChangeNotify.jsonEncode(notifyBody);
+			sendNotify(channelId, notifyHeader, notifyBody);
+		};
+		client->dataChangeCallback(dataChangeCallback);
 
 		// added client to manager map
 		auto it = clientMap_.insert(std::make_pair(sessionId, client));

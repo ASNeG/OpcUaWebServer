@@ -19,6 +19,9 @@
 #define __OpcUaWebServer_DataChangeNotify_h__
 
 #include <boost/property_tree/ptree.hpp>
+#include "OpcUaStackCore/BuildInTypes/OpcUaDataValue.h"
+
+using namespace OpcUaStackCore;
 
 namespace OpcUaWebServer
 {
@@ -29,15 +32,15 @@ namespace OpcUaWebServer
 		DataChangeNotify(void);
 		virtual ~DataChangeNotify(void);
 
-		uint32_t& subscriptionId(void);
-		std::string& subscriptionStatus(void);
+		uint32_t& clientHandle(void);
+		OpcUaDataValue& dataValue(void);
 
 		bool jsonEncode(boost::property_tree::ptree& pt);
 		bool jsonDecode(boost::property_tree::ptree& pt);
 
 	  private:
-		uint32_t subscriptionId_;
-		std::string subscriptionStatus_;
+		uint32_t clientHandle_;
+		OpcUaDataValue dataValue_;
 	};
 
 }
