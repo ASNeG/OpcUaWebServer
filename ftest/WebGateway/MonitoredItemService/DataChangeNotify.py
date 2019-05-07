@@ -95,11 +95,12 @@ req = {
             {
                 "ItemToMonitor" : {
                     "NodeId" : {
-                        "Id" : "2258"
+                        "Namespace" : "3",
+                        "Id" : "218"
                     }
                 },
                 "RequestedParameters" : {
-                    "ClientHandle" : "4711",
+                    "ClientHandle" : "4712",
                     "SamplingInterval" : "1000"
                 }
             }
@@ -129,14 +130,15 @@ monitoredItemId = res['Body']['Results'][0]['MonitoredItemId']
 #
 # receive data change request
 #
-str = ws. recv()
-print("RECV: ", str)
-res = json.loads(str)
-c.checkEqual(res['Header']['MessageType'], "GW_DataChangeNotify")
-c.checkEqual(res['Header']['ClientHandle'], "client-handle")
-c.checkEqual(res['Header']['SessionId'], sessionId)
-c.checkEqual(res['Body']['ClientHandleData'], "4711")
-c.checkEqual(res['Body']['Value']['Status'], "Success")
+for i in range(1, 5):
+    str = ws. recv()
+    print("RECV: ", str)
+    res = json.loads(str)
+    c.checkEqual(res['Header']['MessageType'], "GW_DataChangeNotify")
+    c.checkEqual(res['Header']['ClientHandle'], "client-handle")
+    c.checkEqual(res['Header']['SessionId'], sessionId)
+    c.checkEqual(res['Body']['ClientHandleData'], "4712")
+    c.checkEqual(res['Body']['Value']['Status'], "Success")
 
 
 #
