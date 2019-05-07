@@ -21,7 +21,7 @@ req = {
          "DiscoveryUrl" : "opc.tcp://127.0.0.1:8889"
      }
 }
-print("SEND: ", req)
+print("SEND: ", json.dumps(req, indent = 4))
 ws.send(json.dumps(req)) 
 
 str = ws. recv()
@@ -59,7 +59,7 @@ req = {
     }
 
 }
-print("SEND: ", req)
+print("SEND: ", json.dumps(req, indent = 4))
 ws.send(json.dumps(req)) 
 
 
@@ -94,7 +94,7 @@ req = {
     }
 
 }
-print("SEND: ", req)
+print("SEND: ", json.dumps(req, indent = 4))
 ws.send(json.dumps(req)) 
 
 
@@ -124,7 +124,7 @@ req = {
     }
 
 }
-print("SEND: ", req)
+print("SEND: ", json.dumps(req, indent = 4))
 ws.send(json.dumps(req)) 
 
 str = ws. recv()
@@ -134,8 +134,6 @@ c.checkEqual(res['Header']['MessageType'], "GW_LogoutResponse")
 c.checkEqual(res['Header']['ClientHandle'], "client-handle")
 c.checkEqual(res['Header']['SessionId'], sessionId)
 c.checkEqual(res['Header']['StatusCode'], "Success")
-
-
 
 
 #
