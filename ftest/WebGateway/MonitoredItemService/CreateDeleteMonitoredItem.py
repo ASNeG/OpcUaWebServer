@@ -81,6 +81,84 @@ subscriptionId = res['Body']['SubscriptionId']
 
 
 #
+# send create monitored items request
+#
+req = {
+    "Header" : {
+        "MessageType" : "GW_CreateMonitoredItemsRequest",
+        "ClientHandle" : "client-handle",
+        "SessionId" : sessionId
+    },
+    "Body" : {
+	"SubscriptionId" : subscriptionId,
+        "ItemsToCreate" : [
+            {
+                "ItemToMonitor" : {
+                    "NodeId" : {
+                        "Id" : "2258"
+                    }
+                },
+                "RequestedParameters" : {
+                    "ClientHandle" : "4711",
+                    "SamplingInterval" : "1000"
+                }
+            }
+	]
+    }
+
+}
+print("SEND: ", req)
+ws.send(json.dumps(req)) 
+
+
+#
+# receive monitored create items response
+#
+str = ws. recv()
+print("RECV: ", str)
+res = json.loads(str)
+c.checkEqual(res['Header']['MessageType'], "GW_CreateMonitoredItemsResponse")
+c.checkEqual(res['Header']['ClientHandle'], "client-handle")
+c.checkEqual(res['Header']['SessionId'], sessionId)
+c.checkEqual(res['Header']['StatusCode'], "Success")
+c.checkEqual(res['Body']['Results'][0]['StatusCode'], "Success")
+c.checkExists(res['Body']['Results'][0]['MonitoredItemId'])
+monitoredItemId = res['Body']['Results'][0]['MonitoredItemId']
+
+
+#
+# send delete monitored items request
+#
+req = {
+    "Header" : {
+        "MessageType" : "GW_DeleteMonitoredItemsRequest",
+        "ClientHandle" : "client-handle",
+        "SessionId" : sessionId
+    },
+    "Body" : {
+	"SubscriptionId" : subscriptionId,
+        "MonitoredItemIds" : [ monitoredItemId ]
+    }
+
+}
+print("SEND: ", req)
+ws.send(json.dumps(req)) 
+
+
+#
+# receive delete monitored items response
+#
+str = ws. recv()
+print("RECV: ", str)
+res = json.loads(str)
+c.checkEqual(res['Header']['MessageType'], "GW_DeleteMonitoredItemsResponse")
+c.checkEqual(res['Header']['ClientHandle'], "client-handle")
+c.checkEqual(res['Header']['SessionId'], sessionId)
+c.checkEqual(res['Header']['StatusCode'], "Success")
+c.checkEqual(res['Body']['Results'][0], "Success")
+
+
+#
 # send delete subscriptions request to the opc ua server
 #
 req = {
@@ -108,13 +186,7 @@ c.checkEqual(res['Header']['MessageType'], "GW_DeleteSubscriptionsResponse")
 c.checkEqual(res['Header']['ClientHandle'], "client-handle")
 c.checkEqual(res['Header']['SessionId'], sessionId)
 c.checkEqual(res['Header']['StatusCode'], "Success")
-c.checkExists(res['Body']['SubscriptionId'])
-c.checkExists(res['Body']['RevisedPublishingInterval'])
-c.checkExists(res['Body']['RevisedLifetimeCount'])
-c.checkExists(res['Body']['RevisedMaxKeepAliveCount'])
-
-
-
+c.checkEqual(res['Body']['Results'][0], "Success")
 
 
 #

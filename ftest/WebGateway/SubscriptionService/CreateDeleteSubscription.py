@@ -108,13 +108,7 @@ c.checkEqual(res['Header']['MessageType'], "GW_DeleteSubscriptionsResponse")
 c.checkEqual(res['Header']['ClientHandle'], "client-handle")
 c.checkEqual(res['Header']['SessionId'], sessionId)
 c.checkEqual(res['Header']['StatusCode'], "Success")
-c.checkExists(res['Body']['SubscriptionId'])
-c.checkExists(res['Body']['RevisedPublishingInterval'])
-c.checkExists(res['Body']['RevisedLifetimeCount'])
-c.checkExists(res['Body']['RevisedMaxKeepAliveCount'])
-
-
-
+c.checkEqual(res['Body']['Results'][0], "Success")
 
 
 #
