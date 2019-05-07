@@ -276,6 +276,13 @@ namespace OpcUaWebServer
 		}
 
 		//
+		// subscription service
+		//
+		else if (requestHeader.messageType() == "GW_CreateSubscriptionRequest") {
+			client->createSubscription(requestBody, messageResponseCallback);
+		}
+
+		//
 		// error
 		//
 		else {

@@ -38,6 +38,7 @@ namespace OpcUaWebServer
 	, sessionService_()
 	, attributeService_()
 	, methodService_()
+	, subscriptionService_()
 	{
 	}
 
@@ -404,6 +405,77 @@ namespace OpcUaWebServer
 			}
 		);
 		methodService_->asyncSend(trx);
+	}
+
+	// ------------------------------------------------------------------------
+	// ------------------------------------------------------------------------
+	//
+	// subscription service
+	//
+	// ------------------------------------------------------------------------
+	// ------------------------------------------------------------------------
+	bool
+	Client::initSubscriptionService(const MessageResponseCallback& messageResponseCallback)
+	{
+		if (!subscriptionService_) {
+			SubscriptionServiceConfig subscriptionServiceConfig;
+			subscriptionService_ = serviceSetManager_.subscriptionService(sessionService_, subscriptionServiceConfig);
+			if (!subscriptionService_) {
+				Log(Error, "subscription service error")
+					.parameter("Id", id_);
+				boost::property_tree::ptree responseBody;
+				messageResponseCallback(BadResourceUnavailable, responseBody);
+				return false;
+			}
+		}
+		return true;
+	}
+
+	void
+	Client::createSubscription(
+		boost::property_tree::ptree& requestBody,
+		const MessageResponseCallback& messageResponseCallback
+	)
+	{
+		Log(Debug, "receive create subscription request")
+				.parameter("Id", id_);
+
+		// create subscription service if not exist
+		if (!initSubscriptionService(messageResponseCallback)) return;
+
+		// decode create subscription request from web socket
+		auto trx = constructSPtr<ServiceTransactionCreateSubscription>();
+		auto req = trx->request();
+		if (!req->jsonDecode(requestBody)) {
+			Log(Error, "decode create subscription request error")
+				.parameter("Id", id_);
+			boost::property_tree::ptree responseBody;
+			messageResponseCallback(BadInvalidArgument, responseBody);
+			return;
+		}
+
+		// send write request to opc ua server
+		trx->resultHandler(
+			[this, messageResponseCallback](ServiceTransactionCreateSubscription::SPtr& trx) {
+				boost::property_tree::ptree responseBody;
+
+				// check status code
+				if (trx->statusCode() != Success) {
+					messageResponseCallback(trx->statusCode(), responseBody);
+					return;
+				}
+
+				// encode call response
+				auto res = trx->response();
+				if (!res->jsonEncode(responseBody)) {
+					messageResponseCallback(BadDeviceFailure, responseBody);
+					return;
+				}
+
+				messageResponseCallback(Success, responseBody);
+			}
+		);
+		subscriptionService_->asyncSend(trx);
 	}
 
 }
