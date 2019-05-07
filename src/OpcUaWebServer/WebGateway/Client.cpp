@@ -563,7 +563,7 @@ namespace OpcUaWebServer
 		// create monitored item service if not exist
 		if (!initMonitoredItemService(messageResponseCallback)) return;
 
-		// decode delete subscriptions request from web socket
+		// decode create monitored items request from web socket
 		auto trx = constructSPtr<ServiceTransactionCreateMonitoredItems>();
 		auto req = trx->request();
 		if (!req->jsonDecode(requestBody)) {
@@ -595,7 +595,54 @@ namespace OpcUaWebServer
 				messageResponseCallback(Success, responseBody);
 			}
 		);
-		subscriptionService_->asyncSend(trx);
+		monitoredItemService_->asyncSend(trx);
+	}
+
+	void
+	Client::deleteMonitoredItems(
+		boost::property_tree::ptree& requestBody,
+		const MessageResponseCallback& messageResponseCallback
+	)
+	{
+		Log(Debug, "receive delete monitored items request")
+				.parameter("Id", id_);
+
+		// create monitored item service if not exist
+		if (!initMonitoredItemService(messageResponseCallback)) return;
+
+		// decode delete monitored itmes request from web socket
+		auto trx = constructSPtr<ServiceTransactionDeleteMonitoredItems>();
+		auto req = trx->request();
+		if (!req->jsonDecode(requestBody)) {
+			Log(Error, "decode delete monitored items request error")
+				.parameter("Id", id_);
+			boost::property_tree::ptree responseBody;
+			messageResponseCallback(BadInvalidArgument, responseBody);
+			return;
+		}
+
+		// send delete monitored items request to opc ua server
+		trx->resultHandler(
+			[this, messageResponseCallback](ServiceTransactionDeleteMonitoredItems::SPtr& trx) {
+				boost::property_tree::ptree responseBody;
+
+				// check status code
+				if (trx->statusCode() != Success) {
+					messageResponseCallback(trx->statusCode(), responseBody);
+					return;
+				}
+
+				// encode call response
+				auto res = trx->response();
+				if (!res->jsonEncode(responseBody)) {
+					messageResponseCallback(BadDeviceFailure, responseBody);
+					return;
+				}
+
+				messageResponseCallback(Success, responseBody);
+			}
+		);
+		monitoredItemService_->asyncSend(trx);
 	}
 
 }

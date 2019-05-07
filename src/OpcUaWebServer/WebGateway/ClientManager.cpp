@@ -291,6 +291,9 @@ namespace OpcUaWebServer
 		else if (requestHeader.messageType() == "GW_CreateMonitoredItemsRequest") {
 			client->createMonitoredItems(requestBody, messageResponseCallback);
 		}
+		else if (requestHeader.messageType() == "GW_DeleteMonitoredItemsRequest") {
+			client->deleteMonitoredItems(requestBody, messageResponseCallback);
+		}
 
 		//
 		// error

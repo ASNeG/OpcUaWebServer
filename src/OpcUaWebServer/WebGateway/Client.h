@@ -104,6 +104,10 @@ namespace OpcUaWebServer
 			boost::property_tree::ptree& requestBody,
 			const MessageResponseCallback& messageResponseCallback
 		);
+		void deleteMonitoredItems(
+			boost::property_tree::ptree& requestBody,
+			const MessageResponseCallback& messageResponseCallback
+		);
 
 	  private:
 		bool initAttributeService(const MessageResponseCallback& messageResponseCallback);
