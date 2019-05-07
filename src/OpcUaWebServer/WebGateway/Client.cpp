@@ -32,6 +32,8 @@ namespace OpcUaWebServer
 	: id_(++gId_)
 	, sessionStatusCallback_()
 	, logoutResponseCallback_()
+	, subscriptionStatusCallback_()
+	, dataChangeCallback_()
 	, serviceSetManager_()
 	, ioThread_()
 	, cryptoManager_()
@@ -419,7 +421,33 @@ namespace OpcUaWebServer
 	Client::initSubscriptionService(const MessageResponseCallback& messageResponseCallback)
 	{
 		if (!subscriptionService_) {
+
+			auto dataChangeHandler = [this](const MonitoredItemNotification::SPtr& monitoredItem) {
+				if (dataChangeCallback_) {
+					dataChangeCallback_(
+						monitoredItem->clientHandle(),
+						monitoredItem->value()
+					);
+				}
+			};
+
+			auto subscriptionStateHandler = [this](SubscriptionState subscriptionState, uint32_t subscriptionId) {
+				std::string state = "Unknown";
+				if (subscriptionState == SubscriptionState::SS_Open) {
+					state = "Open";
+				}
+				else if (subscriptionState == SubscriptionState::SS_Close) {
+					state = "Close";
+				}
+
+				if (subscriptionStatusCallback_) {
+					subscriptionStatusCallback_(subscriptionId, state);
+				}
+			};
+
 			SubscriptionServiceConfig subscriptionServiceConfig;
+			subscriptionServiceConfig.dataChangeNotificationHandler_ = dataChangeHandler;
+			subscriptionServiceConfig.subscriptionStateUpdateHandler_ = subscriptionStateHandler;
 			subscriptionService_ = serviceSetManager_.subscriptionService(sessionService_, subscriptionServiceConfig);
 			if (!subscriptionService_) {
 				Log(Error, "subscription service error")
@@ -430,6 +458,22 @@ namespace OpcUaWebServer
 			}
 		}
 		return true;
+	}
+
+	void
+	Client::subscriptionStatusCallback(
+	    const SubscriptionStatusCallback& subscriptionStatusCallback
+	)
+	{
+		subscriptionStatusCallback_ = subscriptionStatusCallback;
+	}
+
+	void
+	Client::dataChangeCallback(
+		const DataChangeCallback dataChangeCallback
+	)
+	{
+		dataChangeCallback_ = dataChangeCallback;
 	}
 
 	void

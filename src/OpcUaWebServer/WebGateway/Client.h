@@ -38,6 +38,8 @@ namespace OpcUaWebServer
 		typedef std::map<std::string, Client::SPtr> Map;
 
 		typedef std::function<void (const std::string& sessionStatus)> SessionStatusCallback;
+		typedef std::function<void (uint32_t subscriptionId, const std::string& subscriptionStatus)> SubscriptionStatusCallback;
+		typedef std::function<void (uint32_t clientHandle, const OpcUaDataValue& dataValue)> DataChangeCallback;
 		typedef std::function<void (OpcUaStatusCode statusCode, boost::property_tree::ptree& responseBody)> LogoutResponseCallback;
 		typedef std::function<void (OpcUaStatusCode statusCode, boost::property_tree::ptree& responseBody)> MessageResponseCallback;
 
@@ -88,6 +90,12 @@ namespace OpcUaWebServer
 		//
 		// subscription service
 		//
+		void subscriptionStatusCallback(
+		    const SubscriptionStatusCallback& subscriptionStatusCallback
+		);
+		void dataChangeCallback(
+			const DataChangeCallback dataChangeCallback
+		);
 		void createSubscription(
 			boost::property_tree::ptree& requestBody,
 			const MessageResponseCallback& messageResponseCallback
@@ -119,6 +127,8 @@ namespace OpcUaWebServer
 		uint32_t id_;
 
 		SessionStatusCallback sessionStatusCallback_;
+		SubscriptionStatusCallback subscriptionStatusCallback_;
+		DataChangeCallback dataChangeCallback_;
 		LogoutResponseCallback logoutResponseCallback_;
 
 		IOThread::SPtr ioThread_;

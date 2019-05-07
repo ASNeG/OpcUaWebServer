@@ -15,6 +15,7 @@
    Autor: Kai Huebl (kai@huebl-sgh.de)
  */
 
+#include <typeinfo>
 #include <boost/property_tree/ptree.hpp>
 #include <boost/property_tree/json_parser.hpp>
 #include <boost/make_shared.hpp>
@@ -22,13 +23,12 @@
 #include "OpcUaWebServer/WebGateway/ClientManager.h"
 #include "OpcUaWebServer/WebGateway/ResponseHeader.h"
 #include "OpcUaWebServer/WebGateway/SessionStatusNotify.h"
+#include "OpcUaWebServer/WebGateway/SubscriptionStatusNotify.h"
 
 using namespace OpcUaStackCore;
 
 namespace OpcUaWebServer
 {
-
-
 
 	ClientManager::ClientManager(void)
 	: sendMessageCallback_()
@@ -169,8 +169,6 @@ namespace OpcUaWebServer
 		client->cryptoManager(cryptoManager_);
 		auto sessionId = client->id();
 
-		// create new opc ua client session
-
 		auto sessionStatusCallback = [this, channelId, clientHandle, sessionId](const std::string& sessionStatus) {
 			NotifyHeader notifyHeader("GW_SessionStatusNotify", clientHandle, sessionId);
 
@@ -182,12 +180,29 @@ namespace OpcUaWebServer
 			sendNotify(channelId, notifyHeader, notifyBody);
 		};
 
+		// create new opc ua client session
 		boost::property_tree::ptree responseBody;
 		auto statusCode = client->login(requestBody, responseBody, sessionStatusCallback);
 		if (statusCode != Success) {
 			sendErrorResponse(channelId, requestHeader, statusCode);
 			return;
 		}
+
+		// register subscription status callback
+		auto subscriptionStatusCallback = [this, channelId, clientHandle, sessionId](uint32_t subscriptionId, const std::string& subscriptionStatus) {
+			NotifyHeader notifyHeader("GW_SubscriptionStatusNotify", clientHandle, sessionId);
+
+			SubscriptionStatusNotify subscriptionStatusNotify;
+			subscriptionStatusNotify.subscriptionId() = subscriptionId;
+			subscriptionStatusNotify.subscriptionStatus() = subscriptionStatus;
+
+			boost::property_tree::ptree notifyBody;
+			subscriptionStatusNotify.jsonEncode(notifyBody);
+			sendNotify(channelId, notifyHeader, notifyBody);
+		};
+		client->subscriptionStatusCallback(subscriptionStatusCallback);
+
+		// register data change callback
 
 		// added client to manager map
 		auto it = clientMap_.insert(std::make_pair(sessionId, client));
