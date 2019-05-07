@@ -97,10 +97,19 @@ namespace OpcUaWebServer
 			const MessageResponseCallback& messageResponseCallback
 		);
 
+		//
+		// monitored item service
+		//
+		void createMonitoredItems(
+			boost::property_tree::ptree& requestBody,
+			const MessageResponseCallback& messageResponseCallback
+		);
+
 	  private:
 		bool initAttributeService(const MessageResponseCallback& messageResponseCallback);
 		bool initMethodService(const MessageResponseCallback& messageResponseCallback);
 		bool initSubscriptionService(const MessageResponseCallback& messageResponseCallback);
+		bool initMonitoredItemService(const MessageResponseCallback& messageResponseCallback);
 
 		static uint32_t gId_;
 		uint32_t id_;
@@ -115,6 +124,7 @@ namespace OpcUaWebServer
 		AttributeService::SPtr attributeService_;
 		MethodService::SPtr methodService_;
 		SubscriptionService::SPtr subscriptionService_;
+		MonitoredItemService::SPtr monitoredItemService_;
 	};
 
 }

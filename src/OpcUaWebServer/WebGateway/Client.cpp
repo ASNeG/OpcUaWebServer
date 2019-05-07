@@ -39,6 +39,7 @@ namespace OpcUaWebServer
 	, attributeService_()
 	, methodService_()
 	, subscriptionService_()
+	, monitoredItemService_()
 	{
 	}
 
@@ -504,6 +505,78 @@ namespace OpcUaWebServer
 		// send delete subscriptions request to opc ua server
 		trx->resultHandler(
 			[this, messageResponseCallback](ServiceTransactionDeleteSubscriptions::SPtr& trx) {
+				boost::property_tree::ptree responseBody;
+
+				// check status code
+				if (trx->statusCode() != Success) {
+					messageResponseCallback(trx->statusCode(), responseBody);
+					return;
+				}
+
+				// encode call response
+				auto res = trx->response();
+				if (!res->jsonEncode(responseBody)) {
+					messageResponseCallback(BadDeviceFailure, responseBody);
+					return;
+				}
+
+				messageResponseCallback(Success, responseBody);
+			}
+		);
+		subscriptionService_->asyncSend(trx);
+	}
+
+
+	// ------------------------------------------------------------------------
+	// ------------------------------------------------------------------------
+	//
+	// monitored item service
+	//
+	// ------------------------------------------------------------------------
+	// ------------------------------------------------------------------------
+	bool
+	Client::initMonitoredItemService(const MessageResponseCallback& messageResponseCallback)
+	{
+		if (!monitoredItemService_) {
+			MonitoredItemServiceConfig monitoredItemServiceConfig;
+			monitoredItemService_ = serviceSetManager_.monitoredItemService(sessionService_, monitoredItemServiceConfig);
+			if (!monitoredItemService_) {
+				Log(Error, "monitored item service error")
+					.parameter("Id", id_);
+				boost::property_tree::ptree responseBody;
+				messageResponseCallback(BadResourceUnavailable, responseBody);
+				return false;
+			}
+		}
+		return true;
+	}
+
+	void
+	Client::createMonitoredItems(
+		boost::property_tree::ptree& requestBody,
+		const MessageResponseCallback& messageResponseCallback
+	)
+	{
+		Log(Debug, "receive create monitored items request")
+				.parameter("Id", id_);
+
+		// create monitored item service if not exist
+		if (!initMonitoredItemService(messageResponseCallback)) return;
+
+		// decode delete subscriptions request from web socket
+		auto trx = constructSPtr<ServiceTransactionCreateMonitoredItems>();
+		auto req = trx->request();
+		if (!req->jsonDecode(requestBody)) {
+			Log(Error, "decode create monitored items request error")
+				.parameter("Id", id_);
+			boost::property_tree::ptree responseBody;
+			messageResponseCallback(BadInvalidArgument, responseBody);
+			return;
+		}
+
+		// send create monitored items request to opc ua server
+		trx->resultHandler(
+			[this, messageResponseCallback](ServiceTransactionCreateMonitoredItems::SPtr& trx) {
 				boost::property_tree::ptree responseBody;
 
 				// check status code

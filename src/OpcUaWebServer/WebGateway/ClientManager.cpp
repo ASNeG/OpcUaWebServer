@@ -286,6 +286,13 @@ namespace OpcUaWebServer
 		}
 
 		//
+		// monitored item service
+		//
+		else if (requestHeader.messageType() == "GW_CreateMonitoredItemsRequest") {
+			client->createMonitoredItems(requestBody, messageResponseCallback);
+		}
+
+		//
 		// error
 		//
 		else {
