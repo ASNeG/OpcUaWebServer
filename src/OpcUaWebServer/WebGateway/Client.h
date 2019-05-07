@@ -92,6 +92,10 @@ namespace OpcUaWebServer
 			boost::property_tree::ptree& requestBody,
 			const MessageResponseCallback& messageResponseCallback
 		);
+		void deleteSubscriptions(
+			boost::property_tree::ptree& requestBody,
+			const MessageResponseCallback& messageResponseCallback
+		);
 
 	  private:
 		bool initAttributeService(const MessageResponseCallback& messageResponseCallback);
