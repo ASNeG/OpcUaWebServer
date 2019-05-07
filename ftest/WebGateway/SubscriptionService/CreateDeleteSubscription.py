@@ -77,6 +77,44 @@ c.checkExists(res['Body']['SubscriptionId'])
 c.checkExists(res['Body']['RevisedPublishingInterval'])
 c.checkExists(res['Body']['RevisedLifetimeCount'])
 c.checkExists(res['Body']['RevisedMaxKeepAliveCount'])
+subscriptionId = res['Body']['SubscriptionId']
+
+
+#
+# send delete subscriptions request to the opc ua server
+#
+req = {
+    "Header" : {
+        "MessageType" : "GW_DeleteSubscriptionsRequest",
+        "ClientHandle" : "client-handle",
+        "SessionId" : sessionId
+    },
+    "Body" : {
+        "SubscriptionIds" : [ subscriptionId ]
+    }
+
+}
+print("SEND: ", req)
+ws.send(json.dumps(req)) 
+
+
+#
+# receive delete subscriptions response from the opc ua server
+#
+str = ws. recv()
+print("RECV: ", str)
+res = json.loads(str)
+c.checkEqual(res['Header']['MessageType'], "GW_DeleteSubscriptionsResponse")
+c.checkEqual(res['Header']['ClientHandle'], "client-handle")
+c.checkEqual(res['Header']['SessionId'], sessionId)
+c.checkEqual(res['Header']['StatusCode'], "Success")
+c.checkExists(res['Body']['SubscriptionId'])
+c.checkExists(res['Body']['RevisedPublishingInterval'])
+c.checkExists(res['Body']['RevisedLifetimeCount'])
+c.checkExists(res['Body']['RevisedMaxKeepAliveCount'])
+
+
+
 
 
 #
