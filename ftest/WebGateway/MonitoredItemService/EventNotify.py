@@ -115,7 +115,49 @@ req = {
                                     "AttributeId" : "13",
                                     "IndexRange" : "",
                                     "BrowsePath" : [ { "Name" : "EventId" } ]
+                                },
+                                {
+                                    "TypeDefinitionId" : { "Id" : "2041" },
+                                    "AttributeId" : "13",
+                                    "IndexRange" : "",
+                                    "BrowsePath" : [ { "Name" : "EventType" } ]
+                                },
+                                {
+                                    "TypeDefinitionId" : { "Id" : "2041" },
+                                    "AttributeId" : "13",
+                                    "IndexRange" : "",
+                                    "BrowsePath" : [ { "Name" : "SourceName" } ]
+                                },
+                                {
+                                    "TypeDefinitionId" : { "Id" : "2041" },
+                                    "AttributeId" : "13",
+                                    "IndexRange" : "",
+                                    "BrowsePath" : [ { "Name" : "Time" } ]
+                                },
+                                {
+                                    "TypeDefinitionId" : { "Id" : "2041" },
+                                    "AttributeId" : "13",
+                                    "IndexRange" : "",
+                                    "BrowsePath" : [ { "Name" : "Message" } ]
+                                },
+                                {
+                                    "TypeDefinitionId" : { "Id" : "2041" },
+                                    "AttributeId" : "13",
+                                    "IndexRange" : "",
+                                    "BrowsePath" : [ { "Name" : "Severity" } ]
                                 }
+                                #{
+                                #    "TypeDefinitionId" : { "Id" : "2041" },
+                                #    "AttributeId" : "13",
+                                #    "IndexRange" : "",
+                                #    "BrowsePath" : [ { "Name" : "Prompt" } ]
+                                #}
+                                #{
+                                #    "TypeDefinitionId" : { "Id" : "2041" },
+                                #    "AttributeId" : "13",
+                                #    "IndexRange" : "",
+                                #    "BrowsePath" : [ { "Name" : "ResponseOptionSet" } ]
+                                #}
                             ],
                             "WhereClause" : {
                                 "Elements" : []
@@ -148,17 +190,16 @@ monitoredItemId = res['Body']['Results'][0]['MonitoredItemId']
 
 
 #
-# receive data change request
+# receive event notify
 #
 for i in range(1, 5):
     str = ws. recv()
     print("RECV: ", str)
     res = json.loads(str)
-    c.checkEqual(res['Header']['MessageType'], "GW_DataChangeNotify")
+    c.checkEqual(res['Header']['MessageType'], "GW_EventNotify")
     c.checkEqual(res['Header']['ClientHandle'], "client-handle")
     c.checkEqual(res['Header']['SessionId'], sessionId)
-    c.checkEqual(res['Body']['ClientHandleData'], "4712")
-    c.checkEqual(res['Body']['Value']['Status'], "Success")
+    c.checkEqual(res['Body']['ClientHandleData'], "4713")
 
 
 #
