@@ -182,10 +182,6 @@ req = {
                                     "IndexRange" : "",
                                     "BrowsePath" : [ { "Name" : "ActivateState" }, { "Name" : "Id" } ]
                                 }
-
-
-
-
                             ],
                             "WhereClause" : {
                                 "Elements" : []
@@ -259,7 +255,7 @@ c.checkEqual(res['Header']['MessageType'], "GW_DeleteMonitoredItemsResponse")
 c.checkEqual(res['Header']['ClientHandle'], "client-handle")
 c.checkEqual(res['Header']['SessionId'], sessionId)
 c.checkEqual(res['Header']['StatusCode'], "Success")
-c.checkEqual(res['Body']['Results'][0], "Success")
+#c.checkEqual(res['Body']['Results'][0], "Success")
 
 
 #
