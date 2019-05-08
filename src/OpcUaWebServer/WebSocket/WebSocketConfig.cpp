@@ -22,7 +22,8 @@ namespace OpcUaWebServer
 {
 
 	WebSocketConfig::WebSocketConfig(void)
-	: address_("0.0.0.0")
+	: enable_(true)
+	, address_("0.0.0.0")
 	, port_(8081)
 	, requestTimeout_(5000)
 	, idleTimeout_(60*60*1000)
@@ -32,6 +33,18 @@ namespace OpcUaWebServer
 
 	WebSocketConfig::~WebSocketConfig(void)
 	{
+	}
+
+	void
+	WebSocketConfig::enable(bool enable)
+	{
+		enable_ = enable;
+	}
+
+	bool
+	WebSocketConfig::enable(void)
+	{
+		return enable_;
 	}
 
 	void

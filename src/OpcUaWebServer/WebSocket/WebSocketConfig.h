@@ -33,6 +33,8 @@ namespace OpcUaWebServer
 		WebSocketConfig(void);
 		virtual ~WebSocketConfig(void);
 
+		void enable(bool enable);
+		bool enable(void);
 		void address(const std::string& address);
 		std::string& address(void);
 		void port(uint32_t port);
@@ -45,6 +47,7 @@ namespace OpcUaWebServer
 		IOThread::SPtr& ioThread(void);
 
 	  private:
+		bool enable_;
 		std::string address_;
 		uint32_t port_;
 		uint32_t requestTimeout_;

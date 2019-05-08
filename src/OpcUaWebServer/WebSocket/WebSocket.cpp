@@ -46,6 +46,10 @@ namespace OpcUaWebServer
 			return false;
 		}
 
+		if (!webSocketConfig_.enable()) {
+			return true;
+		}
+
 		webSocketConfig_.ioThread(ioThread);
 
 		webSocketServer_ = constructSPtr<WebSocketServer>(&webSocketConfig_);
@@ -60,6 +64,10 @@ namespace OpcUaWebServer
 	bool
 	WebSocket::shutdown(void)
 	{
+		if (!webSocketConfig_.enable()) {
+			return true;
+		}
+
 		return true;
 	}
 
@@ -67,6 +75,12 @@ namespace OpcUaWebServer
 	WebSocket::getWebSocketConfig(Config* config)
 	{
 		bool success;
+
+		// check enable flag
+		if (config->exist("OpcUaWebServerModel.WebSocketServer.<xmlattr>.Disable")) {
+			webSocketConfig_.enable(false);
+			return true;
+		}
 
 		// read ip address
 		std::string address;
