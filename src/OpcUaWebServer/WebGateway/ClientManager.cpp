@@ -25,6 +25,7 @@
 #include "OpcUaWebServer/WebGateway/SessionStatusNotify.h"
 #include "OpcUaWebServer/WebGateway/SubscriptionStatusNotify.h"
 #include "OpcUaWebServer/WebGateway/DataChangeNotify.h"
+#include "OpcUaWebServer/WebGateway/EventNotify.h"
 
 using namespace OpcUaStackCore;
 
@@ -218,18 +219,16 @@ namespace OpcUaWebServer
 		client->dataChangeCallback(dataChangeCallback);
 
 		// register event change callback
-		auto eventCallback = [this, channelId, clientHandle, sessionId](uint32_t clientHandleData, const OpcUaVariantArray& variants) {
+		auto eventCallback = [this, channelId, clientHandle, sessionId](uint32_t clientHandleEvent, const OpcUaVariantArray& event) {
 			NotifyHeader notifyHeader("GW_EventNotify", clientHandle, sessionId);
 
-#if 0
 			EventNotify eventNotify;
-			eventNotify.clientHandle() = clientHandleData;
-			eventNotify.variants() = variants;
+			eventNotify.clientHandle() = clientHandleEvent;
+			eventNotify.event() = event;
 
 			boost::property_tree::ptree notifyBody;
 			eventNotify.jsonEncode(notifyBody);
 			sendNotify(channelId, notifyHeader, notifyBody);
-#endif
 		};
 		client->eventCallback(eventCallback);
 

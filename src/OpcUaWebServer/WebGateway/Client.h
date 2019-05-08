@@ -41,7 +41,7 @@ namespace OpcUaWebServer
 		typedef std::function<void (const std::string& sessionStatus)> SessionStatusCallback;
 		typedef std::function<void (uint32_t subscriptionId, const std::string& subscriptionStatus)> SubscriptionStatusCallback;
 		typedef std::function<void (uint32_t clientHandle, const OpcUaDataValue& dataValue)> DataChangeCallback;
-		typedef std::function<void (uint32_t clientHandle, const OpcUaVariantArray& variants)> EventCallback;
+		typedef std::function<void (uint32_t clientHandle, const OpcUaVariantArray& event)> EventCallback;
 		typedef std::function<void (OpcUaStatusCode statusCode, boost::property_tree::ptree& responseBody)> LogoutResponseCallback;
 		typedef std::function<void (OpcUaStatusCode statusCode, boost::property_tree::ptree& responseBody)> MessageResponseCallback;
 
