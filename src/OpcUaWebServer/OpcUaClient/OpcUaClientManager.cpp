@@ -35,7 +35,8 @@ namespace OpcUaWebServer
 {
 
 	OpcUaClientManager::OpcUaClientManager(void)
-	: config_(nullptr)
+	: enable_(true)
+	, config_(nullptr)
 	, opcUaClientManagerIf_(nullptr)
 	, opcUaClientConfigMap_()
 	, opcUaClientMap_()
@@ -62,6 +63,11 @@ namespace OpcUaWebServer
 		cryptoManager_ = cryptoManager;
 
 		if (!readClientConfig()) return false;
+
+		if (!enable_) {
+			return true;
+		}
+
 		if (!startupClient()) return false;
 
 		return true;
@@ -70,6 +76,10 @@ namespace OpcUaWebServer
 	bool
 	OpcUaClientManager::shutdown(void)
 	{
+		if (!enable_) {
+			return true;
+		}
+
 		return true;
 	}
 
@@ -461,6 +471,12 @@ namespace OpcUaWebServer
 	bool
 	OpcUaClientManager::readClientConfig(void)
 	{
+		// check diable flag
+		if (config_->exist("OpcUaWebServerModel.OpcUaClient.<xmlattr>.Disable")) {
+			enable_ = false;
+			return true;
+		}
+
 		// read client files from configuration
 		std::vector<std::string> clientConfigFileVec;
 		config_->getValues("OpcUaWebServerModel.OpcUaClient.ClientConfigFile", clientConfigFileVec);

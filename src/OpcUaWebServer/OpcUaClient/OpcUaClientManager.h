@@ -64,6 +64,8 @@ namespace OpcUaWebServer
 		bool readClientConfig(void);
 		bool startupClient(void);
 
+		bool enable_;
+
 		Config* config_;
 		IOThread::SPtr ioThread_;
 		CryptoManager::SPtr cryptoManager_;
