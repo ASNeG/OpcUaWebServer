@@ -217,6 +217,22 @@ namespace OpcUaWebServer
 		};
 		client->dataChangeCallback(dataChangeCallback);
 
+		// register event change callback
+		auto eventCallback = [this, channelId, clientHandle, sessionId](uint32_t clientHandleData, const OpcUaVariantArray& variants) {
+			NotifyHeader notifyHeader("GW_EventNotify", clientHandle, sessionId);
+
+#if 0
+			EventNotify eventNotify;
+			eventNotify.clientHandle() = clientHandleData;
+			eventNotify.variants() = variants;
+
+			boost::property_tree::ptree notifyBody;
+			eventNotify.jsonEncode(notifyBody);
+			sendNotify(channelId, notifyHeader, notifyBody);
+#endif
+		};
+		client->eventCallback(eventCallback);
+
 		// added client to manager map
 		auto it = clientMap_.insert(std::make_pair(sessionId, client));
 		if (!it.second) {

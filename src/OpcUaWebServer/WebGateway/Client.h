@@ -23,6 +23,7 @@
 #include <map>
 #include "OpcUaStackCore/Utility/IOThread.h"
 #include "OpcUaStackCore/Certificate/CryptoManager.h"
+#include "OpcUaStackCore/StandardDataTypes/EventFieldList.h"
 #include "OpcUaStackClient/ServiceSet/ServiceSetManager.h"
 
 using namespace OpcUaStackCore;
@@ -40,6 +41,7 @@ namespace OpcUaWebServer
 		typedef std::function<void (const std::string& sessionStatus)> SessionStatusCallback;
 		typedef std::function<void (uint32_t subscriptionId, const std::string& subscriptionStatus)> SubscriptionStatusCallback;
 		typedef std::function<void (uint32_t clientHandle, const OpcUaDataValue& dataValue)> DataChangeCallback;
+		typedef std::function<void (uint32_t clientHandle, const OpcUaVariantArray& variants)> EventCallback;
 		typedef std::function<void (OpcUaStatusCode statusCode, boost::property_tree::ptree& responseBody)> LogoutResponseCallback;
 		typedef std::function<void (OpcUaStatusCode statusCode, boost::property_tree::ptree& responseBody)> MessageResponseCallback;
 
@@ -96,6 +98,9 @@ namespace OpcUaWebServer
 		void dataChangeCallback(
 			const DataChangeCallback dataChangeCallback
 		);
+		void eventCallback(
+			const EventCallback eventCallback
+		);
 		void createSubscription(
 			boost::property_tree::ptree& requestBody,
 			const MessageResponseCallback& messageResponseCallback
@@ -129,6 +134,7 @@ namespace OpcUaWebServer
 		SessionStatusCallback sessionStatusCallback_;
 		SubscriptionStatusCallback subscriptionStatusCallback_;
 		DataChangeCallback dataChangeCallback_;
+		EventCallback eventCallback_;
 		LogoutResponseCallback logoutResponseCallback_;
 
 		IOThread::SPtr ioThread_;

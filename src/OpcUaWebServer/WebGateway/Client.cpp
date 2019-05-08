@@ -1,5 +1,5 @@
 /*
-   Copyright 2015 Kai Huebl (kai@huebl-sgh.de)
+   Copyright 2019 Kai Huebl (kai@huebl-sgh.de)
 
    Lizenziert gemäß Apache Licence Version 2.0 (die „Lizenz“); Nutzung dieser
    Datei nur in Übereinstimmung mit der Lizenz erlaubt.
@@ -34,6 +34,7 @@ namespace OpcUaWebServer
 	, logoutResponseCallback_()
 	, subscriptionStatusCallback_()
 	, dataChangeCallback_()
+	, eventCallback_()
 	, serviceSetManager_()
 	, ioThread_()
 	, cryptoManager_()
@@ -431,6 +432,15 @@ namespace OpcUaWebServer
 				}
 			};
 
+			auto eventHandler = [this](const EventFieldList::SPtr& eventFieldList) {
+				if (eventCallback_) {
+					eventCallback_(
+						eventFieldList->clientHandle(),
+						eventFieldList->eventFields()
+					);
+				}
+			};
+
 			auto subscriptionStateHandler = [this](SubscriptionState subscriptionState, uint32_t subscriptionId) {
 				std::string state = "Unknown";
 				if (subscriptionState == SubscriptionState::SS_Open) {
@@ -474,6 +484,14 @@ namespace OpcUaWebServer
 	)
 	{
 		dataChangeCallback_ = dataChangeCallback;
+	}
+
+	void
+	Client::eventCallback(
+		const EventCallback eventCallback
+	)
+	{
+		eventCallback_ = eventCallback;
 	}
 
 	void
