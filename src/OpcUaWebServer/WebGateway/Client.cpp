@@ -457,6 +457,7 @@ namespace OpcUaWebServer
 
 			SubscriptionServiceConfig subscriptionServiceConfig;
 			subscriptionServiceConfig.dataChangeNotificationHandler_ = dataChangeHandler;
+			subscriptionServiceConfig.eventNotificationHandler_ = eventHandler;
 			subscriptionServiceConfig.subscriptionStateUpdateHandler_ = subscriptionStateHandler;
 			subscriptionService_ = serviceSetManager_.subscriptionService(sessionService_, subscriptionServiceConfig);
 			if (!subscriptionService_) {

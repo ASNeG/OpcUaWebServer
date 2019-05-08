@@ -85,7 +85,6 @@ namespace OpcUaWebServer
 
 		// get Disable flag
 		if (config->exist("OpcUaWebServerModel.HttpServer.<xmlattr>.Disable")) {
-			std::cout << "XXXXXXXXXXXXXXXXXXXXXXXXX" << std::endl;
 			httpConfig_.enable(false);
 			return true;
 		}
