@@ -145,19 +145,47 @@ req = {
                                     "AttributeId" : "13",
                                     "IndexRange" : "",
                                     "BrowsePath" : [ { "Name" : "Severity" } ]
+                                },
+                                {
+                                    "TypeDefinitionId" : { "Id" : "2041" },
+                                    "AttributeId" : "13",
+                                    "IndexRange" : "",
+                                    "BrowsePath" : [ { "Name" : "Prompt" } ]
+                                },
+                                {
+                                    "TypeDefinitionId" : { "Id" : "2041" },
+                                    "AttributeId" : "13",
+                                    "IndexRange" : "",
+                                    "BrowsePath" : [ { "Name" : "ResponseOptionSet" } ]
+                                },
+                                {
+                                    "TypeDefinitionId" : { "Id" : "2041" },
+                                    "AttributeId" : "13",
+                                    "IndexRange" : "",
+                                    "BrowsePath" : [ { "Name" : "Value" } ]
+                                },
+                                {
+                                    "TypeDefinitionId" : { "Id" : "2041" },
+                                    "AttributeId" : "13",
+                                    "IndexRange" : "",
+                                    "BrowsePath" : [ { "Name" : "Id" } ]
+                                },
+                                {
+                                    "TypeDefinitionId" : { "Id" : "2041" },
+                                    "AttributeId" : "13",
+                                    "IndexRange" : "",
+                                    "BrowsePath" : [ { "Name" : "AvtivateState" } ]
+                                },
+                                {
+                                    "TypeDefinitionId" : { "Id" : "2041" },
+                                    "AttributeId" : "13",
+                                    "IndexRange" : "",
+                                    "BrowsePath" : [ { "Name" : "ActivateState" }, { "Name" : "Id" } ]
                                 }
-                                #{
-                                #    "TypeDefinitionId" : { "Id" : "2041" },
-                                #    "AttributeId" : "13",
-                                #    "IndexRange" : "",
-                                #    "BrowsePath" : [ { "Name" : "Prompt" } ]
-                                #}
-                                #{
-                                #    "TypeDefinitionId" : { "Id" : "2041" },
-                                #    "AttributeId" : "13",
-                                #    "IndexRange" : "",
-                                #    "BrowsePath" : [ { "Name" : "ResponseOptionSet" } ]
-                                #}
+
+
+
+
                             ],
                             "WhereClause" : {
                                 "Elements" : []
