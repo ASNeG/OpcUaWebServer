@@ -17,7 +17,7 @@
 
 <OpcUaWebServerModel>
   
-  <HttpServer>
+  <HttpServer Disable>
   	<Address>0.0.0.0</Address>
   	<Port>8080</Addreess>
   	<WebDirectory>@CONF_DIR@/../../../var/www/OpcUaWebServer</WebDirectory>
@@ -32,19 +32,19 @@
   		
   </HttpServer>
   	
-  <WebSocketServer>
+  <WebSocketServer Disable>
   	<Address>0.0.0.0</Address>
   	<Port>8081</Addreess>
   	<RequestTimeout>5000</RequestTimeout>
   	<IdleTimeout>3600000</IdleTimeout>
   </WebSocketServer>
   	
-  <OpcUaClient>
+  <OpcUaClient Disable>
   	<ClientConfigFile>@CONF_DIR@/OpcUaClient0.xml</ClientConfigFile>
   	<ClientConfigFile>@CONF_DIR@/OpcUaClient1.xml</ClientConfigFile>
   </OpcUaClient>
   
-  <WebGateway>
+  <WebGateway Disable>
     <Address>0.0.0.0</Address>
   	<Port>8082</Addreess>
   </WebGateway>

@@ -22,12 +22,25 @@ namespace OpcUaWebServer
 {
 
 	HttpConfig::HttpConfig(void)
-	: address_("0.0.0.0")
+	: enable_(true)
+	, address_("0.0.0.0")
 	, port_(8080)
 	, ioThread_()
 	, webDirectory_("")
 	, requestTimeout_(5000)
 	{
+	}
+
+	void
+	HttpConfig::enable(bool enable)
+	{
+		enable_ = enable;
+	}
+
+	bool
+	HttpConfig::enable(void)
+	{
+		return enable_;
 	}
 
 	HttpConfig::~HttpConfig(void)

@@ -46,6 +46,10 @@ namespace OpcUaWebServer
 		if (!getHttpConfig(config)) return false;
 		if (!getIPLoggerConfig(config)) return false;
 
+		if (!httpConfig_.enable()) {
+			return true;
+		}
+
 		httpConfig_.ioThread(ioThread_);
 
 		httpContent_ = constructSPtr<HttpContent>();
@@ -62,6 +66,10 @@ namespace OpcUaWebServer
 	bool
 	WebServer::shutdown(void)
 	{
+		if (!httpConfig_.enable()) {
+			return true;
+		}
+
 		httpServer_->shutdown();
 		httpServer_.reset();
 
@@ -74,6 +82,13 @@ namespace OpcUaWebServer
 	WebServer::getHttpConfig(Config* config)
 	{
 		bool success;
+
+		// get Disable flag
+		if (config->exist("OpcUaWebServerModel.HttpServer.<xmlattr>.Disable")) {
+			std::cout << "XXXXXXXXXXXXXXXXXXXXXXXXX" << std::endl;
+			httpConfig_.enable(false);
+			return true;
+		}
 
 		// read ip address
 		std::string address;

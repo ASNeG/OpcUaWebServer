@@ -33,6 +33,9 @@ namespace OpcUaWebServer
 		HttpConfig(void);
 		virtual ~HttpConfig(void);
 
+		void enable(bool enable);
+		bool enable(void);
+
 		void address(const std::string& address);
 		std::string& address(void);
 		void port(uint32_t port);
@@ -54,6 +57,8 @@ namespace OpcUaWebServer
 		uint32_t maxIPAge(void);
 
 	  private:
+		bool enable_;
+
 		// http channel configuration
 		std::string address_;
 		uint32_t port_;
