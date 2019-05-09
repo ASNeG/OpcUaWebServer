@@ -31,6 +31,12 @@ run in the root directory of the sources:
 
   $ sh build.sh -t local -s ~/.ASNeG
 
+Now the OpcUaWebServer can be started.
+
+::
+  
+  $ OpcUaServer4 ~/.ASNeG/etc/OpcUaStack/OpcUaWebServer/OpcUaServer.xml
+
 
 **Windows**
 

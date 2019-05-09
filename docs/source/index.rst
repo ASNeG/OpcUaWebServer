@@ -3,7 +3,9 @@
 ASNeG OPC UA Web Server Documentation
 ============================================
 
-ASNeG OPC UA Web Server is an open source opc ua web server.
+ASNeG OPC UA Web Server is an open source opc ua web server. He  provides a simple way 
+to connect modern Web applications with the OPC UA technology. Any process data can be 
+displayed in realtime in Web applications using the ASNeG OPC UA Web Server. 
 
 Contents
 --------

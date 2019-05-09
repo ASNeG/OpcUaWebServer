@@ -17,7 +17,6 @@
 
 <OpcUaWebServerModel>
   
-  <!--
   <HttpServer>
   	<Address>0.0.0.0</Address>
   	<Port>8080</Addreess>
@@ -44,7 +43,6 @@
   	<ClientConfigFile>@CONF_DIR@/OpcUaClient0.xml</ClientConfigFile>
   	<ClientConfigFile>@CONF_DIR@/OpcUaClient1.xml</ClientConfigFile>
   </OpcUaClient>
-  -->
   
   <WebGateway>
     <Address>0.0.0.0</Address>
