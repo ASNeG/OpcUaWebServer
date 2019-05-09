@@ -20,8 +20,7 @@ The OpcUaWebServer contains the following components:
    :alt: OpcUaWebServer Components
    :align: center
 
-
-  **OpcUaWebServer components**
+   **OpcUaWebServer components**
 
 **HTTP Server** provides a simple interface for web pages. The provision of simple static web
 pages in HTML format does not require a separate web server for simple web applications with
