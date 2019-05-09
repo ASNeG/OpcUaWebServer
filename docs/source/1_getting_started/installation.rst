@@ -19,7 +19,16 @@ installation of the ASNeG Demo Server is optional.
 
 **Linux (Ubuntu or Debian)**
 
+To install the requirments, follow the instructions in the following documents.
 
+* `Installation OpcUaStack <https://opcuastack.readthedocs.io/en/release4/1_getting_started/installation.html>`_.
+* `Installation ASNeG Demo Server <https://asnegdemoserver.readthedocs.io/en/release4/1_getting_started/installation.html>`_. 
+
+The next stept is the compilation of the source code and its installation. You should 
+run in the root directory of the sources:
+
+::
+  $ sh buils.sh -t local -s ~/.ASneG
 
 
 **Windows**
@@ -47,13 +56,3 @@ Docker
 -----------
 
 todo
-
-References
----------------------------
-
-* `OpcUaStack installation`_
-* `ASNeG Demo Server installation`_
-
-
-.. _OpcUaStack installation: https://opcuastack.readthedocs.io/en/release4/1_getting_started/installation.html
-.. _ASNeG Demo Server installation: https://asnegdemoserver.readthedocs.io/en/release4/1_getting_started/installation.html
