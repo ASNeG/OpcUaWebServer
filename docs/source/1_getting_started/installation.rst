@@ -37,8 +37,16 @@ Now the OpcUaWebServer can be started.
   
   $ OpcUaServer4 ~/.ASNeG/etc/OpcUaStack/OpcUaWebServer/OpcUaServer.xml
 
+The OpcUaWebServer provides the following communication interfaces:
+
+* HTTP interface on port 8080
+* Web Socket Server on port 8081
+* Web Socket Gateway on port 8082
+
 
 **Windows**
+
+todo
 
 
 DEP Packages
