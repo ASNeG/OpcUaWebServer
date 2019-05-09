@@ -74,10 +74,8 @@ namespace OpcUaWebServer
 
 		// get policy id
 		auto policyId = pt.get_optional<std::string>("PolicyId");
-		if (!policyId) {
-			Log(Error, "LoginRequest decode error")
-				.parameter("Element", "PolicyId");
-			return false;
+		if (policyId) {
+			policyId_ = *policyId;
 		}
 
 		return true;
