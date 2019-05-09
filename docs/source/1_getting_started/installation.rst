@@ -28,7 +28,8 @@ The next stept is the compilation of the source code and its installation. You s
 run in the root directory of the sources:
 
 ::
-  $ sh buils.sh -t local -s ~/.ASneG
+
+  $ sh build.sh -t local -s ~/.ASNeG
 
 
 **Windows**
