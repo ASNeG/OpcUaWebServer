@@ -30,12 +30,14 @@ namespace OpcUaWebServer
 		virtual ~LoginRequest(void);
 
 		std::string& discoveryUrl(void);
+		std::string& policyId(void);
 
 		bool jsonEncode(boost::property_tree::ptree& pt);
 		bool jsonDecode(boost::property_tree::ptree& pt);
 
 	  private:
 		std::string discoveryUrl_;
+		std::string policyId_;
 	};
 
 }

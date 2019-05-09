@@ -96,6 +96,9 @@ namespace OpcUaWebServer
 		sessionServiceConfig.secureChannelClient_->discoveryUrl(loginRequest.discoveryUrl());
 		sessionServiceConfig.secureChannelClient_->cryptoManager(cryptoManager_);
 		sessionServiceConfig.session_->sessionName("WebGateway");
+		if (loginRequest.policyId() != "") {
+			sessionServiceConfig.session_->policyId(loginRequest.policyId());
+		}
 		sessionServiceConfig.sessionServiceChangeHandler_ =
 			[this] (SessionBase& session, SessionServiceStateId sessionState) {
 				if (sessionState == SessionServiceStateId::Established) {

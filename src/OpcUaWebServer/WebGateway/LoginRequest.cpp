@@ -25,11 +25,18 @@ namespace OpcUaWebServer
 
 	LoginRequest::LoginRequest(void)
 	: discoveryUrl_("")
+	, policyId_("")
 	{
 	}
 
 	LoginRequest::~LoginRequest(void)
 	{
+	}
+
+	std::string&
+	LoginRequest::policyId(void)
+	{
+		return policyId_;
 	}
 
 	std::string&
@@ -42,7 +49,14 @@ namespace OpcUaWebServer
 	bool
 	LoginRequest::jsonEncode(boost::property_tree::ptree& pt)
 	{
+		// set discovery url
 		pt.put("DiscoveryUrl", discoveryUrl_);
+
+		// set policy id
+		if (policyId_ != "") {
+			pt.put("PolicyId", policyId_);
+			return false;
+		}
 		return true;
 	}
 
@@ -50,12 +64,21 @@ namespace OpcUaWebServer
 	LoginRequest::jsonDecode(boost::property_tree::ptree& pt)
 	{
 		// get discovery url from json message
-		boost::optional<std::string> discoveryUrl = pt.get_optional<std::string>("DiscoveryUrl");
+		auto discoveryUrl = pt.get_optional<std::string>("DiscoveryUrl");
 		if (!discoveryUrl) {
-			Log(Error, "message body do not contain discovery url");
+			Log(Error, "LoginRequest decode error")
+				.parameter("Element", "DiscoveryUrl");
 			return false;
 		}
 		discoveryUrl_ = *discoveryUrl;
+
+		// get policy id
+		auto policyId = pt.get_optional<std::string>("PolicyId");
+		if (!policyId) {
+			Log(Error, "LoginRequest decode error")
+				.parameter("Element", "PolicyId");
+			return false;
+		}
 
 		return true;
 	}
