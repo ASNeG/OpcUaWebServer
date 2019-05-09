@@ -15,7 +15,7 @@ The OpcUaWebServer contains the following components:
 * Web Gateway 
 * OPC UA Client
 
-.. figure:: OpcUaWebServer.png
+.. figure:: opc_ua_web_server.png
    :scale: 100 %
    :alt: OpcUaWebServer Components
    :align: center
@@ -39,7 +39,8 @@ The Web Socket Gateway component is not decoupled from the opc ua server. All we
 packets are transferred from the Web Gateway to binary OPC UA packets and sent directly to the 
 assigned OPC UA server. A separate configuration for the Web Gateway is not necessary. As an advantage,
 all OPC UA service functions of a OPC UA server can be used directly from the web application. However,
-the JSON interface functions are a little bit complex than with the Web Socket Server model.   
+the JSON interface functions are a little bit complex than with the Web Socket Server model. The 
+use of the Web Gateway component is optional.   
 
 
 **OPC UA Client** is used for communikcation with one or more OPC UA servers.
