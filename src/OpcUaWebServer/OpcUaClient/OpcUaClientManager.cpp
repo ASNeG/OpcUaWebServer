@@ -472,7 +472,10 @@ namespace OpcUaWebServer
 	OpcUaClientManager::readClientConfig(void)
 	{
 		// check diable flag
-		if (config_->exist("OpcUaWebServerModel.OpcUaClient.<xmlattr>.Disable")) {
+		if (
+			!config_->exist("OpcUaWebServerModel.OpcUaClient") ||
+			config_->exist("OpcUaWebServerModel.OpcUaClient.<xmlattr>.Disable")
+		) {
 			enable_ = false;
 			return true;
 		}

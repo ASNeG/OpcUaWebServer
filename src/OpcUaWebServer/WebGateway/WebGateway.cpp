@@ -52,6 +52,10 @@ namespace OpcUaWebServer
 			return false;
 		}
 
+		if (!webGatewayConfig_.active()) {
+			return true;
+		}
+
 		//
 		// startup web socket server instance
 		//
@@ -92,6 +96,9 @@ namespace OpcUaWebServer
 	bool
 	WebGateway::shutdown(void)
 	{
+		if (!webGatewayConfig_.active()) {
+			return true;
+		}
 
 		// shutdown client manager
 		clientManager_.shutdown();
@@ -111,7 +118,9 @@ namespace OpcUaWebServer
 
 		// check if gateway configuration is exist in configuration file. If not, then
 		// the web gateway is diabled.
-		if (!config->exist("OpcUaWebServerModel.WebGateway")) {
+		if (!config->exist("OpcUaWebServerModel.WebGateway") ||
+			 config->exist("OpcUaWebServerModel.WebGateway.<xmlattr>.Disable")
+		) {
 			Log(Info, "web gateway is disabled");
 			webGatewayConfig_.active(false);
 			return true;

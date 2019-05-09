@@ -44,11 +44,12 @@ namespace OpcUaWebServer
 		ioThread_ = ioThread;
 
 		if (!getHttpConfig(config)) return false;
-		if (!getIPLoggerConfig(config)) return false;
 
 		if (!httpConfig_.enable()) {
 			return true;
 		}
+
+		if (!getIPLoggerConfig(config)) return false;
 
 		httpConfig_.ioThread(ioThread_);
 
@@ -84,7 +85,10 @@ namespace OpcUaWebServer
 		bool success;
 
 		// get Disable flag
-		if (config->exist("OpcUaWebServerModel.HttpServer.<xmlattr>.Disable")) {
+		if (
+			!config->exist("OpcUaWebServerModel.HttpServer") ||
+			config->exist("OpcUaWebServerModel.HttpServer.<xmlattr>.Disable")
+		) {
 			httpConfig_.enable(false);
 			return true;
 		}

@@ -77,7 +77,10 @@ namespace OpcUaWebServer
 		bool success;
 
 		// check enable flag
-		if (config->exist("OpcUaWebServerModel.WebSocketServer.<xmlattr>.Disable")) {
+		if (
+			!config->exist("OpcUaWebServerModel.WebSocketServer") ||
+			config->exist("OpcUaWebServerModel.WebSocketServer.<xmlattr>.Disable")
+		) {
 			webSocketConfig_.enable(false);
 			return true;
 		}
