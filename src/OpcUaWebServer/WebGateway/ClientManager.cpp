@@ -261,16 +261,18 @@ namespace OpcUaWebServer
 		auto client = it->second;
 
 		// logout
-		auto loginResponseCallback = [this, channelId, requestHeader](OpcUaStatusCode statusCode, boost::property_tree::ptree& responseBody) mutable {
+		auto logoutResponseCallback = [this, channelId, requestHeader](OpcUaStatusCode statusCode, boost::property_tree::ptree& responseBody) mutable {
 			if (statusCode != Success) {
 				sendErrorResponse(channelId, requestHeader, statusCode);
 			}
 			else {
-				// FIXME: delete the client from the client map
 				sendResponse(channelId, requestHeader, responseBody);
+
+				auto it = clientMap_.find(requestHeader.sessionId());
+				clientMap_.erase(it);
 			}
 		};
-		client->logout(requestBody, loginResponseCallback);
+		client->logout(requestBody, logoutResponseCallback);
 	}
 
 	void
