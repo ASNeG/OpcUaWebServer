@@ -16,7 +16,9 @@
 
  */
 
+#include <boost/make_shared.hpp>
 #include "OpcUaStackCore/Base/ConfigJson.h"
+#include "OpcUaStackCore/Base/Utility.h"
 #include "OpcUaWebServer/WebGateway/Client.h"
 #include "OpcUaWebServer/WebGateway/LoginRequest.h"
 #include "OpcUaWebServer/WebGateway/LogoutRequest.h"
@@ -90,14 +92,90 @@ namespace OpcUaWebServer
 				.parameter("Id", id_);
 			return BadInvalidArgument;
 		}
+		loginRequest.log("login request parameter");
 
 		// set secure channel configuration
 		SessionServiceConfig sessionServiceConfig;
 		sessionServiceConfig.secureChannelClient_->discoveryUrl(loginRequest.discoveryUrl());
 		sessionServiceConfig.secureChannelClient_->cryptoManager(cryptoManager_);
+		sessionServiceConfig.secureChannelClient_->securityMode(loginRequest.securityMode());
+		sessionServiceConfig.secureChannelClient_->securityPolicy(loginRequest.securityPolicy());
 		sessionServiceConfig.session_->sessionName("WebGateway");
-		if (loginRequest.policyId() != "") {
-			sessionServiceConfig.session_->policyId(loginRequest.policyId());
+		switch (loginRequest.userAuthentication().userAuthType())
+		{
+			case UserAuthType::Anonymous:
+			{
+				Log(Debug, "anonymous authentication");
+
+				sessionServiceConfig.session_->authenticationAnonymous(
+				    loginRequest.userAuthentication().getAttribute("PolicyId")
+				);
+				break;
+			}
+			case UserAuthType::UserName:
+			{
+				Log(Debug, "user name authentication");
+
+				sessionServiceConfig.session_->authenticationUserName(
+					loginRequest.userAuthentication().getAttribute("PolicyId"),
+					loginRequest.userAuthentication().getAttribute("UserName"),
+					loginRequest.userAuthentication().getAttribute("Password"),
+					loginRequest.userAuthentication().getAttribute("SecurityPolicyUri")
+				);
+				break;
+			}
+			case UserAuthType::X509:
+			{
+				Log(Debug, "X509 authentication");
+
+				// create certificate
+				auto certData = loginRequest.userAuthentication().getAttribute("Certificate");
+				Certificate::SPtr certificate = boost::make_shared<Certificate>();
+				MemoryBuffer certDataBuf(certData.length()/2);
+				hexStringToByteSequence(certData, (uint8_t*)certDataBuf.memBuf());
+				if (!certificate->fromDERBuf(certDataBuf)) {
+					Log(Error, "create certificate error")
+						.parameter("Id", id_);
+					return BadInvalidArgument;
+				}
+
+				// create private key
+				auto privateKeyData = loginRequest.userAuthentication().getAttribute("PrivateKey");
+				PrivateKey::SPtr privateKey = boost::make_shared<PrivateKey>();
+				MemoryBuffer privateKeyBuf(privateKeyData.length()/2);
+					hexStringToByteSequence(privateKeyData, (uint8_t*)privateKeyBuf.memBuf());
+					if (!certificate->fromDERBuf(privateKeyBuf)) {
+						Log(Error, "create private key error")
+							.parameter("Id", id_);
+						return BadInvalidArgument;
+					}
+
+				sessionServiceConfig.session_->authenticationX509(
+					loginRequest.userAuthentication().getAttribute("PolicyId"),
+					certificate,
+					privateKey,
+					loginRequest.userAuthentication().getAttribute("SecurityPolicyUri")
+				);
+				break;
+			}
+			case UserAuthType::Issued:
+			{
+				Log(Debug, "issued authentication");
+
+				sessionServiceConfig.session_->authenticationIssued(
+					loginRequest.userAuthentication().getAttribute("PolicyId"),
+					loginRequest.userAuthentication().getAttribute("TokenData"),
+					loginRequest.userAuthentication().getAttribute("SecurityPolicyUri")
+				);
+				break;
+			}
+			default:
+			{
+				Log(Error, "authentication type unknown")
+					.parameter("Id", id_)
+					.parameter("UserAuthType", (uint32_t)loginRequest.userAuthentication().userAuthType());
+				return BadInvalidArgument;
+			}
 		}
 		sessionServiceConfig.sessionServiceChangeHandler_ =
 			[this] (SessionBase& session, SessionServiceStateId sessionState) {
