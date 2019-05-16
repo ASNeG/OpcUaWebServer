@@ -87,6 +87,7 @@ namespace OpcUaWebServer
 		);
 
 		Client::Map clientMap_;
+		std::multimap<uint32_t, std::string> channelIdSessionIdMap_;
 
 		DisconnectChannelCallback disconnectChannelCallback_;
 		SendMessageCallback sendMessageCallback_;

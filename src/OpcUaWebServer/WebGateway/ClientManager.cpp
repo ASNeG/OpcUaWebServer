@@ -36,6 +36,7 @@ namespace OpcUaWebServer
 	: sendMessageCallback_()
 	, disconnectChannelCallback_()
 	, clientMap_()
+	, channelIdSessionIdMap_()
 	, ioThread_()
 	, cryptoManager_()
 	{
@@ -153,7 +154,30 @@ namespace OpcUaWebServer
 		boost::property_tree::ptree& body
 	)
 	{
-		// FIXME: todo
+		// remove all client sessions are assigned to the channel id
+		auto result = channelIdSessionIdMap_.equal_range(channelId);
+		for (auto it = result.first; it != result.second; it++) {
+
+			// find client
+			auto sessionId = it->second;
+			auto itc = clientMap_.find(sessionId);
+			if (itc == clientMap_.end()) {
+				sendErrorResponse(channelId, requestHeader, BadNotFound);
+				return;
+			}
+			auto client = itc->second;
+
+			// create request body
+			boost::property_tree::ptree requestBody;
+
+			// logout complete handler
+			auto logoutResponseCallback = [this, sessionId](OpcUaStatusCode statusCode, boost::property_tree::ptree& responseBody) mutable {
+				auto it = clientMap_.find(sessionId);
+				clientMap_.erase(it);
+			};
+
+			client->logout(requestBody, logoutResponseCallback);
+		}
 	}
 
 	void
@@ -240,6 +264,7 @@ namespace OpcUaWebServer
 			sendErrorResponse(channelId, requestHeader, BadInternalError);
 			return;
 		}
+		channelIdSessionIdMap_.insert(std::make_pair(channelId, sessionId));
 
 		// send login response
 		sendResponse(channelId, requestHeader, responseBody);
