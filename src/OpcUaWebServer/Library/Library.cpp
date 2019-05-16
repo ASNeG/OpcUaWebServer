@@ -108,10 +108,6 @@ namespace OpcUaWebServer
 	{
 		Log(Debug, "Library::shutdown");
 
-		if (!ioThread_->shutdown()) return false;
-		ioThread_.reset();
-		Log(Info, "shutdown io thread");
-
 		if (!opcUaClientManager_.shutdown()) return false;
 		Log(Info, "shutdown opc ua client manager");
 
@@ -126,6 +122,10 @@ namespace OpcUaWebServer
 
 		if (!webServer_.shutdown()) return false;
 		Log(Info, "shutdown web server");
+
+		if (!ioThread_->shutdown()) return false;
+		ioThread_.reset();
+		Log(Info, "shutdown io thread");
 
 		return true;
 	}

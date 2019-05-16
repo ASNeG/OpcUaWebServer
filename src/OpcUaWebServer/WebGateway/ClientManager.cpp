@@ -35,6 +35,7 @@ namespace OpcUaWebServer
 	ClientManager::ClientManager(void)
 	: sendMessageCallback_()
 	, disconnectChannelCallback_()
+	, shutdownCallback_()
 	, clientMap_()
 	, channelIdSessionIdMap_()
 	, ioThread_()
@@ -60,6 +61,36 @@ namespace OpcUaWebServer
 	bool
 	ClientManager::shutdown(void)
 	{
+		if (clientMap_.size() == 0) {
+			return true;
+		}
+
+		// we must close all opc ua client sessions
+		auto prom = std::promise<void>();
+		auto future = prom.get_future();
+		shutdownCallback_ = [this, &prom](void) {
+			if (clientMap_.size() == 0) {
+				prom.set_value();
+			}
+		};
+
+		// shutdown all opc ua client sessions
+		for (auto element : clientMap_) {
+			auto sessionId = element.first;
+			auto client = element.second;
+
+			// logout complete handler
+			auto logoutResponseCallback = [this, sessionId](OpcUaStatusCode statusCode, boost::property_tree::ptree& responseBody) mutable {
+				auto it = clientMap_.find(sessionId);
+				clientMap_.erase(it);
+				if (shutdownCallback_) shutdownCallback_();
+			};
+
+			boost::property_tree::ptree requestBody;
+			client->logout(requestBody, logoutResponseCallback);
+		}
+
+		future.wait();
 		return true;
 	}
 
@@ -154,30 +185,35 @@ namespace OpcUaWebServer
 		boost::property_tree::ptree& body
 	)
 	{
+		Log(Debug, "WSG receive channel close request")
+			.parameter("ChannelId", channelId);
+
 		// remove all client sessions are assigned to the channel id
 		auto result = channelIdSessionIdMap_.equal_range(channelId);
 		for (auto it = result.first; it != result.second; it++) {
 
 			// find client
-			auto sessionId = it->second;
+			std::string sessionId = it->second;
 			auto itc = clientMap_.find(sessionId);
 			if (itc == clientMap_.end()) {
-				sendErrorResponse(channelId, requestHeader, BadNotFound);
-				return;
+				continue;
 			}
 			auto client = itc->second;
 
-			// create request body
-			boost::property_tree::ptree requestBody;
-
 			// logout complete handler
-			auto logoutResponseCallback = [this, sessionId](OpcUaStatusCode statusCode, boost::property_tree::ptree& responseBody) mutable {
+			auto logoutResponseCallback = [this, channelId, sessionId](OpcUaStatusCode statusCode, boost::property_tree::ptree& responseBody) mutable {
+				Log(Debug, "WSG remove client session")
+					.parameter("ChannelId", channelId)
+					.parameter("SessionId", sessionId);
 				auto it = clientMap_.find(sessionId);
 				clientMap_.erase(it);
+				if (shutdownCallback_) shutdownCallback_();
 			};
 
+			boost::property_tree::ptree requestBody;
 			client->logout(requestBody, logoutResponseCallback);
 		}
+		channelIdSessionIdMap_.erase(channelId);
 	}
 
 	void
@@ -194,6 +230,10 @@ namespace OpcUaWebServer
 		client->ioThread(ioThread_);
 		client->cryptoManager(cryptoManager_);
 		auto sessionId = client->id();
+
+		Log(Debug, "WSG receive login request")
+			.parameter("ChannelId", channelId)
+			.parameter("SessionId", sessionId);
 
 		auto sessionStatusCallback = [this, channelId, clientHandle, sessionId](const std::string& sessionStatus) {
 			NotifyHeader notifyHeader("GW_SessionStatusNotify", clientHandle, sessionId);
@@ -277,6 +317,10 @@ namespace OpcUaWebServer
 		boost::property_tree::ptree& requestBody
 	)
 	{
+		Log(Debug, "WSG receive logout request")
+			.parameter("ChannelId", channelId)
+			.parameter("SessionId", requestHeader.sessionId());
+
 		// find client
 		auto it = clientMap_.find(requestHeader.sessionId());
 		if (it == clientMap_.end()) {
@@ -291,12 +335,29 @@ namespace OpcUaWebServer
 				sendErrorResponse(channelId, requestHeader, statusCode);
 			}
 			else {
+				Log(Debug, "WSG remove session")
+					.parameter("ChannelId", channelId)
+					.parameter("SessionId", requestHeader.sessionId());
+
 				sendResponse(channelId, requestHeader, responseBody);
 
 				auto it = clientMap_.find(requestHeader.sessionId());
-				clientMap_.erase(it);
+				if (it != clientMap_.end()) {
+					clientMap_.erase(it);
+				}
+
+				if (shutdownCallback_) shutdownCallback_();
 			}
 		};
+
+		// remove element from client sesssion map
+		auto result = channelIdSessionIdMap_.equal_range(channelId);
+		for (auto it = result.first; it != result.second; it++) {
+			if (it->second == requestHeader.sessionId()) {
+				channelIdSessionIdMap_.erase(it);
+			}
+		}
+
 		client->logout(requestBody, logoutResponseCallback);
 	}
 
@@ -307,6 +368,11 @@ namespace OpcUaWebServer
 		boost::property_tree::ptree& requestBody
 	)
 	{
+		Log(Debug, "WSG receive data request")
+			.parameter("ChannelId", channelId)
+			.parameter("SessionId", requestHeader.sessionId())
+			.parameter("Message", requestHeader.messageType());
+
 		// find client
 		auto it = clientMap_.find(requestHeader.sessionId());
 		if (it == clientMap_.end()) {
@@ -389,6 +455,11 @@ namespace OpcUaWebServer
 		responseHeader.statusCode() = Success;
 		responseHeader.jsonEncode(pt);
 
+		Log(Debug, "WSG send response")
+			.parameter("ChannelId", channelId)
+			.parameter("SessionId", responseHeader.sessionId())
+			.parameter("Message", responseHeader.messageType());
+
 		// create body
 		pt.add_child("Body", responseBody);
 
@@ -427,6 +498,11 @@ namespace OpcUaWebServer
 		boost::property_tree::ptree& notifyBody
 	)
 	{
+		Log(Debug, "WSG send notify")
+			.parameter("ChannelId", channelId)
+			.parameter("SessionId", notifyHeader.sessionId())
+			.parameter("Message", notifyHeader.messageType());
+
 		bool error = false;
 		std::string errorMessage;
 		boost::property_tree::ptree pt;
@@ -480,6 +556,12 @@ namespace OpcUaWebServer
 		ResponseHeader responseHeader(requestHeader);
 		responseHeader.statusCode() = statusCode;
 		responseHeader.jsonEncode(pt);
+
+		Log(Debug, "WSG send error response")
+			.parameter("ChannelId", channelId)
+			.parameter("SessionId", responseHeader.sessionId())
+			.parameter("Message", responseHeader.messageType())
+			.parameter("StatusCode", OpcUaStatusCodeMap::shortString(statusCode));
 
 		// create json message
 		std::stringstream msg;

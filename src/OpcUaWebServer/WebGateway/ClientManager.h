@@ -35,6 +35,7 @@ namespace OpcUaWebServer
 	  public:
 		typedef std::function<void (WebSocketMessage& webSocketMessag)> SendMessageCallback;
 		typedef std::function<void (uint32_t channelId)> DisconnectChannelCallback;
+		typedef std::function<void (void)> ShutdownCallback;
 
 		ClientManager(void);
 		virtual ~ClientManager(void);
@@ -89,8 +90,10 @@ namespace OpcUaWebServer
 		Client::Map clientMap_;
 		std::multimap<uint32_t, std::string> channelIdSessionIdMap_;
 
+
 		DisconnectChannelCallback disconnectChannelCallback_;
 		SendMessageCallback sendMessageCallback_;
+		ShutdownCallback shutdownCallback_;
 
 		IOThread::SPtr ioThread_;
 		CryptoManager::SPtr cryptoManager_;
