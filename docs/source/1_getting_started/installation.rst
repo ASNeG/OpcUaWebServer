@@ -35,6 +35,8 @@ Now the OpcUaWebServer can be started.
 
 ::
   
+  $ export PATH=$PATH:~/.ASNeG/usr/bin
+  $ export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:~/.ASNeG/usr/lib/
   $ OpcUaServer4 ~/.ASNeG/etc/OpcUaStack/OpcUaWebServer/OpcUaServer.xml
 
 The OpcUaWebServer provides the following communication interfaces:
