@@ -90,7 +90,9 @@ namespace OpcUaWebServer
 			client->logout(requestBody, logoutResponseCallback);
 		}
 
+		std::cout << "AA" << std::endl;
 		future.wait();
+		std::cout << "BB" << std::endl;
 		return true;
 	}
 

@@ -63,11 +63,12 @@ namespace OpcUaWebServer
 		}
 
 		// start web server components
+		Log(Info, "startup web server");
 		if (!webServer_.startup(&config, ioThread_)) {
 			return false;
 		}
-		Log(Info, "startup web server");
 
+		Log(Info, "startup web socket");
 		rc = webSocket_.startup(
 			&config,
 			ioThread_,
@@ -79,8 +80,8 @@ namespace OpcUaWebServer
 		if (!rc) {
 			return false;
 		}
-		Log(Info, "startup web socket");
 
+		Log(Info, "startup web gateway");
 		rc = webGateway_.startup(
 			&config, ioThread_,
 			cryptoManager()
@@ -88,17 +89,16 @@ namespace OpcUaWebServer
 		if (!rc) {
 			return false;
 		}
-		Log(Info, "startup web gateway");
 
+		Log(Info, "startup message server");
 		if (!messageServer_.startup(&config, this)) {
 			return false;
 		}
-		Log(Info, "startup message server");
 
+		Log(Info, "startup opc ua client manager");
 		if (!opcUaClientManager_.startup(&config, this, ioThread_, cryptoManager())) {
 			return false;
 		}
-		Log(Info, "startup opc ua client manager");
 
 		return true;
 	}
@@ -108,24 +108,24 @@ namespace OpcUaWebServer
 	{
 		Log(Debug, "Library::shutdown");
 
-		if (!opcUaClientManager_.shutdown()) return false;
 		Log(Info, "shutdown opc ua client manager");
+		if (!opcUaClientManager_.shutdown()) return false;
 
-		if (!messageServer_.shutdown()) return false;
 		Log(Info, "shutdown message server");
+		if (!messageServer_.shutdown()) return false;
 
-		if (!webGateway_.shutdown()) return false;
 		Log(Info, "shutdown web gateway");
+		if (!webGateway_.shutdown()) return false;
 
-		if (!webSocket_.shutdown()) return false;
 		Log(Info, "shutdown web socket");
+		if (!webSocket_.shutdown()) return false;
 
-		if (!webServer_.shutdown()) return false;
 		Log(Info, "shutdown web server");
+		if (!webServer_.shutdown()) return false;
 
+		Log(Info, "shutdown io thread");
 		if (!ioThread_->shutdown()) return false;
 		ioThread_.reset();
-		Log(Info, "shutdown io thread");
 
 		return true;
 	}
