@@ -9,9 +9,14 @@ NC='\033[0m'
 # read the list of all python test scripts
 #
 TEST_SCRIPTS=`find . -name \*.py | grep -v Python`
+LOOP=0
 
 if [ "$#" -eq 1 ]; then
-    TEST_SCRIPTS=$1
+    if [ "$1" == "loop" ]; then
+        LOOP=1
+    else
+        TEST_SCRIPTS=$1
+    fi
 fi
 
 echo "==============================================================="
@@ -29,22 +34,28 @@ RESULTS=()
 
 export PYTHONPATH=Python
 
-for i in ${TEST_SCRIPTS[@]}; do
-    SCRIPT=$i
+while [ true ]; do
+    for i in ${TEST_SCRIPTS[@]}; do
+        SCRIPT=$i
 
-    echo "run test script ${SCRIPT} ..."
-    python3 ${SCRIPT}
+        echo "run test script ${SCRIPT} ..."
+        python3 ${SCRIPT}
 
-    if [ $? -ne 0 ]; then
-        echo -e "${RED}test script ${SCRIPT}  failed${NC}"
-        TEST_SCRIPT_FAILED=$(( ${TEST_SCRIPT_FAILED} + 1 ))
-        RESULTS+=('FAILED')
-    else
-        echo -e "${GREEN}test script ${SCRIPT} success${NC}"
-        TEST_SCRIPT_SUCCESS=$(( ${TEST_SCRIPT_SUCCESS} + 1 ))
-        RESULTS+=('SUCCESS')
-    fi
+        if [ $? -ne 0 ]; then
+            echo -e "${RED}test script ${SCRIPT}  failed${NC}"
+            TEST_SCRIPT_FAILED=$(( ${TEST_SCRIPT_FAILED} + 1 ))
+            RESULTS+=('FAILED')
+        else
+            echo -e "${GREEN}test script ${SCRIPT} success${NC}"
+            TEST_SCRIPT_SUCCESS=$(( ${TEST_SCRIPT_SUCCESS} + 1 ))
+            RESULTS+=('SUCCESS')
+        fi
+     done
 
+     if [ $LOOP -ne 1 ]; 
+     then
+         break
+     fi
 done
 
 #
