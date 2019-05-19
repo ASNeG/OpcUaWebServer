@@ -137,7 +137,8 @@ namespace OpcUaWebServer
 		EventCallback eventCallback_;
 		LogoutResponseCallback logoutResponseCallback_;
 
-		IOThread::SPtr ioThread_;
+		std::string sessionName_;
+
 		CryptoManager::SPtr cryptoManager_;
 		ServiceSetManager serviceSetManager_;
 		SessionService::SPtr sessionService_;

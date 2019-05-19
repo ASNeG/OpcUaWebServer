@@ -57,25 +57,9 @@ namespace OpcUaWebServer
 		}
 
 		//
-		// startup web socket server instance
-		//
-		webSocketConfig_.address(webGatewayConfig_.address());
-		webSocketConfig_.port(webGatewayConfig_.port());
-		webSocketConfig_.ioThread(ioThread);
-
-		auto receiveMessageCallback = [this](WebSocketMessage& webSocketMessage) {
-			clientManager_.receiveMessage(webSocketMessage);
-		};
-
-		webSocketServer_ = constructSPtr<WebSocketServer>(&webSocketConfig_);
-		webSocketServer_->receiveMessageCallback(receiveMessageCallback);
-		if (!webSocketServer_->startup()) {
-			return false;
-		}
-
-		//
 		// startup client manager
 		//
+		Log(Debug, "client manager startup");
 		auto sendMessageCallback = [this](WebSocketMessage& webSocketMessage) {
 			webSocketServer_->sendMessage(webSocketMessage);
 		};
@@ -90,6 +74,24 @@ namespace OpcUaWebServer
 			return false;
 		}
 
+		//
+		// startup web socket server instance
+		//
+		Log(Debug, "web socket server startup");
+		webSocketConfig_.address(webGatewayConfig_.address());
+		webSocketConfig_.port(webGatewayConfig_.port());
+		webSocketConfig_.ioThread(ioThread);
+
+		auto receiveMessageCallback = [this](WebSocketMessage& webSocketMessage) {
+			clientManager_.receiveMessage(webSocketMessage);
+		};
+
+		webSocketServer_ = constructSPtr<WebSocketServer>(&webSocketConfig_);
+		webSocketServer_->receiveMessageCallback(receiveMessageCallback);
+		if (!webSocketServer_->startup()) {
+			return false;
+		}
+
 		return true;
 	}
 
@@ -100,13 +102,15 @@ namespace OpcUaWebServer
 			return true;
 		}
 
-		// shutdown client manager
-		clientManager_.shutdown();
-
 		// shutdown web socket server
+		Log(Debug, "web socket server shutdown");
 		if (webSocketServer_) {
 			webSocketServer_->shutdown();
 		}
+
+		// shutdown client manager
+		Log(Debug, "client manager shutdown");
+		clientManager_.shutdown();
 
 		return true;
 	}

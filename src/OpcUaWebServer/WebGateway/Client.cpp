@@ -38,14 +38,17 @@ namespace OpcUaWebServer
 	, dataChangeCallback_()
 	, eventCallback_()
 	, serviceSetManager_()
-	, ioThread_()
 	, cryptoManager_()
 	, sessionService_()
 	, attributeService_()
 	, methodService_()
 	, subscriptionService_()
 	, monitoredItemService_()
+	, sessionName_()
 	{
+		std::stringstream sessionName;
+		sessionName << "WebGateway-" << id_;
+		sessionName_ = sessionName.str();
 	}
 
 	Client::~Client(void)
@@ -58,13 +61,6 @@ namespace OpcUaWebServer
 		std::stringstream ss;
 		ss << id_;
 		return ss.str();
-	}
-
-
-	void
-	Client::ioThread(IOThread::SPtr& ioThread)
-	{
-		ioThread_ = ioThread;
 	}
 
 	void
@@ -100,7 +96,8 @@ namespace OpcUaWebServer
 		sessionServiceConfig.secureChannelClient_->cryptoManager(cryptoManager_);
 		sessionServiceConfig.secureChannelClient_->securityMode(loginRequest.securityMode());
 		sessionServiceConfig.secureChannelClient_->securityPolicy(loginRequest.securityPolicy());
-		sessionServiceConfig.session_->sessionName("WebGateway");
+		sessionServiceConfig.session_->sessionName(sessionName_);
+		sessionServiceConfig.ioThreadName(sessionName_);
 		switch (loginRequest.userAuthentication().userAuthType())
 		{
 			case UserAuthType::Anonymous:
@@ -254,6 +251,7 @@ namespace OpcUaWebServer
 	{
 		if (!attributeService_) {
 			AttributeServiceConfig attributeServiceConfig;
+			attributeServiceConfig.ioThreadName(sessionName_);
 			attributeService_ = serviceSetManager_.attributeService(sessionService_, attributeServiceConfig);
 			if (!attributeService_) {
 				Log(Error, "attribute service error")
@@ -433,6 +431,7 @@ namespace OpcUaWebServer
 	{
 		if (!methodService_) {
 			MethodServiceConfig methodServiceConfig;
+			methodServiceConfig.ioThreadName(sessionName_);
 			methodService_ = serviceSetManager_.methodService(sessionService_, methodServiceConfig);
 			if (!methodService_) {
 				Log(Error, "method service error")
@@ -537,6 +536,7 @@ namespace OpcUaWebServer
 			};
 
 			SubscriptionServiceConfig subscriptionServiceConfig;
+			subscriptionServiceConfig.ioThreadName(sessionName_);
 			subscriptionServiceConfig.dataChangeNotificationHandler_ = dataChangeHandler;
 			subscriptionServiceConfig.eventNotificationHandler_ = eventHandler;
 			subscriptionServiceConfig.subscriptionStateUpdateHandler_ = subscriptionStateHandler;
@@ -683,6 +683,7 @@ namespace OpcUaWebServer
 	{
 		if (!monitoredItemService_) {
 			MonitoredItemServiceConfig monitoredItemServiceConfig;
+			monitoredItemServiceConfig.ioThreadName(sessionName_);
 			monitoredItemService_ = serviceSetManager_.monitoredItemService(sessionService_, monitoredItemServiceConfig);
 			if (!monitoredItemService_) {
 				Log(Error, "monitored item service error")
