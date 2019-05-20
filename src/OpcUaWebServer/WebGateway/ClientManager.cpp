@@ -61,6 +61,9 @@ namespace OpcUaWebServer
 	bool
 	ClientManager::shutdown(void)
 	{
+		Log(Debug, "stop opc ua client sessions")
+			.parameter("NumberSessions", clientMap_.size());
+
 		if (clientMap_.size() == 0) {
 			return true;
 		}
@@ -75,24 +78,35 @@ namespace OpcUaWebServer
 		};
 
 		// shutdown all opc ua client sessions
+		std::vector<Client::SPtr> clientVec;
 		for (auto element : clientMap_) {
-			auto sessionId = element.first;
-			auto client = element.second;
+			clientVec.push_back(element.second);
+		}
+
+		for (auto client : clientVec) {
+			std::string sessionId = client->id();
 
 			// logout complete handler
 			auto logoutResponseCallback = [this, sessionId](OpcUaStatusCode statusCode, boost::property_tree::ptree& responseBody) mutable {
 				auto it = clientMap_.find(sessionId);
-				clientMap_.erase(it);
-				if (shutdownCallback_) shutdownCallback_();
+				if (it != clientMap_.end()) {
+					std::string sessionId = it->first;
+					std::thread thr([this, sessionId](){
+						clientMap_.erase(sessionId);
+						if (shutdownCallback_) shutdownCallback_();
+					});
+					thr.detach();
+				}
+				else {
+					if (shutdownCallback_) shutdownCallback_();
+				}
 			};
 
 			boost::property_tree::ptree requestBody;
 			client->logout(requestBody, logoutResponseCallback);
 		}
 
-		std::cout << "AA" << std::endl;
 		future.wait();
-		std::cout << "BB" << std::endl;
 		return true;
 	}
 
@@ -114,6 +128,11 @@ namespace OpcUaWebServer
 		std::cout << "Command=" << webSocketMessage.command_ << std::endl;
 		std::cout << "ChannelId=" << webSocketMessage.channelId_ << std::endl;
 		std::cout << "ReceivedMessage=" << webSocketMessage.message_ << std::endl;
+
+		if (shutdownCallback_) {
+			// we want to shutdown and ignore al packages
+			return;
+		}
 
 		boost::property_tree::ptree pt;
 		std::stringstream ss;
@@ -204,12 +223,18 @@ namespace OpcUaWebServer
 
 			// logout complete handler
 			auto logoutResponseCallback = [this, channelId, sessionId](OpcUaStatusCode statusCode, boost::property_tree::ptree& responseBody) mutable {
-				Log(Debug, "WSG remove client session")
-					.parameter("ChannelId", channelId)
-					.parameter("SessionId", sessionId);
 				auto it = clientMap_.find(sessionId);
-				clientMap_.erase(it);
-				if (shutdownCallback_) shutdownCallback_();
+				if (it != clientMap_.end()) {
+					std::string sessionId = it->first;
+					std::thread thr([this, sessionId](){
+						clientMap_.erase(sessionId);
+						if (shutdownCallback_) shutdownCallback_();
+					});
+					thr.detach();
+				}
+				else {
+					if (shutdownCallback_) shutdownCallback_();
+				}
 			};
 
 			boost::property_tree::ptree requestBody;
@@ -229,7 +254,6 @@ namespace OpcUaWebServer
 
 		// create new opc ua client
 		auto client = boost::make_shared<Client>();
-		client->ioThread(ioThread_);
 		client->cryptoManager(cryptoManager_);
 		auto sessionId = client->id();
 
@@ -307,6 +331,9 @@ namespace OpcUaWebServer
 			return;
 		}
 		channelIdSessionIdMap_.insert(std::make_pair(channelId, sessionId));
+		for (auto it = clientMap_.begin(); it != clientMap_.end(); it++) {
+			Log(Debug, "WSG CLIENT MAP").parameter("SESSION", it->first);
+		}
 
 		// send login response
 		sendResponse(channelId, requestHeader, responseBody);
@@ -335,24 +362,25 @@ namespace OpcUaWebServer
 		auto logoutResponseCallback = [this, channelId, requestHeader](OpcUaStatusCode statusCode, boost::property_tree::ptree& responseBody) mutable {
 			if (statusCode != Success) {
 				sendErrorResponse(channelId, requestHeader, statusCode);
+				return;
 			}
-			else {
-				Log(Debug, "WSG remove session")
-					.parameter("ChannelId", channelId)
-					.parameter("SessionId", requestHeader.sessionId());
 
-				sendResponse(channelId, requestHeader, responseBody);
+			Log(Debug, "WSG remove session")
+				.parameter("ChannelId", channelId)
+				.parameter("SessionId", requestHeader.sessionId())
+				.parameter("NumberSessions", clientMap_.size());
 
-				auto it = clientMap_.find(requestHeader.sessionId());
-				if (it != clientMap_.end()) {
-					clientMap_.erase(it);
-				}
+			sendResponse(channelId, requestHeader, responseBody);
 
+			std::string sessionId = requestHeader.sessionId();
+			std::thread thr([this, sessionId](){
+				clientMap_.erase(sessionId);
 				if (shutdownCallback_) shutdownCallback_();
-			}
+			});
+			thr.detach();
 		};
 
-		// remove element from client sesssion map
+		// remove element from client session map
 		auto result = channelIdSessionIdMap_.equal_range(channelId);
 		for (auto it = result.first; it != result.second; it++) {
 			if (it->second == requestHeader.sessionId()) {
