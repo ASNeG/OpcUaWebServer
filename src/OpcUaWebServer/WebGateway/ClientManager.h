@@ -87,6 +87,7 @@ namespace OpcUaWebServer
 			OpcUaStatusCode statusCode
 		);
 
+		boost::mutex mutex_;
 		Client::Map clientMap_;
 		std::multimap<uint32_t, std::string> channelIdSessionIdMap_;
 
