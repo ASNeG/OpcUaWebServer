@@ -78,26 +78,33 @@ namespace OpcUaWebServer
 		};
 
 		// shutdown all opc ua client sessions
+		mutex_.lock();
 		std::vector<Client::SPtr> clientVec;
 		for (auto element : clientMap_) {
 			clientVec.push_back(element.second);
 		}
+		mutex_.unlock();
 
 		for (auto client : clientVec) {
 			std::string sessionId = client->id();
 
 			// logout complete handler
 			auto logoutResponseCallback = [this, sessionId](OpcUaStatusCode statusCode, boost::property_tree::ptree& responseBody) mutable {
+				mutex_.lock();
 				auto it = clientMap_.find(sessionId);
 				if (it != clientMap_.end()) {
 					std::string sessionId = it->first;
+					mutex_.unlock();
 					std::thread thr([this, sessionId](){
+						mutex_.lock();
 						clientMap_.erase(sessionId);
+						mutex_.unlock();
 						if (shutdownCallback_) shutdownCallback_();
 					});
 					thr.detach();
 				}
 				else {
+					mutex_.unlock();
 					if (shutdownCallback_) shutdownCallback_();
 				}
 			};
@@ -214,25 +221,32 @@ namespace OpcUaWebServer
 		for (auto it = result.first; it != result.second; it++) {
 
 			// find client
+			mutex_.lock();
 			std::string sessionId = it->second;
 			auto itc = clientMap_.find(sessionId);
 			if (itc == clientMap_.end()) {
 				continue;
 			}
 			auto client = itc->second;
+			mutex_.unlock();
 
 			// logout complete handler
 			auto logoutResponseCallback = [this, channelId, sessionId](OpcUaStatusCode statusCode, boost::property_tree::ptree& responseBody) mutable {
+				mutex_.lock();
 				auto it = clientMap_.find(sessionId);
 				if (it != clientMap_.end()) {
 					std::string sessionId = it->first;
+					mutex_.unlock();
 					std::thread thr([this, sessionId](){
+						mutex_.lock();
 						clientMap_.erase(sessionId);
+						mutex_.unlock();
 						if (shutdownCallback_) shutdownCallback_();
 					});
 					thr.detach();
 				}
 				else {
+					mutex_.unlock();
 					if (shutdownCallback_) shutdownCallback_();
 				}
 			};
@@ -323,17 +337,17 @@ namespace OpcUaWebServer
 		client->eventCallback(eventCallback);
 
 		// added client to manager map
+		mutex_.lock();
 		auto it = clientMap_.insert(std::make_pair(sessionId, client));
 		if (!it.second) {
+			mutex_.unlock();
 			Log(Error, "client session id error")
 				.parameter("Id", sessionId);
 			sendErrorResponse(channelId, requestHeader, BadInternalError);
 			return;
 		}
 		channelIdSessionIdMap_.insert(std::make_pair(channelId, sessionId));
-		for (auto it = clientMap_.begin(); it != clientMap_.end(); it++) {
-			Log(Debug, "WSG CLIENT MAP").parameter("SESSION", it->first);
-		}
+		mutex_.unlock();
 
 		// send login response
 		sendResponse(channelId, requestHeader, responseBody);
@@ -351,12 +365,15 @@ namespace OpcUaWebServer
 			.parameter("SessionId", requestHeader.sessionId());
 
 		// find client
+		mutex_.lock();
 		auto it = clientMap_.find(requestHeader.sessionId());
 		if (it == clientMap_.end()) {
+			mutex_.unlock();
 			sendErrorResponse(channelId, requestHeader, BadNotFound);
 			return;
 		}
 		auto client = it->second;
+		mutex_.unlock();
 
 		// logout
 		auto logoutResponseCallback = [this, channelId, requestHeader](OpcUaStatusCode statusCode, boost::property_tree::ptree& responseBody) mutable {
@@ -373,8 +390,10 @@ namespace OpcUaWebServer
 			sendResponse(channelId, requestHeader, responseBody);
 
 			std::string sessionId = requestHeader.sessionId();
-			std::thread thr([this, sessionId](){
+			std::thread thr([this, sessionId]() {
+				mutex_.lock();
 				clientMap_.erase(sessionId);
+				mutex_.unlock();
 				if (shutdownCallback_) shutdownCallback_();
 			});
 			thr.detach();
@@ -404,12 +423,15 @@ namespace OpcUaWebServer
 			.parameter("Message", requestHeader.messageType());
 
 		// find client
+		mutex_.lock();
 		auto it = clientMap_.find(requestHeader.sessionId());
 		if (it == clientMap_.end()) {
+			mutex_.unlock();
 			sendErrorResponse(channelId, requestHeader, BadSessionClosed);
 			return;
 		}
 		auto client = it->second;
+		mutex_.unlock();
 
 		// handle request
 		auto messageResponseCallback = [this, channelId, requestHeader](OpcUaStatusCode statusCode, boost::property_tree::ptree& responseBody) mutable {
