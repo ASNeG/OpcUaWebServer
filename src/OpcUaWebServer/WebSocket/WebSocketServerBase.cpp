@@ -107,7 +107,9 @@ namespace OpcUaWebServer
 		WebSocketMessage webSocketMessage;
 		webSocketMessage.channelId_ = webSocketChannel->id_;
 		webSocketMessage.message_ = "{\"Header\":{\"MessageType\": \"CHANNELCLOSE_MESSAGE\",\"ClientHandle\": \"---\"},\"Body\":{}}";
-		if (receiveMessageCallback_) receiveMessageCallback_(webSocketMessage);
+		if (receiveMessageCallback_) {
+			receiveMessageCallback_(webSocketMessage);
+		}
 
 		// close and delete channel
 		webSocketChannel->close();
@@ -139,7 +141,9 @@ namespace OpcUaWebServer
 		Log(Debug, "delete web socket")
 		    .parameter("ChannelId", webSocketChannel->id_);
 		auto it = webSocketChannelMap_.find(webSocketChannel->id_);
-		if (it != webSocketChannelMap_.end()) webSocketChannelMap_.erase(it);
+		if (it != webSocketChannelMap_.end()) {
+			webSocketChannelMap_.erase(it);
+		}
 	}
 
 	// ------------------------------------------------------------------------
@@ -693,7 +697,8 @@ namespace OpcUaWebServer
 				.parameter("Port", webSocketChannel->partner_.port())
 				.parameter("ChannelId", webSocketChannel->id_);
 
-			closeWebSocketChannel(webSocketChannel);
+			//closeWebSocketChannel(webSocketChannel);
+			webSocketChannel->close();
 			return false;
 		}
 		os.write(headerBytes, headerLength);
