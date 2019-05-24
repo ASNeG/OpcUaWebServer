@@ -692,14 +692,24 @@ namespace OpcUaWebServer
 			headerLength = 10;
 			headerBytes[1] = 127;
 
-			Log(Debug, "WebSocketServer do not support 8 byte length field; close channel")
-				.parameter("Address", webSocketChannel->partner_.address().to_string())
-				.parameter("Port", webSocketChannel->partner_.port())
-				.parameter("ChannelId", webSocketChannel->id_);
+			char x;
+			x = (length%256>>(8*0)) & 0xFF;
+			headerBytes[9] = x;
+			x = ((length>>(8*1))%256) & 0xFF;
+			headerBytes[8] = x;
+			x = ((length>>(8*2))%256) & 0xFF;
+			headerBytes[7] = x;
+			x = ((length>>(8*3))%256) & 0xFF;
+			headerBytes[6] = x;
+			x = ((length>>(8*4))%256) & 0xFF;
+			headerBytes[5] = x;
+			x = ((length>>(8*5))%256) & 0xFF;
+			headerBytes[4] = x;
+			x = ((length>>(8*6))%256) & 0xFF;
+			headerBytes[3] = x;
+			x = ((length>>(8*7))%256) & 0xFF;
+			headerBytes[2] = x;
 
-			//closeWebSocketChannel(webSocketChannel);
-			webSocketChannel->close();
-			return false;
 		}
 		os.write(headerBytes, headerLength);
 
