@@ -523,12 +523,16 @@ namespace OpcUaWebServer
 		}
 
 		if (length == 127) {
-			Log(Debug, "WebSocketServer do not support 8 byte length field; close channel")
-				.parameter("Address", webSocketChannel->partner_.address().to_string())
-				.parameter("Port", webSocketChannel->partner_.port())
-				.parameter("ChannelId", webSocketChannel->id_);
+			// start request timer
+			webSocketChannel->slotTimerElement_->expireFromNow(webSocketConfig_->requestTimeout());
+			webSocketChannel->slotTimerElement_->callback().reset(boost::bind(&WebSocketServerBase::handleReceiveMessageLength2Timeout, this, webSocketChannel));
+			webSocketConfig_->ioThread()->slotTimer()->start(webSocketChannel->slotTimerElement_);
 
-			closeWebSocketChannel(webSocketChannel);
+			webSocketChannel->async_read_exactly(
+				webSocketChannel->recvBuffer_,
+				boost::bind(&WebSocketServerBase::handleReceiveMessageLength8, this, boost::asio::placeholders::error, boost::asio::placeholders::bytes_transferred, webSocketChannel),
+				8
+			);
 			return;
 		}
 
@@ -568,6 +572,53 @@ namespace OpcUaWebServer
 
 		uint32_t length = (lengthBytes[0] & 0xFF) * 256
 				        + (lengthBytes[1] & 0xFF);
+
+		// start request timer
+		webSocketChannel->slotTimerElement_->expireFromNow(webSocketConfig_->requestTimeout());
+		webSocketChannel->slotTimerElement_->callback().reset(boost::bind(&WebSocketServerBase::handleReceiveMessageContentTimeout, this, webSocketChannel));
+		webSocketConfig_->ioThread()->slotTimer()->start(webSocketChannel->slotTimerElement_);
+
+		webSocketChannel->async_read_exactly(
+			webSocketChannel->recvBuffer_,
+			boost::bind(&WebSocketServerBase::handleReceiveMessageContent, this, boost::asio::placeholders::error, boost::asio::placeholders::bytes_transferred, webSocketChannel),
+			length+4
+		);
+	}
+
+	void
+	WebSocketServerBase::handleReceiveMessageLength8(const boost::system::error_code& error, std::size_t bytes_transfered, WebSocketChannel* webSocketChannel)
+	{
+		if (webSocketChannel->timeout_) {
+			closeWebSocketChannel(webSocketChannel);
+			return;
+		}
+
+		// stop request timer
+		webSocketConfig_->ioThread()->slotTimer()->stop(webSocketChannel->slotTimerElement_);
+
+		if (error) {
+			Log(Debug, "WebSocketServer receive message content2 error; close channel")
+				.parameter("Address", webSocketChannel->partner_.address().to_string())
+				.parameter("Port", webSocketChannel->partner_.port())
+				.parameter("ChannelId", webSocketChannel->id_);
+
+			closeWebSocketChannel(webSocketChannel);
+			return;
+		}
+
+		// read two byte length
+		std::istream is(&webSocketChannel->recvBuffer_);
+		char lengthBytes[8];
+		is.read(lengthBytes, 8);
+
+		uint64_t length = ((lengthBytes[0] & 0xFF) << 56)
+						+ ((lengthBytes[1] & 0xFF) << 48)
+						+ ((lengthBytes[2] & 0xFF) << 40)
+						+ ((lengthBytes[3] & 0xFF) << 32)
+						+ ((lengthBytes[4] & 0xFF) << 24)
+						+ ((lengthBytes[5] & 0xFF) << 16)
+				        + ((lengthBytes[6] & 0xFF) << 8)
+				        + ((lengthBytes[7] & 0xFF));
 
 		// start request timer
 		webSocketChannel->slotTimerElement_->expireFromNow(webSocketConfig_->requestTimeout());
@@ -678,38 +729,45 @@ namespace OpcUaWebServer
 			headerLength = 2;
 			headerBytes[1] = (uint8_t)length;
 		}
-		else if (length <= 0xFFFF) {
-			headerLength = 4;
-			headerBytes[1] = 126;
-
-			char x;
-			x = ((length>>(8*1))%256) & 0xFF;
-			headerBytes[2] = x;
-			x = (length%256>>(8*0)) & 0xFF;
-			headerBytes[3] = x;
-		}
 		else {
-			headerLength = 10;
-			headerBytes[1] = 127;
+			if (length <= 0xFFFF) {
 
-			char x;
-			x = (length%256>>(8*0)) & 0xFF;
-			headerBytes[9] = x;
-			x = ((length>>(8*1))%256) & 0xFF;
-			headerBytes[8] = x;
-			x = ((length>>(8*2))%256) & 0xFF;
-			headerBytes[7] = x;
-			x = ((length>>(8*3))%256) & 0xFF;
-			headerBytes[6] = x;
-			x = ((length>>(8*4))%256) & 0xFF;
-			headerBytes[5] = x;
-			x = ((length>>(8*5))%256) & 0xFF;
-			headerBytes[4] = x;
-			x = ((length>>(8*6))%256) & 0xFF;
-			headerBytes[3] = x;
-			x = ((length>>(8*7))%256) & 0xFF;
-			headerBytes[2] = x;
+				headerLength = 4;
+				headerBytes[1] = 126;
 
+				char x;
+				x = ((length>>(8*1))%256) & 0xFF;
+				headerBytes[2] = x;
+				x = (length%256>>(8*0)) & 0xFF;
+				headerBytes[3] = x;
+			}
+			else {
+				headerLength = 10;
+				headerBytes[1] = 127;
+
+				char x;
+				x = (length%256>>(8*0)) & 0xFF;
+				headerBytes[9] = x;
+				x = ((length>>(8*1))%256) & 0xFF;
+				headerBytes[8] = x;
+				x = ((length>>(8*2))%256) & 0xFF;
+				headerBytes[7] = x;
+				x = ((length>>(8*3))%256) & 0xFF;
+				headerBytes[6] = x;
+				x = ((length>>(8*4))%256) & 0xFF;
+				headerBytes[5] = x;
+				x = ((length>>(8*5))%256) & 0xFF;
+				headerBytes[4] = x;
+				x = ((length>>(8*6))%256) & 0xFF;
+				headerBytes[3] = x;
+				x = ((length>>(8*7))%256) & 0xFF;
+				headerBytes[2] = x;
+
+			}
+
+			for (uint32_t idx=0; idx<headerLength-2; idx++) {
+				//headerBytes[idx+2] = 0;
+			}
 		}
 		os.write(headerBytes, headerLength);
 
