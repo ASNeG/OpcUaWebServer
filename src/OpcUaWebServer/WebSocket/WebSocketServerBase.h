@@ -75,6 +75,7 @@ namespace OpcUaWebServer
 		void handleReceiveMessageHeader(const boost::system::error_code& error, std::size_t bytes_transfered, WebSocketChannel* webSocketChannel);
 		void handleReceiveMessageLength2Timeout(WebSocketChannel* webSocketChannel);
 		void handleReceiveMessageLength2(const boost::system::error_code& error, std::size_t bytes_transfered, WebSocketChannel* webSocketChannel);
+		void handleReceiveMessageLength8(const boost::system::error_code& error, std::size_t bytes_transfered, WebSocketChannel* webSocketChannel);
 		void handleReceiveMessageContentTimeout(WebSocketChannel* webSocketChannel);
 		void handleReceiveMessageContent(const boost::system::error_code& error, std::size_t bytes_transfered, WebSocketChannel* webSocketChannel);
 
