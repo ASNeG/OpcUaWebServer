@@ -50,7 +50,7 @@ namespace OpcUaWebServer
 	EventNotify::jsonEncode(boost::property_tree::ptree& pt)
 	{
 		JsonNumber::jsonEncode(pt, clientHandle_, "ClientHandleData");
-		event_.jsonEncode(pt, "Event", "");
+		event_.jsonEncode(pt, "Event");
 
 		return true;
 	}
@@ -65,7 +65,7 @@ namespace OpcUaWebServer
 		}
 
 		// get event
-		if (!event_.jsonDecode(pt, "Event", "")) {
+		if (!event_.jsonDecode(pt, "Event")) {
 			Log(Error, "message body do not contain an event");
 			return false;
 		}

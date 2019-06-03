@@ -104,7 +104,7 @@ namespace OpcUaWebServer
 		return userAuthentication_;
 	}
 
-	std::string&
+	OpcUaString&
 	LoginRequest::discoveryUrl(void)
 	{
 		return discoveryUrl_;
@@ -142,27 +142,19 @@ namespace OpcUaWebServer
 	}
 
 	bool
-	LoginRequest::jsonEncode(boost::property_tree::ptree& pt)
+	LoginRequest::jsonEncodeImpl(boost::property_tree::ptree& pt) const
 	{
-		// set discovery url
-		pt.put("DiscoveryUrl", discoveryUrl_);
-
-		// FIXME: todo
-
 		return true;
 	}
 
 	bool
-	LoginRequest::jsonDecode(boost::property_tree::ptree& pt)
+	LoginRequest::jsonDecodeImpl(const boost::property_tree::ptree& pt)
 	{
-		// get discovery url from json message
-		auto discoveryUrl = pt.get_optional<std::string>("DiscoveryUrl");
-		if (!discoveryUrl) {
-			Log(Error, "LoginRequest decode error")
-				.parameter("Element", "DiscoveryUrl");
-			return false;
-		}
-		discoveryUrl_ = *discoveryUrl;
+		OpcUaString securityPolicy;
+		bool rc = true;
+
+		rc = rc & jsonObjectDecode(pt, discoveryUrl_, "DiscoveryUrl");
+		if (!rc) return false;
 
 		// get security policy uri
 		auto securityPolicyUri = pt.get_optional<std::string>("SecurityPolicyUri");
@@ -192,7 +184,7 @@ namespace OpcUaWebServer
 
 		// get security mode
 		auto securityMode = pt.get_optional<std::string>("SecurityMode");
-		if (securityPolicyUri) {
+		if (securityMode) {
 			if (*securityMode == "None") {
 				securityMode_ = MessageSecurityMode::EnumNone;
 			}
