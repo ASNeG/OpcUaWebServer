@@ -100,8 +100,8 @@ c.checkEqual(res['Header']['ClientHandle'], "client-handle")
 c.checkEqual(res['Header']['SessionId'], sessionId)
 c.checkEqual(res['Header']['StatusCode'], "Success")
 c.checkEqual(len(res['Body']['Results']), 2)
-c.checkEqual(res['Body']['Results'][0], "Success")
-c.checkEqual(res['Body']['Results'][1], "Success")
+c.checkEqual(res['Body']['Results'][0], "0")
+c.checkEqual(res['Body']['Results'][1], "0")
 
 
 #
