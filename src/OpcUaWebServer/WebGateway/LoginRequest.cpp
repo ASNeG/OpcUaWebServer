@@ -150,29 +150,17 @@ namespace OpcUaWebServer
 	bool
 	LoginRequest::jsonDecodeImpl(const boost::property_tree::ptree& pt)
 	{
-		OpcUaString securityPolicy;
 		bool rc = true;
-
 		rc = rc & jsonObjectDecode(pt, discoveryUrl_, "DiscoveryUrl");
-		if (!rc) return false;
 
 		// get security policy uri
 		auto securityPolicyUri = pt.get_optional<std::string>("SecurityPolicyUri");
 		if (securityPolicyUri) {
-			if (*securityPolicyUri == "http://opcfoundation.org/UA/SecurityPolicy#None</SecurityPolicyUri") {
-				securityPolicy_ = SecurityPolicy::EnumNone;
-			}
-			else if (*securityPolicyUri == "http://opcfoundation.org/UA/SecurityPolicy#Basic128Rsa15") {
-				securityPolicy_ = SecurityPolicy::EnumBasic128Rsa15;
-			}
-			else if (*securityPolicyUri == "http://opcfoundation.org/UA/SecurityPolicy#Basic256") {
-				securityPolicy_ = SecurityPolicy::EnumBasic256;
-			}
-			else if (*securityPolicyUri == "http://opcfoundation.org/UA/SecurityPolicy#Basic256Sha256") {
-				securityPolicy_ = SecurityPolicy::EnumBasic256Sha256;
+			if (SecurityPolicy::exist(*securityPolicyUri)) {
+				securityPolicy_ = SecurityPolicy::str2Enum(*securityPolicyUri);
 			}
 			else {
-				Log(Error, "LoginRequest decode error")
+				Log(Error, "LoginRequest decode error, because unknown security polocy uri")
 					.parameter("Element", "SecurityPolicyUri")
 					.parameter("Value", *securityPolicyUri);
 				return false;
@@ -185,14 +173,8 @@ namespace OpcUaWebServer
 		// get security mode
 		auto securityMode = pt.get_optional<std::string>("SecurityMode");
 		if (securityMode) {
-			if (*securityMode == "None") {
-				securityMode_ = MessageSecurityMode::EnumNone;
-			}
-			else if (*securityMode == "Sign") {
-				securityMode_ = MessageSecurityMode::EnumSign;
-			}
-			else if (*securityMode == "SignAndEncrypt") {
-				securityMode_ = MessageSecurityMode::EnumSignAndEncrypt;
+			if (MessageSecurityMode::exist(*securityMode)) {
+				securityMode_ = MessageSecurityMode::str2Enum(*securityMode);
 			}
 			else {
 				Log(Error, "LoginRequest decode error")
@@ -255,11 +237,7 @@ namespace OpcUaWebServer
 			// get security policy uri
 			auto securityPolicyUri = pt.get_optional<std::string>("UserAuth.SecurityPolicyUri");
 			if (securityPolicyUri) {
-				if (
-					*securityPolicyUri != "http://opcfoundation.org/UA/SecurityPolicy#None</SecurityPolicyUri" &&
-					*securityPolicyUri != "http://opcfoundation.org/UA/SecurityPolicy#Basic128Rsa15" &&
-					*securityPolicyUri != "http://opcfoundation.org/UA/SecurityPolicy#Basic256" &&
-					*securityPolicyUri != "http://opcfoundation.org/UA/SecurityPolicy#Basic256Sha256") {
+				if (!SecurityPolicy::exist(*securityPolicyUri)) {
 					Log(Error, "LoginRequest decode error")
 						.parameter("Element", "UserAuth.SecurityPolicyUri")
 						.parameter("Value", *securityPolicyUri);
@@ -295,11 +273,7 @@ namespace OpcUaWebServer
 			// get security policy uri
 			auto securityPolicyUri = pt.get_optional<std::string>("UserAuth.SecurityPolicyUri");
 			if (securityPolicyUri) {
-				if (
-					*securityPolicyUri != "http://opcfoundation.org/UA/SecurityPolicy#None</SecurityPolicyUri" &&
-					*securityPolicyUri != "http://opcfoundation.org/UA/SecurityPolicy#Basic128Rsa15" &&
-					*securityPolicyUri != "http://opcfoundation.org/UA/SecurityPolicy#Basic256" &&
-					*securityPolicyUri != "http://opcfoundation.org/UA/SecurityPolicy#Basic256Sha256") {
+				if (!SecurityPolicy::exist(*securityPolicyUri)) {
 					Log(Error, "LoginRequest decode error")
 						.parameter("Element", "UserAuth.SecurityPolicyUri")
 						.parameter("Value", *securityPolicyUri);

@@ -19,21 +19,26 @@
 #define __OpcUaWebServer_LoginResponse_h__
 
 #include <boost/property_tree/ptree.hpp>
+#include "OpcUaStackCore/BuildInTypes/OpcUaString.h"
+
+using namespace OpcUaStackCore;
 
 namespace OpcUaWebServer
 {
 
 	class LoginResponse
+	: public JsonFormatter
 	{
 	  public:
 		LoginResponse(void);
 		virtual ~LoginResponse(void);
 
-		bool jsonEncode(boost::property_tree::ptree& pt);
-		bool jsonDecode(boost::property_tree::ptree& pt);
+	  protected:
+	    bool jsonEncodeImpl(boost::property_tree::ptree& pt) const override;
+	    bool jsonDecodeImpl(const boost::property_tree::ptree& pt) override;
 
 	  private:
-		std::string sessionId_;
+		OpcUaString sessionId_;
 	};
 
 }

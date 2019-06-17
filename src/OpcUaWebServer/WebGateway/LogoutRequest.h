@@ -19,20 +19,23 @@
 #define __OpcUaWebServer_LogoutRequest_h__
 
 #include <boost/property_tree/ptree.hpp>
+#include "OpcUaStackCore/BuildInTypes/JsonFormatter.h"
+
+using namespace OpcUaStackCore;
 
 namespace OpcUaWebServer
 {
 
 	class LogoutRequest
+	: public JsonFormatter
 	{
 	  public:
 		LogoutRequest(void);
 		virtual ~LogoutRequest(void);
 
-		std::string& sessionId(void);
-
-		bool jsonEncode(boost::property_tree::ptree& pt);
-		bool jsonDecode(boost::property_tree::ptree& pt);
+      protected:
+        bool jsonEncodeImpl(boost::property_tree::ptree& pt) const override;
+        bool jsonDecodeImpl(const boost::property_tree::ptree& pt) override;
 
 	  private:
 	};

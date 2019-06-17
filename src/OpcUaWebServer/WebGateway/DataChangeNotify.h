@@ -27,6 +27,7 @@ namespace OpcUaWebServer
 {
 
 	class DataChangeNotify
+	: public JsonFormatter
 	{
 	  public:
 		DataChangeNotify(void);
@@ -35,8 +36,9 @@ namespace OpcUaWebServer
 		uint32_t& clientHandle(void);
 		OpcUaDataValue& dataValue(void);
 
-		bool jsonEncode(boost::property_tree::ptree& pt);
-		bool jsonDecode(boost::property_tree::ptree& pt);
+      protected:
+        bool jsonEncodeImpl(boost::property_tree::ptree& pt) const override;
+        bool jsonDecodeImpl(const boost::property_tree::ptree& pt) override;
 
 	  private:
 		uint32_t clientHandle_;

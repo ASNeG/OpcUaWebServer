@@ -32,31 +32,22 @@ namespace OpcUaWebServer
 	{
 	}
 
-	std::string&
+	OpcUaString&
 	SessionStatusNotify::sessionStatus(void)
 	{
 		return sessionStatus_;
 	}
 
 	bool
-	SessionStatusNotify::jsonEncode(boost::property_tree::ptree& pt)
+	SessionStatusNotify::jsonEncodeImpl(boost::property_tree::ptree& pt) const
 	{
-		pt.put("SessionStatus", sessionStatus_);
-		return true;
+		return jsonObjectEncode(pt, sessionStatus_, "SessionStatus");
 	}
 
 	bool
-	SessionStatusNotify::jsonDecode(boost::property_tree::ptree& pt)
+	SessionStatusNotify::jsonDecodeImpl(const boost::property_tree::ptree& pt)
 	{
-		// get session status from json message
-		boost::optional<std::string> sessionStatus = pt.get_optional<std::string>("SessionStatus");
-		if (!sessionStatus) {
-			Log(Error, "message body do not contain session status");
-			return false;
-		}
-		sessionStatus_ = *sessionStatus;
-
-		return true;
+		return jsonObjectDecode(pt, sessionStatus_, "SessionStatus");
 	}
 
 }

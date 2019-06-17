@@ -40,38 +40,28 @@ namespace OpcUaWebServer
 		return subscriptionId_;
 	}
 
-	std::string&
+	OpcUaString&
 	SubscriptionStatusNotify::subscriptionStatus(void)
 	{
 		return subscriptionStatus_;
 	}
 
 	bool
-	SubscriptionStatusNotify::jsonEncode(boost::property_tree::ptree& pt)
+	SubscriptionStatusNotify::jsonEncodeImpl(boost::property_tree::ptree& pt) const
 	{
-		JsonNumber::jsonEncode(pt, subscriptionId_, "SubscriptionId");
-		pt.put("SubscriptionStatus", subscriptionStatus_);
-		return true;
+		bool rc = true;
+		rc = rc & jsonNumberEncode(pt, subscriptionId_, "SubscriptionId");
+		rc = rc & jsonObjectEncode(pt, subscriptionStatus_, "SubscriptionStatus");
+		return rc;
 	}
 
 	bool
-	SubscriptionStatusNotify::jsonDecode(boost::property_tree::ptree& pt)
+	SubscriptionStatusNotify::jsonDecodeImpl(const boost::property_tree::ptree& pt)
 	{
-		// get subscription id
-		if (!JsonNumber::jsonDecode(pt, subscriptionId_, "SubscriptionId")) {
-			Log(Error, "message body do not contain subscription id");
-			return false;
-		}
-
-		// get session status from json message
-		boost::optional<std::string> subscriptionStatus = pt.get_optional<std::string>("SubscriptionStatus");
-		if (!subscriptionStatus) {
-			Log(Error, "message body do not contain subscription status");
-			return false;
-		}
-		subscriptionStatus_ = *subscriptionStatus;
-
-		return true;
+		bool rc = true;
+		rc = rc & jsonNumberDecode(pt, subscriptionId_, "SubscriptionId");
+		rc = rc & jsonObjectDecode(pt, subscriptionStatus_, "SubscriptionStatus");
+		return rc;
 	}
 
 }

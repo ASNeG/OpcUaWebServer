@@ -32,13 +32,13 @@ namespace OpcUaWebServer
 	}
 
 	bool
-	LogoutRequest::jsonEncode(boost::property_tree::ptree& pt)
+	LogoutRequest::jsonEncodeImpl(boost::property_tree::ptree& pt) const
 	{
 		return true;
 	}
 
 	bool
-	LogoutRequest::jsonDecode(boost::property_tree::ptree& pt)
+	LogoutRequest::jsonDecodeImpl(const boost::property_tree::ptree& pt)
 	{
 		return true;
 	}

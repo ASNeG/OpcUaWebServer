@@ -29,7 +29,7 @@ print("RECV: ", str)
 res = json.loads(str)
 c.checkEqual(res['Header']['MessageType'], "GW_LoginResponse")
 c.checkEqual(res['Header']['ClientHandle'], "client-handle")
-c.checkEqual(res['Header']['StatusCode'], "Success")
+c.checkEqual(res['Header']['StatusCode'], "0")
 c.checkExists(res['Body']['SessionId'])
 sessionId = res['Body']['SessionId']
 
@@ -63,8 +63,10 @@ req = {
 		    "Id" : "218"
                 },
                 "Value": {
-                    "Type": "11",
-                    "Body": "80"
+                    "Value" : {
+                        "Type": "11",
+                        "Body": "80"
+                    }
                 }
             },
             {
@@ -73,12 +75,14 @@ req = {
 		    "Id" : "219"
                 },
                 "Value": {
-                    "Type": "11",
-                    "Body": [
-                        "2.10921e+06",
-                        "2.10921e+06",
-                        "2.10922e+06"
-                    ]
+                    "Value" : {
+                        "Type": "11",
+                        "Body": [
+                            "2.10921e+06",
+                            "2.10921e+06",
+                            "2.10922e+06"
+                        ]
+                    }
                 }
             }
 	]         
@@ -98,7 +102,7 @@ res = json.loads(str)
 c.checkEqual(res['Header']['MessageType'], "GW_WriteResponse")
 c.checkEqual(res['Header']['ClientHandle'], "client-handle")
 c.checkEqual(res['Header']['SessionId'], sessionId)
-c.checkEqual(res['Header']['StatusCode'], "Success")
+c.checkEqual(res['Header']['StatusCode'], "0")
 c.checkEqual(len(res['Body']['Results']), 2)
 c.checkEqual(res['Body']['Results'][0], "0")
 c.checkEqual(res['Body']['Results'][1], "0")
@@ -126,7 +130,7 @@ res = json.loads(str)
 c.checkEqual(res['Header']['MessageType'], "GW_LogoutResponse")
 c.checkEqual(res['Header']['ClientHandle'], "client-handle")
 c.checkEqual(res['Header']['SessionId'], sessionId)
-c.checkEqual(res['Header']['StatusCode'], "Success")
+c.checkEqual(res['Header']['StatusCode'], "0")
 
 
 

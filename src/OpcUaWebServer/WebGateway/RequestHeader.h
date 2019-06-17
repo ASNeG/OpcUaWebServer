@@ -19,33 +19,38 @@
 #define __OpcUaWebServer_RequestHeader_h__
 
 #include <boost/property_tree/ptree.hpp>
+#include "OpcUaStackCore/BuildInTypes/OpcUaString.h"
+
+using namespace OpcUaStackCore;
 
 namespace OpcUaWebServer
 {
 
 	class RequestHeader
+	: public JsonFormatter
 	{
 	  public:
 		RequestHeader(void);
 		RequestHeader(const RequestHeader& RequestHeader);
 		RequestHeader(
-		    const std::string& messageType,
-			const std::string& clientHandle,
-			const std::string& sessionId
+		    const OpcUaString& messageType,
+			const OpcUaString& clientHandle,
+			const OpcUaString& sessionId
 		);
 		virtual ~RequestHeader(void);
 
-		std::string& messageType(void);
-		std::string& clientHandle(void);
-		std::string& sessionId(void);
+		OpcUaString& messageType(void);
+		OpcUaString& clientHandle(void);
+		OpcUaString& sessionId(void);
 
-		bool jsonEncode(boost::property_tree::ptree& pt);
-		bool jsonDecode(boost::property_tree::ptree& pt);
+      protected:
+        bool jsonEncodeImpl(boost::property_tree::ptree& pt) const override;
+        bool jsonDecodeImpl(const boost::property_tree::ptree& pt) override;
 
 	  private:
-		std::string messageType_;
-		std::string clientHandle_;
-		std::string sessionId_;
+        OpcUaString messageType_;
+        OpcUaString clientHandle_;
+        OpcUaString sessionId_;
 	};
 
 }

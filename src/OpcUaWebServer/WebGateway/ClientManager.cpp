@@ -154,7 +154,7 @@ namespace OpcUaWebServer
 
 		// get header from json message
 		RequestHeader requestHeader;
-		if (!requestHeader.jsonDecode(pt)) {
+		if (!requestHeader.jsonDecode(pt, "Header")) {
 			Log(Error, "message header error");
 			if (disconnectChannelCallback_) {
 				disconnectChannelCallback_(webSocketMessage.channelId_);
@@ -170,17 +170,18 @@ namespace OpcUaWebServer
 			return;
 		}
 
-		if (requestHeader.messageType() == "CHANNELCLOSE_MESSAGE") {
+		auto messageType = requestHeader.messageType().toStdString();
+		if (messageType == "CHANNELCLOSE_MESSAGE") {
 			handleChannelClose(webSocketMessage.channelId_, requestHeader, *body);
 			return;
 		}
 
-		else if (requestHeader.messageType() == "GW_LoginRequest") {
+		else if (messageType == "GW_LoginRequest") {
 			handleLogin(webSocketMessage.channelId_, requestHeader, *body);
 			return;
 		}
 
-		else if (requestHeader.messageType() == "GW_LogoutRequest") {
+		else if (messageType == "GW_LogoutRequest") {
 			handleLogout(webSocketMessage.channelId_, requestHeader, *body);
 			return;
 		}
@@ -386,7 +387,7 @@ namespace OpcUaWebServer
 		// remove element from client session map
 		auto result = channelIdSessionIdMap_.equal_range(channelId);
 		for (auto it = result.first; it != result.second; it++) {
-			if (it->second == requestHeader.sessionId()) {
+			if (it->second == requestHeader.sessionId().toStdString()) {
 				channelIdSessionIdMap_.erase(it);
 			}
 		}
@@ -430,40 +431,41 @@ namespace OpcUaWebServer
 		//
 		// attribute service
 		//
-		if (requestHeader.messageType() == "GW_ReadRequest") {
+		auto messageType = requestHeader.messageType().toStdString();
+		if (messageType == "GW_ReadRequest") {
 			client->read(requestBody, messageResponseCallback);
 		}
-		else if (requestHeader.messageType() == "GW_WriteRequest") {
+		else if (messageType == "GW_WriteRequest") {
 			client->write(requestBody, messageResponseCallback);
 		}
-		else if (requestHeader.messageType() == "GW_HistoryReadRequest") {
+		else if (messageType == "GW_HistoryReadRequest") {
 			client->historyRead(requestBody, messageResponseCallback);
 		}
 
 		//
 		// method service
 		//
-		else if (requestHeader.messageType() == "GW_CallRequest") {
+		else if (messageType == "GW_CallRequest") {
 			client->call(requestBody, messageResponseCallback);
 		}
 
 		//
 		// subscription service
 		//
-		else if (requestHeader.messageType() == "GW_CreateSubscriptionRequest") {
+		else if (messageType == "GW_CreateSubscriptionRequest") {
 			client->createSubscription(requestBody, messageResponseCallback);
 		}
-		else if (requestHeader.messageType() == "GW_DeleteSubscriptionsRequest") {
+		else if (messageType == "GW_DeleteSubscriptionsRequest") {
 			client->deleteSubscriptions(requestBody, messageResponseCallback);
 		}
 
 		//
 		// monitored item service
 		//
-		else if (requestHeader.messageType() == "GW_CreateMonitoredItemsRequest") {
+		else if (messageType == "GW_CreateMonitoredItemsRequest") {
 			client->createMonitoredItems(requestBody, messageResponseCallback);
 		}
-		else if (requestHeader.messageType() == "GW_DeleteMonitoredItemsRequest") {
+		else if (messageType == "GW_DeleteMonitoredItemsRequest") {
 			client->deleteMonitoredItems(requestBody, messageResponseCallback);
 		}
 
@@ -489,7 +491,7 @@ namespace OpcUaWebServer
 		// create header
 		ResponseHeader responseHeader(requestHeader);
 		responseHeader.statusCode() = Success;
-		responseHeader.jsonEncode(pt);
+		responseHeader.jsonEncode(pt, "Header");
 
 		Log(Debug, "WSG send response")
 			.parameter("ChannelId", channelId)
@@ -534,7 +536,7 @@ namespace OpcUaWebServer
 		boost::property_tree::ptree pt;
 
 		// create header
-		notifyHeader.jsonEncode(pt);
+		notifyHeader.jsonEncode(pt, "Header");
 
 		// create body
 		pt.add_child("Body", notifyBody);
@@ -571,7 +573,7 @@ namespace OpcUaWebServer
 		// create header
 		ResponseHeader responseHeader(requestHeader);
 		responseHeader.statusCode() = statusCode;
-		responseHeader.jsonEncode(pt);
+		responseHeader.jsonEncode(pt, "Header");
 
 		Log(Debug, "WSG send error response")
 			.parameter("ChannelId", channelId)

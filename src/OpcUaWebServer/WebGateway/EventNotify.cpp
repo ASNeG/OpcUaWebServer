@@ -46,32 +46,23 @@ namespace OpcUaWebServer
 		return event_;
 	}
 
-	bool
-	EventNotify::jsonEncode(boost::property_tree::ptree& pt)
-	{
-		JsonNumber::jsonEncode(pt, clientHandle_, "ClientHandleData");
-		event_.jsonEncode(pt, "Event");
+    bool
+	EventNotify::jsonEncodeImpl(boost::property_tree::ptree& pt) const
+    {
+    	bool rc = true;
+    	rc = rc & jsonNumberEncode(pt, clientHandle_, "ClientHandleData");
+    	rc = rc & jsonArrayEncode(pt, event_, "Event");
+    	return rc;
+    }
 
-		return true;
-	}
-
-	bool
-	EventNotify::jsonDecode(boost::property_tree::ptree& pt)
-	{
-		// get client handle
-		if (!JsonNumber::jsonDecode(pt, clientHandle_, "ClientHandleData")) {
-			Log(Error, "message body do not contain client handle");
-			return false;
-		}
-
-		// get event
-		if (!event_.jsonDecode(pt, "Event")) {
-			Log(Error, "message body do not contain an event");
-			return false;
-		}
-
-		return true;
-	}
+    bool
+	EventNotify::jsonDecodeImpl(const boost::property_tree::ptree& pt)
+    {
+    	bool rc = true;
+    	rc = rc & jsonNumberDecode(pt, clientHandle_, "ClientHandleData");
+    	rc = rc & jsonArrayDecode(pt, event_, "Event");
+    	return rc;
+    }
 
 }
 
