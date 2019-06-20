@@ -1,0 +1,15 @@
+
+For the test of Websockets the following library is needed:
+
+https://pypi.org/project/websocket_client/
+websocket_client 0.56.0
+
+
+
+The test is started as follows:
+$ ./test.sh
+
+
+
+Inidivual tests can be performed as follows:
+$ /test.sh Connection/ConnectDisconnect.py
