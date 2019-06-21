@@ -47,6 +47,7 @@ namespace OpcUaWebServer
 
 		bool timeout_;
 		uint32_t id_;
+		uint8_t opcode_;
 		boost::asio::streambuf recvBuffer_;
 		boost::asio::streambuf sendBuffer_;
 		WebSocketRequest webSocketRequest_;

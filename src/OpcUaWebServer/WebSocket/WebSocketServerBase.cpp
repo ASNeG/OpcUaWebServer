@@ -415,7 +415,11 @@ namespace OpcUaWebServer
 	}
 
 	void
-	WebSocketServerBase::handleReceiveMessageHeader(const boost::system::error_code& error, std::size_t bytes_transfered, WebSocketChannel* webSocketChannel)
+	WebSocketServerBase::handleReceiveMessageHeader(
+		const boost::system::error_code& error,
+		std::size_t bytes_transfered,
+		WebSocketChannel* webSocketChannel
+	)
 	{
 		if (webSocketChannel->timeout_) {
 			closeWebSocketChannel(webSocketChannel);
@@ -440,11 +444,11 @@ namespace OpcUaWebServer
 		is.read(headerBytes, 2);
 
 		bool fin = (headerBytes[0] & 0x80) == 0x80;	// true - last frame
-		uint8_t opcode = headerBytes[0] & 0x0F;		// 1 - text frame
+		webSocketChannel->opcode_ = headerBytes[0] & 0x0F;		// 1 - text frame
 		bool mask = (headerBytes[1] & 0x80) == 0x80;	// true - mask
 		uint32_t length = headerBytes[1] & 0x7f;
 
-		if (opcode == OP_CONTINUATION_FRAME) {
+		if (webSocketChannel->opcode_ == OP_CONTINUATION_FRAME) {
 			Log(Debug, "WebSocketServer do not support continuation frame messages; close channel")
 				.parameter("Address", webSocketChannel->partner_.address().to_string())
 				.parameter("Port", webSocketChannel->partner_.port())
@@ -454,7 +458,7 @@ namespace OpcUaWebServer
 			return;
 		}
 
-		if (opcode == OP_BINARY_FRAME) {
+		if (webSocketChannel->opcode_ == OP_BINARY_FRAME) {
 			Log(Error, "WebSocketServer do not support binary frame messages; close channel")
 				.parameter("Address", webSocketChannel->partner_.address().to_string())
 				.parameter("Port", webSocketChannel->partner_.port())
@@ -464,7 +468,7 @@ namespace OpcUaWebServer
 			return;
 		}
 
-		if (opcode == OP_CLOSE_FRAME) {
+		if (webSocketChannel->opcode_ == OP_CLOSE_FRAME) {
 			Log(Debug, "WebSocketServer receive close frame messages; close channel")
 				.parameter("Address", webSocketChannel->partner_.address().to_string())
 				.parameter("Port", webSocketChannel->partner_.port())
@@ -474,17 +478,7 @@ namespace OpcUaWebServer
 			return;
 		}
 
-		if (opcode == OP_PING_FRAME) {
-			Log(Debug, "WebSocketServer do not support continuation ping messages; close channel")
-				.parameter("Address", webSocketChannel->partner_.address().to_string())
-				.parameter("Port", webSocketChannel->partner_.port())
-				.parameter("ChannelId", webSocketChannel->id_);
-
-			closeWebSocketChannel(webSocketChannel);
-			return;
-		}
-
-		if (opcode != OP_TEXT_FRAME) {
+		if (webSocketChannel->opcode_ != OP_TEXT_FRAME && webSocketChannel->opcode_ != OP_PING_FRAME) {
 			Log(Debug, "WebSocketServer do not support continuation text messages; close channel")
 				.parameter("Address", webSocketChannel->partner_.address().to_string())
 				.parameter("Port", webSocketChannel->partner_.port())
@@ -688,6 +682,12 @@ namespace OpcUaWebServer
 			webSocketMessage.message_.append(buffer, bufferLen);
 		}
 
+		if (webSocketChannel->opcode_ == OP_PING_FRAME) {
+			sendMessage(webSocketMessage, webSocketChannel, 0x8A);
+			receiveMessage(webSocketChannel);
+			return;
+		}
+
 		if (receiveMessageCallback_) receiveMessageCallback_(webSocketMessage);
 		receiveMessage(webSocketChannel);
 	}
@@ -713,14 +713,23 @@ namespace OpcUaWebServer
 	// ------------------------------------------------------------------------
 	// ------------------------------------------------------------------------
 	bool
-	WebSocketServerBase::sendMessage(WebSocketMessage& webSocketMessage, WebSocketChannel* webSocketChannel)
+	WebSocketServerBase::sendMessage(
+		WebSocketMessage& webSocketMessage,
+		WebSocketChannel* webSocketChannel,
+		char headerByte
+	)
 	{
 		std::ostream os(&webSocketChannel->sendBuffer_);
 
 		char headerBytes[10];
 
-		// set FIN and text frame
-		headerBytes[0] = (char)0x81;
+		if (headerByte == 0x00) {
+			// set FIN and text frame
+			headerBytes[0] = (char)0x81;
+		}
+		else {
+			headerBytes[0] = headerByte;
+		}
 
 		// set length
 		uint32_t headerLength;
