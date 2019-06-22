@@ -19,23 +19,28 @@
 #define __OpcUaWebServer_SessionStatusNotify_h__
 
 #include <boost/property_tree/ptree.hpp>
+#include "OpcUaStackCore/BuildInTypes/OpcUaString.h"
+
+using namespace OpcUaStackCore;
 
 namespace OpcUaWebServer
 {
 
 	class SessionStatusNotify
+	: public JsonFormatter
 	{
 	  public:
 		SessionStatusNotify(void);
 		virtual ~SessionStatusNotify(void);
 
-		std::string& sessionStatus(void);
+		OpcUaString& sessionStatus(void);
 
-		bool jsonEncode(boost::property_tree::ptree& pt);
-		bool jsonDecode(boost::property_tree::ptree& pt);
+      protected:
+        bool jsonEncodeImpl(boost::property_tree::ptree& pt) const override;
+        bool jsonDecodeImpl(const boost::property_tree::ptree& pt) override;
 
 	  private:
-		std::string sessionStatus_;
+		OpcUaString sessionStatus_;
 	};
 
 }

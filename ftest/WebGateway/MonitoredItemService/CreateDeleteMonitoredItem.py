@@ -29,7 +29,7 @@ print("RECV: ", str)
 res = json.loads(str)
 c.checkEqual(res['Header']['MessageType'], "GW_LoginResponse")
 c.checkEqual(res['Header']['ClientHandle'], "client-handle")
-c.checkEqual(res['Header']['StatusCode'], "Success")
+c.checkEqual(res['Header']['StatusCode'], "0")
 c.checkExists(res['Body']['SessionId'])
 sessionId = res['Body']['SessionId']
 
@@ -72,7 +72,7 @@ res = json.loads(str)
 c.checkEqual(res['Header']['MessageType'], "GW_CreateSubscriptionResponse")
 c.checkEqual(res['Header']['ClientHandle'], "client-handle")
 c.checkEqual(res['Header']['SessionId'], sessionId)
-c.checkEqual(res['Header']['StatusCode'], "Success")
+c.checkEqual(res['Header']['StatusCode'], "0")
 c.checkExists(res['Body']['SubscriptionId'])
 c.checkExists(res['Body']['RevisedPublishingInterval'])
 c.checkExists(res['Body']['RevisedLifetimeCount'])
@@ -120,8 +120,8 @@ res = json.loads(str)
 c.checkEqual(res['Header']['MessageType'], "GW_CreateMonitoredItemsResponse")
 c.checkEqual(res['Header']['ClientHandle'], "client-handle")
 c.checkEqual(res['Header']['SessionId'], sessionId)
-c.checkEqual(res['Header']['StatusCode'], "Success")
-c.checkEqual(res['Body']['Results'][0]['StatusCode'], "Success")
+c.checkEqual(res['Header']['StatusCode'], "0")
+c.checkEqual(res['Body']['Results'][0]['StatusCode'], "0")
 c.checkExists(res['Body']['Results'][0]['MonitoredItemId'])
 monitoredItemId = res['Body']['Results'][0]['MonitoredItemId']
 
@@ -136,7 +136,7 @@ c.checkEqual(res['Header']['MessageType'], "GW_DataChangeNotify")
 c.checkEqual(res['Header']['ClientHandle'], "client-handle")
 c.checkEqual(res['Header']['SessionId'], sessionId)
 c.checkEqual(res['Body']['ClientHandleData'], "4711")
-c.checkEqual(res['Body']['Value']['Status'], "Success")
+c.checkExists(res['Body']['Value'])
 
 
 #
@@ -167,8 +167,8 @@ res = json.loads(str)
 c.checkEqual(res['Header']['MessageType'], "GW_DeleteMonitoredItemsResponse")
 c.checkEqual(res['Header']['ClientHandle'], "client-handle")
 c.checkEqual(res['Header']['SessionId'], sessionId)
-c.checkEqual(res['Header']['StatusCode'], "Success")
-c.checkEqual(res['Body']['Results'][0], "Success")
+c.checkEqual(res['Header']['StatusCode'], "0")
+c.checkEqual(res['Body']['Results'][0], "0")
 
 
 #
@@ -198,8 +198,8 @@ res = json.loads(str)
 c.checkEqual(res['Header']['MessageType'], "GW_DeleteSubscriptionsResponse")
 c.checkEqual(res['Header']['ClientHandle'], "client-handle")
 c.checkEqual(res['Header']['SessionId'], sessionId)
-c.checkEqual(res['Header']['StatusCode'], "Success")
-c.checkEqual(res['Body']['Results'][0], "Success")
+c.checkEqual(res['Header']['StatusCode'], "0")
+c.checkEqual(res['Body']['Results'][0], "0")
 
 
 #
@@ -224,7 +224,7 @@ res = json.loads(str)
 c.checkEqual(res['Header']['MessageType'], "GW_LogoutResponse")
 c.checkEqual(res['Header']['ClientHandle'], "client-handle")
 c.checkEqual(res['Header']['SessionId'], sessionId)
-c.checkEqual(res['Header']['StatusCode'], "Success")
+c.checkEqual(res['Header']['StatusCode'], "0")
 
 
 

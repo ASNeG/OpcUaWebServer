@@ -39,9 +39,9 @@ namespace OpcUaWebServer
 	}
 
 	RequestHeader::RequestHeader(
-	    const std::string& messageType,
-		const std::string& clientHandle,
-		const std::string& sessionId
+	    const OpcUaString& messageType,
+		const OpcUaString& clientHandle,
+		const OpcUaString& sessionId
 	)
 	: messageType_(messageType)
 	, clientHandle_(clientHandle)
@@ -53,65 +53,43 @@ namespace OpcUaWebServer
 	{
 	}
 
-	std::string&
+	OpcUaString&
 	RequestHeader::messageType(void)
 	{
 		return messageType_;
 	}
 
-	std::string&
+	OpcUaString&
 	RequestHeader::clientHandle(void)
 	{
 		return clientHandle_;
 	}
 
-	std::string&
+	OpcUaString&
 	RequestHeader::sessionId(void)
 	{
 		return sessionId_;
 	}
 
-	bool
-	RequestHeader::jsonEncode(boost::property_tree::ptree& pt)
-	{
-		boost::property_tree::ptree headerElement;
-		headerElement.put("MessageType", messageType_);
-		headerElement.put("ClientHandle", clientHandle_);
-		if (!sessionId_.empty()) {
-			headerElement.put("SessionId", sessionId_);
-		}
-		pt.push_back(std::make_pair("Header", headerElement));
+    bool
+	RequestHeader::jsonEncodeImpl(boost::property_tree::ptree& pt) const
+    {
+    	bool rc = true;
+    	rc = rc & jsonObjectEncode(pt, messageType_, "MessageType");
+    	rc = rc & jsonObjectEncode(pt, clientHandle_, "ClientHandle");
+    	rc = rc & jsonObjectEncode(pt, sessionId_, "SessionId", true);
+    	return rc;
+    }
 
-		return true;
-	}
-
-	bool
-	RequestHeader::jsonDecode(boost::property_tree::ptree& pt)
-	{
-		// get message type from json message
-		boost::optional<std::string> messageType = pt.get_optional<std::string>("Header.MessageType");
-		if (!messageType) {
-			Log(Error, "message header do not contain message type");
-			return false;
-		}
-		messageType_ = *messageType;
-
-		// get client handle from json message
-		boost::optional<std::string> clientHandle = pt.get_optional<std::string>("Header.ClientHandle");
-		if (!clientHandle) {
-			Log(Error, "message header do not contain client handle");
-			return false;
-		}
-		clientHandle_ = *clientHandle;
-
-		// get session id from json message
-		boost::optional<std::string> sessionId = pt.get_optional<std::string>("Header.SessionId");
-		if (sessionId) {
-			sessionId_ = *sessionId;
-		}
-
-		return true;
-	}
+    bool
+	RequestHeader::jsonDecodeImpl(const boost::property_tree::ptree& pt)
+    {
+       	bool rc = true;
+       	rc = rc & jsonObjectDecode(pt, messageType_, "MessageType");
+        rc = rc & jsonObjectDecode(pt, clientHandle_, "ClientHandle");
+        rc = rc & jsonObjectDecode(pt, sessionId_, "SessionId", true);
+        return rc;
+    }
 
 }
 

@@ -33,16 +33,17 @@ namespace OpcUaWebServer
 		ResponseHeader(void);
 		ResponseHeader(const RequestHeader& RequestHeader);
 		ResponseHeader(
-		    const std::string& messageType,
-			const std::string& clientHandle,
-			const std::string& sessionId
+		    const OpcUaString& messageType,
+			const OpcUaString& clientHandle,
+			const OpcUaString& sessionId
 		);
 		virtual ~ResponseHeader(void);
 
 		OpcUaStatusCode& statusCode(void);
 
-		bool jsonEncode(boost::property_tree::ptree& pt);
-		bool jsonDecode(boost::property_tree::ptree& pt);
+      protected:
+        bool jsonEncodeImpl(boost::property_tree::ptree& pt) const override;
+        bool jsonDecodeImpl(const boost::property_tree::ptree& pt) override;
 
 	  private:
 		OpcUaStatusCode statusCode_;

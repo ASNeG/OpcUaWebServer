@@ -19,25 +19,30 @@
 #define __OpcUaWebServer_SubscriptionStatusNotify_h__
 
 #include <boost/property_tree/ptree.hpp>
+#include "OpcUaStackCore/BuildInTypes/OpcUaString.h"
+
+using namespace OpcUaStackCore;
 
 namespace OpcUaWebServer
 {
 
 	class SubscriptionStatusNotify
+	: public JsonFormatter
 	{
 	  public:
 		SubscriptionStatusNotify(void);
 		virtual ~SubscriptionStatusNotify(void);
 
 		uint32_t& subscriptionId(void);
-		std::string& subscriptionStatus(void);
+		OpcUaString& subscriptionStatus(void);
 
-		bool jsonEncode(boost::property_tree::ptree& pt);
-		bool jsonDecode(boost::property_tree::ptree& pt);
+      protected:
+        bool jsonEncodeImpl(boost::property_tree::ptree& pt) const override;
+        bool jsonDecodeImpl(const boost::property_tree::ptree& pt) override;
 
 	  private:
 		uint32_t subscriptionId_;
-		std::string subscriptionStatus_;
+		OpcUaString subscriptionStatus_;
 	};
 
 }

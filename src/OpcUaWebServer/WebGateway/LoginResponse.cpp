@@ -32,27 +32,17 @@ namespace OpcUaWebServer
 	{
 	}
 
+    bool
+	LoginResponse::jsonEncodeImpl(boost::property_tree::ptree& pt) const
+    {
+    	return jsonObjectEncode(pt, sessionId_, "SessionId");
+    }
 
-	bool
-	LoginResponse::jsonEncode(boost::property_tree::ptree& pt)
-	{
-		pt.put("SessionId", sessionId_);
-		return true;
-	}
-
-	bool
-	LoginResponse::jsonDecode(boost::property_tree::ptree& pt)
-	{
-		// get session id from json message
-		boost::optional<std::string> sessionId = pt.get_optional<std::string>("SessionId");
-		if (!sessionId) {
-			Log(Error, "message body do not contain session id");
-			return false;
-		}
-		sessionId_ = *sessionId;
-
-		return true;
-	}
+    bool
+	LoginResponse::jsonDecodeImpl(const boost::property_tree::ptree& pt)
+    {
+    	return jsonObjectDecode(pt, sessionId_, "SessionId");
+    }
 
 }
 

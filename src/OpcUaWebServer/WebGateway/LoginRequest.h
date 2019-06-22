@@ -22,6 +22,7 @@
 #include <boost/property_tree/ptree.hpp>
 #include "OpcUaStackCore/StandardDataTypes/MessageSecurityMode.h"
 #include "OpcUaStackCore/BuildInTypes/SecurityPolicy.h"
+#include "OpcUaStackCore/BuildInTypes/JsonFormatter.h"
 
 using namespace OpcUaStackCore;
 
@@ -56,22 +57,24 @@ namespace OpcUaWebServer
 
 
 	class LoginRequest
+	: public JsonFormatter
 	{
 	  public:
 		LoginRequest(void);
 		virtual ~LoginRequest(void);
 
-		std::string& discoveryUrl(void);
+		OpcUaString& discoveryUrl(void);
 		MessageSecurityMode::Enum securityMode(void);
 		SecurityPolicy::Enum securityPolicy(void);
 		UserAuthentication& userAuthentication(void);
 		void log(const std::string& message);
 
-		bool jsonEncode(boost::property_tree::ptree& pt);
-		bool jsonDecode(boost::property_tree::ptree& pt);
+	  protected:
+		bool jsonEncodeImpl(boost::property_tree::ptree& pt) const override;
+		bool jsonDecodeImpl(const boost::property_tree::ptree& pt) override;
 
 	  private:
-		std::string discoveryUrl_;
+		OpcUaString discoveryUrl_;
 		MessageSecurityMode::Enum securityMode_;
 		SecurityPolicy::Enum securityPolicy_;
 		UserAuthentication userAuthentication_;

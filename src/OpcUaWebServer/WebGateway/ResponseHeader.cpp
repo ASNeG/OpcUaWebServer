@@ -34,13 +34,15 @@ namespace OpcUaWebServer
 	: RequestHeader(requestHeader)
 	, statusCode_(Success)
 	{
-		boost::replace_all(messageType(), "Request", "Response");
+		auto str = messageType().toStdString();
+		boost::replace_all(str, "Request", "Response");
+		messageType() = OpcUaString(str);
 	}
 
 	ResponseHeader::ResponseHeader(
-	    const std::string& messageType,
-		const std::string& clientHandle,
-		const std::string& sessionId
+	    const OpcUaString& messageType,
+		const OpcUaString& clientHandle,
+		const OpcUaString& sessionId
 	)
 	: RequestHeader(messageType, clientHandle, sessionId)
 	, statusCode_(Success)
@@ -57,29 +59,23 @@ namespace OpcUaWebServer
 		return statusCode_;
 	}
 
-	bool
-	ResponseHeader::jsonEncode(boost::property_tree::ptree& pt)
-	{
-		if (!RequestHeader::jsonEncode(pt)) return false;
-		pt.put("Header.StatusCode", OpcUaStatusCodeMap::shortString(statusCode_));
-		return true;
-	}
+    bool
+	ResponseHeader::jsonEncodeImpl(boost::property_tree::ptree& pt) const
+    {
+    	bool rc = true;
+    	rc = rc & RequestHeader::jsonEncodeImpl(pt);
+    	rc = rc & jsonNumberEncode(pt, (uint32_t)statusCode_, "StatusCode");
+    	return rc;
+    }
 
-	bool
-	ResponseHeader::jsonDecode(boost::property_tree::ptree& pt)
-	{
-		if (!RequestHeader::jsonDecode(pt)) return false;
-
-		// get status code from json message
-		boost::optional<std::string> statusCode = pt.get_optional<std::string>("Header.StatusCode");
-		if (!statusCode) {
-			statusCode_ = Success;
-			return true;
-		}
-		statusCode_ = OpcUaStatusCodeMap::statusCode(*statusCode);
-
-		return true;
-	}
+    bool
+	ResponseHeader::jsonDecodeImpl(const boost::property_tree::ptree& pt)
+    {
+       	bool rc = true;
+        rc = rc & RequestHeader::jsonDecodeImpl(pt);
+        rc = rc & jsonNumberDecode(pt, *(uint32_t*)&statusCode_, "StatusCode", true, (uint32_t)0);
+        return rc;
+    }
 
 }
 

@@ -29,7 +29,7 @@ print("RECV: ", str)
 res = json.loads(str)
 c.checkEqual(res['Header']['MessageType'], "GW_LoginResponse")
 c.checkEqual(res['Header']['ClientHandle'], "client-handle")
-c.checkEqual(res['Header']['StatusCode'], "Success")
+c.checkEqual(res['Header']['StatusCode'], "0")
 c.checkExists(res['Body']['SessionId'])
 sessionId = res['Body']['SessionId']
 
@@ -96,9 +96,9 @@ res = json.loads(str)
 c.checkEqual(res['Header']['MessageType'], "GW_CallResponse")
 c.checkEqual(res['Header']['ClientHandle'], "client-handle")
 c.checkEqual(res['Header']['SessionId'], sessionId)
-c.checkEqual(res['Header']['StatusCode'], "Success")
+c.checkEqual(res['Header']['StatusCode'], "0")
 c.checkEqual(len(res['Body']['Results']), 1)
-c.checkEqual(res['Body']['Results'][0]['Status'], "Success")
+c.checkEqual(res['Body']['Results'][0]['StatusCode'], "0")
 
 
 #
@@ -123,7 +123,7 @@ res = json.loads(str)
 c.checkEqual(res['Header']['MessageType'], "GW_LogoutResponse")
 c.checkEqual(res['Header']['ClientHandle'], "client-handle")
 c.checkEqual(res['Header']['SessionId'], sessionId)
-c.checkEqual(res['Header']['StatusCode'], "Success")
+c.checkEqual(res['Header']['StatusCode'], "0")
 
 
 
