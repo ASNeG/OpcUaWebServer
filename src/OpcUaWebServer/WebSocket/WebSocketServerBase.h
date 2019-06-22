@@ -85,7 +85,11 @@ namespace OpcUaWebServer
 		//
 		// handle send message
 		//
-		bool sendMessage(WebSocketMessage& webSocketMessage, WebSocketChannel* webSocketChannel);
+		bool sendMessage(
+			WebSocketMessage& webSocketMessage,
+			WebSocketChannel* webSocketChannel,
+			char headerByte = 0x00
+		);
 		void handleWriteMessageComplete(const boost::system::error_code& error, WebSocketChannel* httpChannel);
 
 
