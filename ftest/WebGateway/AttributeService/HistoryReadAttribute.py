@@ -84,7 +84,7 @@ ws.send(json.dumps(req))
 
 
 #
-# receive history read response from the opc ua server
+# receive history read attribute response from the opc ua server
 #
 str = ws. recv()
 print("RECV: ", str)
