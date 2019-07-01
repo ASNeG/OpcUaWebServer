@@ -7,7 +7,7 @@ services:
       - "8889"
     volumes:
       - server_pki:/etc/OpcUaStack/ASNeG-Demo/pki
-  stack:
+  webserver:
     container_name: webserver-demo
     depends_on:
       - asneg-demo
