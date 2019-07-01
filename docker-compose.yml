@@ -1,0 +1,28 @@
+version: '2'
+services:
+  asneg-demo:
+    image: asneg/asneg-demo:release-4
+    hostname: asneg-demo
+    expose:
+      - "8889"
+    volumes:
+      - server_pki:/etc/OpcUaStack/ASNeG-Demo/pki
+  webserver:
+    container_name: webserver-demo
+    depends_on:
+      - asneg-demo
+    environment: 
+      - SERVER_PKI_ROOT_DIR=/tmp/
+    build: .
+    volumes:
+      - server_pki:/tmp/etc/OpcUaStack/ASNeG-Demo/pki
+    command: >-
+      bash -c "sed -i 's/127.0.0.1:8889/asneg-demo:8889/' /etc/OpcUaStack/OpcUaWebServer/OpcUaClient0.xml
+      && sed -i 's/127.0.0.1:8889/asneg-demo:8889/' /etc/OpcUaStack/OpcUaWebServer/OpcUaClient1.xml 
+      && OpcUaServer4 /etc/OpcUaStack/OpcUaWebServer/OpcUaServer.xml"
+    ports: 
+      - "8080:8080"
+      - "8081:8081"
+      - "8082:8082"
+volumes:
+  server_pki:
