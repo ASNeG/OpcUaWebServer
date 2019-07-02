@@ -6,7 +6,7 @@ About
 
 ASNeG OPC UA Web Server is a web application to access
 to OPC UA data via the Internet. It provides a JSON API via WebSocket protocol
-and has an embeded OPC UA client to communicate with OPC UA servers. 
+and has an embedded OPC UA client to communicate with OPC UA servers. 
 
 
 Features
@@ -39,8 +39,8 @@ Then type the following command:
 ::
 
     $ sh build.sh -t local -s ASNEG_INSTALL_DIR
-	 
-	
+     
+    
 **On Windows**
 
 ::
@@ -52,7 +52,7 @@ Then type the following command:
 Usage
 -------------------------------------------------------
 
-If you have install the server locally you can run it by using
+If you have installed the server locally, you can run it by using
 the following command:
 
 ::
@@ -71,19 +71,19 @@ Also you can use Docker without installing any dependencies:
 Demo Application
 ----------------------------------------------
 
-The demo application contains the web server and demo OPC UA server as a data source. You can found
+The demo application contains the web server and a demo OPC UA server as a data source. You can found
 it `here <http://jenkins.asneg.de:8083/>`_ or run on your machine:
 
 ::
 
   $ docker-compose run -d -p 8083:8080 -p 8081:8081 -p 8082:8082 webserver
 
-Then open the link http://127.0.0.1:8080 with you web browser.
+Then open the link http://127.0.0.1:8080 with your web browser.
 
 Development Status
 ----------------------------------------------
 
-ASNeG OPC UA Web Server is in the development stage. Moreover it dependents on OpcUaStack 4 which
+ASNeG OPC UA Web Server is in the development stage. Moreover it dependents on OpcUaStack 4, which
 is also being developing and not released. 
 
 References
