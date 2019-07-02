@@ -12,7 +12,7 @@ and has an embeded OPC UA client to communicate with OPC UA servers.
 Features
 --------------------------------------------------------
 
-* Embedded **OPC UA Client** from `ASNeG OpcUaStack`_
+* Embedded **OPC UA Client** from `ASNeG OPC UA Stack`_
 * **HTTP Server** to distribute to delivery the web pages
 * **WebSokcet Server** with a simplified JSON API
 * **WebSokcet Gateway** with a JSON-OPC UA mapping
@@ -29,7 +29,7 @@ Requirements
 Installing
 --------------------------------------------------------
 
-Before install OpcUaWebServer you must install `ASNeG OPC UA Stack`. See this
+Before install OpcUaWebServer you must `install ASNeG OpcUaStack`_. See this
 tutorial for more information.
 
 Then type the following command:
@@ -47,7 +47,7 @@ Then type the following command:
 
     $ build.bat local -s ASNEG_INSTALL_DIR
 
-`ASNEG_INSTALL_DIR` is a path where ASNeG OPC UA Stack is installed.
+*ASNEG_INSTALL_DIR* is a path where ASNeG OPC UA Stack is installed.
 
 Usage
 -------------------------------------------------------
@@ -97,3 +97,4 @@ References
 .. _`Project Homepage`: https://asneg.github.io/projects/opcuawebserver
 .. _Documentation: https://opcuawebserver.readthedocs.io
 .. _`ASNeG OPC UA Stack`: https://asneg.github.io/projects/opcuastack
+.. _`install ASNeG OpcUaStack`: https://opcuastack.readthedocs.io/en/latest/1_getting_started/installation.html
