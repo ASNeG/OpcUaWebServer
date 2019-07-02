@@ -18,7 +18,6 @@ Features
 * **WebSokcet Gateway** with a JSON-OPC UA mapping
 * **Web Panel** to visualize the process data by using graphical JavaScript library
 * Configuration with XML files
-* Based on `ASNeG OpcUaStack`_
 
 Requirements
 --------------------------------------------------------
@@ -30,7 +29,7 @@ Requirements
 Installing
 --------------------------------------------------------
 
-Before install OpcUaWebServer you must install `ASNeG OpcUaStack`. See this
+Before install OpcUaWebServer you must install `ASNeG OPC UA Stack`. See this
 tutorial for more information.
 
 Then type the following command:
@@ -73,7 +72,7 @@ Demo Application
 ----------------------------------------------
 
 The demo application contains the web server and demo OPC UA server as a data source. You can found
-it here_ or run on your machine:
+it `here <http://jenkins.asneg.de:8083/>`_ or run on your machine:
 
 ::
 
@@ -89,3 +88,12 @@ is also being developing and not released.
 
 References
 ----------------------------------------------
+
+* `Project Homepage`_
+* Documentation_
+* `ASNeG OPC UA Stack`_
+
+
+.. _`Project Homepage`: https://asneg.github.io/projects/opcuawebserver
+.. _Documentation: https://opcuawebserver.readthedocs.io
+.. _`ASNeG OPC UA Stack`: https://asneg.github.io/projects/opcuastack
