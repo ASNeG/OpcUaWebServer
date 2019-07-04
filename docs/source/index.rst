@@ -18,7 +18,6 @@ Contents
    3_websocket_server/_index
    4_websocket_gateway/_index
 
-
 Development Status
 ----------------------------------------------
 
