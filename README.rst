@@ -1,6 +1,17 @@
 OpcUaWebServer
 ========================================================
 
+.. image:: http://jenkins.asneg.de:8080/job/OpcUaWebServer/job/master/badge/icon
+    :target: http://jenkins.asneg.de:8080/job/OpcUaWebServer/job/master/
+.. image:: https://img.shields.io/github/downloads/ASNeG/OpcUaWebServer/total.svg
+    :alt: Github All Releases
+    :target: https://github.com/ASNeG/OpcUaWebServer
+.. image:: https://asneg-invate-form.herokuapp.com/badge.svg
+    :alt: Slack Community
+    :target: https://asneg-invate-form.herokuapp.com
+
+
+
 About
 --------------------------------------------------------
 
