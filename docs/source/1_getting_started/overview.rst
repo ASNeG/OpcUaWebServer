@@ -25,20 +25,67 @@ The OpcUaWebServer contains the following components:
 pages in HTML format does not require a separate web server for simple web applications with
 OPC UA access. The use of the HTTP Server component is optional.
 
-**Web Socket Server** provides a bidirectional web socket interface for access to OPC UA variables.
+**WebSocket Server** provides a JSON API via bidirectional WebSocket protocol for access to OPC UA variables.
 The Web Socket Server component is decoupled from the OPC UA server. Symbolic names are used to
-access OPC UA variables. A configuration in the Web Socket server maps these variables to OPC UA
+access OPC UA variables. A configuration in the WebSocket Server maps these variables to OPC UA
 variables and the assigned OPC UA server. The functionality of the interface is very simple but
 limited to a few functions. The disadvantage of the interface is the high configuration effort. 
 The use of the Web Socket Server component is optional. 
 
-**Web Gateway** provides a bidirectional web socket interface for access to OPC UA server services.
-The Web Socket Gateway component is not decoupled from the OPC UA server. All web application JSON 
-packets are transferred from the Web Gateway to binary OPC UA packets and sent directly to the assigned OPC UA server. 
-A separate configuration for the Web Gateway is not necessary. As an advantage,
+**WebSocket Gateway** provides a JSON API via bidirectional WebSocket protocol for access to OPC UA server services.
+The WebSocket Gateway component is not decoupled from the OPC UA server. All web application JSON 
+packets are transferred from the WebGateway to binary OPC UA packets and sent directly to the assigned OPC UA server. 
+A separate configuration for the WebGateway is not necessary. As an advantage,
 all OPC UA service functions of an OPC UA server can be used directly from the web application. However,
 the JSON interface functions are a little bit complex than with the Web Socket Server model. The use of the Web Gateway component is optional.   
 
 
 **OPC UA Client** is used for communication with one or more OPC UA servers.
 
+In addition, the Web Server provides **Web Panel** for visualization of the process data. **Web Panel** uses a JavaScript library of visual components which can be bound with OPC UA variables. You can use it as a very
+simple SCADA system configured by XML files. You can see how it work with our `Demo Application`_.
+
+
+WebSocket Server JSON API Reference
+------------------------------------
+
+*WebSocket Server* has a simple JSON API with the limited functionality contains the following requests:
+
++---------------------+---------------------------------------------------------------------+
+| Name                | Description                                                         |
++=====================+=====================================================================+
+| ValueList           | Returns all names of  OPC UA variables processed by the server.     |
++---------------------+---------------------------------------------------------------------+
+| ValueInfo           | Returns information about OPC UA variables (such as type, name etc.)|
++---------------------+---------------------------------------------------------------------+
+| Read                | Reads the value, status and timestamp of the given variable         |
++---------------------+---------------------------------------------------------------------+
+| HistoricalRead      | Reads historical values of the given  variables                     |
++---------------------+---------------------------------------------------------------------+
+| Write               | Writes the value, status and timestamp of the given variable        |
++---------------------+---------------------------------------------------------------------+
+| MonitorSartResponse | Starts monitoring the given variable to receive its new values      |
++---------------------+---------------------------------------------------------------------+
+| MonitorStopResponse | Stops monitoring the given variable                                 |
++---------------------+---------------------------------------------------------------------+
+
+For more information see :ref:`websocket_server`
+
+WebSocket Gateway JSON API Reference
+------------------------------------
+
+*WebSocket Gateway* supports all the OPC UA services that `ASNeG OPC UA Stack`_ covers.
+See `its coverage tables <https://opcuastack.readthedocs.io/en/latest/1_getting_started/overview.html#opc-ua-specification-coverage>`_ 
+for more information.
+
+
+References
+----------
+
+* `ASNeG OPC UA Stack`_
+* `Demo Application`_
+* :ref:`websocket_server`
+* :ref:`websocket_gateway`
+
+.. _`ASNeG OPC UA Stack`: https://asneg.github.io/projects/opcuastack
+.. _`Demo Application`: http://jenkins.asneg.de:8083
