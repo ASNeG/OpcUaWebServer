@@ -19,7 +19,15 @@ Contents
    4_web_socket_gateway/_index
 
 
+Contribution
+------------
 
+Our goal is to let people use OPC UA technology easily and for free. As an open source project
+we can't reach the goal without a strong community. So we will appreciate any help
+to the project.
+
+If you feel eager to help the project, take a look at `Contributing to ASNeG <https://github.com/ASNeG/.github/blob/master/CONTRIBUTING.md>`_
+and join us `on Slack <https://asneg-invate-form.herokuapp.com/>`_
 
 
 Indices and tables
