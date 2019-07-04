@@ -15,8 +15,15 @@ Contents
 
    1_getting_started/_index
    2_http_server/_index
-   3_web_socket_server/_index
-   4_web_socket_gateway/_index
+   3_websocket_server/_index
+   4_websocket_gateway/_index
+
+
+Development Status
+----------------------------------------------
+
+ASNeG OPC UA Web Server is in the development stage. Moreover it dependents on OpcUaStack 4, which
+is also being developing and not released.
 
 
 Contribution
@@ -29,11 +36,6 @@ to the project.
 If you feel eager to help the project, take a look at `Contributing to ASNeG <https://github.com/ASNeG/.github/blob/master/CONTRIBUTING.md>`_
 and join us `on Slack <https://asneg-invate-form.herokuapp.com/>`_
 
-Development Status
-----------------------------------------------
-
-ASNeG OPC UA Web Server is in the development stage. Moreover it dependents on OpcUaStack 4, which
-is also being developing and not released.
 
 Indices and tables
 -------------------
