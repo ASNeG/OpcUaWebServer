@@ -7,7 +7,7 @@ WORKDIR /build
 
 # Build
 RUN cmake /tmp/src
-RUN make
+RUN make -j 2
 RUN make install
 
 # Start OpcUaWebServer

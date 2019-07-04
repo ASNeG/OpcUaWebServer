@@ -19,7 +19,7 @@ pipeline {
     stage('test_linux') {
       steps {
         timeout(time: 5, unit: "MINUTES") {
-          sh 'docker-compose run sh /tmp/ftest/test.sh'
+          sh 'docker-compose run webserver sh /tmp/ftest/test.sh'
         }
       }
     }
