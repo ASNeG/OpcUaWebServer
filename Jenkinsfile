@@ -19,7 +19,7 @@ pipeline {
     stage('test_linux') {
       steps {
         timeout(time: 5, unit: "MINUTES") {
-          sh 'docker-compose run webserver bash /tmp/ftest/WebGateway/test.sh'
+          sh 'docker-compose run test_client bash -c "cd /code/ftest/ && python3 -m unittest discover"'
         }
       }
     }
