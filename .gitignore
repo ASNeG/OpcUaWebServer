@@ -20,3 +20,4 @@ build_local*
 
 .idea
 src/cmake-build-*
+__pycache__

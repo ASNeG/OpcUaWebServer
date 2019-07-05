@@ -10,7 +10,7 @@ pipeline {
       parallel {
         stage('build_linux') {
           steps {
-            sh 'docker-compose build'
+            sh 'docker-compose build --pull'
           }
         }
       }
@@ -19,7 +19,7 @@ pipeline {
     stage('test_linux') {
       steps {
         timeout(time: 5, unit: "MINUTES") {
-          sh 'docker-compose run webserver sh /tmp/ftest/test.sh'
+          sh 'docker-compose run webserver bash /tmp/ftest/WebGateway/test.sh'
         }
       }
     }
