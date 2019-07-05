@@ -1,2 +1,2 @@
 websocket
-websocket-cliente
+websocket-client
