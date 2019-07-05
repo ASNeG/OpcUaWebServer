@@ -25,8 +25,8 @@ Features
 
 * Embedded **OPC UA Client** from `ASNeG OPC UA Stack`_
 * **HTTP Server** to distribute to delivery the web pages
-* **WebSokcet Server** with a simplified JSON API
-* **WebSokcet Gateway** with a JSON-OPC UA mapping
+* **WebSocket Server** with a simplified JSON API
+* **WebSocket Gateway** with a JSON-OPC UA mapping
 * **Web Panel** to visualize the process data by using graphical JavaScript library
 * Configuration with XML files
 
