@@ -1,4 +1,6 @@
-Web Socket Gateway
+.. _websocket_server:
+
+WebSocket Server
 ====================
 
 .. toctree::
