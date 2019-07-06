@@ -32,6 +32,8 @@ pipeline {
         timeout(time: 5, unit: "MINUTES") {
           sh 'docker-compose run test_client bash -c "cd /code/ftest/ && nosetests --with-xunit"'
         }
+
+        junit(testResults: 'ftest/nosetests.xml')
       }
 
     }
@@ -40,7 +42,6 @@ pipeline {
   post {
     always {
       sh 'docker-compose run test_client bash -c "find /code/ | grep __pycache__ | xargs rm -rf"'
-      junit(testResults: 'ftest/nosetests.xml')
 
       sh 'docker-compose run webserver sh build.sh -t clean'
       sh 'docker-compose down --volumes --rmi local --remove-orphans'

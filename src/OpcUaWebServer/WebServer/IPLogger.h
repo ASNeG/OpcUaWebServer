@@ -17,7 +17,7 @@
  */
 
 #ifndef __OpcUaStackWebServer_IPLogger_h__
-#define __OpcUaStackWebServer_Filelogger_h__
+#define __OpcUaStackWebServer_IPLogger_h__
 
 #include <boost/date_time/posix_time/posix_time.hpp>
 #include <boost/filesystem/fstream.hpp>
