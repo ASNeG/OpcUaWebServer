@@ -93,7 +93,7 @@ it `here <http://jenkins.asneg.de:8083/>`_ or run on your machine:
 
 ::
 
-  $ docker-compose run -d -p 8083:8080 -p 8081:8081 -p 8082:8082 webserver
+  $ docker-compose run -d -p 8080:8080 -p 8081:8081 -p 8082:8082 webserver
 
 Then open the link http://127.0.0.1:8080 with your web browser.
 
