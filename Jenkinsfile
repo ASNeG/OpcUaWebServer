@@ -27,7 +27,7 @@ pipeline {
 
   post {
     always {
-      sh 'docker-compose down --volumes --rmi local'
+      sh 'docker-compose down --volumes --rmi local --remove-orphans'
     }
   }
 }
