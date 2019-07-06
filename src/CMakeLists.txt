@@ -16,8 +16,8 @@ set(VERSION_MINOR "0" CACHE STRING "minor version")
 set(VERSION_PATCH "0" CACHE STRING "patch version")
 
 set(OPCUASTACK_VERSION_MAJOR "4")
-set(OPCUASTACK_VERSION_MINOR "1")
-set(OPCUASTACK_VERSION_PATCH "0")
+# set(OPCUASTACK_VERSION_MINOR "1")
+# set(OPCUASTACK_VERSION_PATCH "0")
 
 
 # -----------------------------------------------------------------------------

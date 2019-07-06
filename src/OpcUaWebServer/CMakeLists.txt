@@ -81,17 +81,19 @@ foreach(ITEM ${DEPLOY_FILES_AND_DIRS})
         LIST(APPEND FILES_TO_DEPLOY ${ITEM})
     ENDIF()
 endforeach()
-install(FILES ${FILES_TO_DEPLOY} DESTINATION /var/www/OpcUaWebServer)
-install(DIRECTORY ${DIRS_TO_DEPLOY} DESTINATION /var/www/OpcUaWebServer)
 
 file (GLOB CONFIG_FILES ${PROJECT_SOURCE_DIR}/OpcUaWebServer/Config/*.xml)
 install(TARGETS OpcUaWebServer DESTINATION ${INSTALL_PREFIX}/lib)
+
+install(FILES ${FILES_TO_DEPLOY} DESTINATION ${INSTALL_PREFIX}/../var/www/OpcUaWebServer)
+install(DIRECTORY ${DIRS_TO_DEPLOY} DESTINATION ${INSTALL_PREFIX}/../var/www/OpcUaWebServer)
 
 if (WIN32)
     install(FILES ${CONFIG_FILES} DESTINATION ${INSTALL_PREFIX}/../etc/OpcUaStack/OpcUaWebServer) 
     install(FILES ${PROJECT_SOURCE_DIR}/OpcUaWebServer/linux/log/README DESTINATION ${INSTALL_PREFIX}/../var/log/OpcUaStack/OpcUaWebServer)
     install(DIRECTORY DESTINATION ${INSTALL_PREFIX}/../var/log/OpcUaStack/OpcUaWebServer)
 else()    
+
     install(FILES ${CONFIG_FILES} DESTINATION ${INSTALL_PREFIX}/../etc/OpcUaStack/OpcUaWebServer) 
     install(FILES ${PROJECT_SOURCE_DIR}/OpcUaWebServer/linux/log/README DESTINATION /var/log/OpcUaStack/OpcUaWebServer)
     install(DIRECTORY DESTINATION /var/log/OpcUaStack/OpcUaWebServer)
