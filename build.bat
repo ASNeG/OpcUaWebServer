@@ -21,6 +21,7 @@ set COMMAND="local"
 set STACK_PREFIX=C:\ASNeG
 set VS_GENERATOR=""
 set BUILD_TYPE="Debug"
+set JOBS=1
 set STANDALONE=OFF
 
 :parse
@@ -45,6 +46,10 @@ set STANDALONE=OFF
     if "%~1"=="/B"               set BUILD_TYPE=%~2
     if "%~1"=="-B"               set BUILD_TYPE=%~2
     if "%~1"=="--build-type"     set BUILD_TYPE=%~2
+
+    if "%~1"=="/j"               set JOBS=%~2
+    if "%~1"=="-j"               set JOBS=%~2
+    if "%~1"=="--jobs"           set JOBS=%~2
     shift
 
     REM flags
@@ -112,7 +117,7 @@ REM ---------------------------------------------------------------------------
 	REM
 	REM build OpcUaStack
 	REM
-	%CMAKE% %VS_GENERATOR% -DCMAKE_BUILD_TYPE=%BUILD_TYPE% -DOPCUASTACK_INSTALL_PREFIX=%STACK_PREFIX% -H./src/ -B./build_local_%BUILD_DIR_SUFFIX%
+	%CMAKE% %VS_GENERATOR% -DCMAKE_BUILD_TYPE=%BUILD_TYPE% -DCMAKE_CXX_FLAGS=/MP%JOBS% -DOPCUASTACK_INSTALL_PREFIX=%STACK_PREFIX% -H./src/ -B./build_local_%BUILD_DIR_SUFFIX%
 
 	REM
 	REM install OpcUaStack
@@ -133,7 +138,7 @@ REM ---------------------------------------------------------------------------
 	REM
 	REM build OpcUaStack
 	REM
-	%CMAKE% %VS_GENERATOR% -DCPACK_BINARY_MSI=ON -DSTANDALONE=%STANDALONE% -DOPCUASTACK_INSTALL_PREFIX=%STACK_PREFIX%  -DCMAKE_BUILD_TYPE=%BUILD_TYPE% -H./src/ -B./build_msi_%BUILD_DIR_SUFFIX%
+	%CMAKE% %VS_GENERATOR% -DCPACK_BINARY_MSI=ON -DSTANDALONE=%STANDALONE% -DCMAKE_CXX_FLAGS=/MP%JOBS% -DOPCUASTACK_INSTALL_PREFIX=%STACK_PREFIX%  -DCMAKE_BUILD_TYPE=%BUILD_TYPE% -H./src/ -B./build_msi_%BUILD_DIR_SUFFIX%
 
 	REM
 	REM package OpcUaStack to MSI
@@ -152,7 +157,7 @@ REM ---------------------------------------------------------------------------
 	REM
 	REM build unittest
 	REM
-	%CMAKE% %VS_GENERATOR% -DOPCUASTACK_INSTALL_PREFIX="%STACK_PREFIX%" -DCMAKE_BUILD_TYPE=%BUILD_TYPE% -H./tst/ -B./build_tst_%BUILD_DIR_SUFFIX%
+	%CMAKE% %VS_GENERATOR% -DOPCUASTACK_INSTALL_PREFIX="%STACK_PREFIX%" -DCMAKE_CXX_FLAGS=/MP%JOBS% -DCMAKE_BUILD_TYPE=%BUILD_TYPE% -H./tst/ -B./build_tst_%BUILD_DIR_SUFFIX%
 
 	REM
 	REM install OpcUaStack
@@ -186,6 +191,8 @@ REM ---------------------------------------------------------------------------
    echo --build-type, -B, /B BUILD_TYPE:  set the build types (Debug | Release). By default, it is Debug type.
    echo.
    echo --standalone, -S, /S:  includes OpcUaStack and its dependencies in MSI package of the application
+   echo.
+   echo "--jobs, -j, /j JOB_COUNT: sets the number of the jobs of make"
    echo.
 
 goto:eof
