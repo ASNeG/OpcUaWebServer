@@ -27,7 +27,7 @@ pipeline {
 
   post {
     always {
-      sh 'docker-compose run test_client bash -c "find /code/ | grep -E \"(__pycache__|\.pyc|\.pyo$)\" | xargs rm -rf"
+      sh 'docker-compose run test_client bash -c "find /code/ | grep -E \"(__pycache__|\\.pyc|\\.pyo$)\" | xargs rm -rf"
 '
       sh 'docker-compose down --volumes --rmi local --remove-orphans'
       xunit (
