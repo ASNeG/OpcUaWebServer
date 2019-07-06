@@ -29,6 +29,8 @@ pipeline {
     always {
       sh 'docker-compose run test_client bash -c "find /code/ | grep __pycache__ | xargs rm -rf"'
       sh 'docker-compose down --volumes --rmi local --remove-orphans'
+      sh 'docker-compose run stack sh build.sh -t clean'
+
       xunit (
         thresholds: [ skipped(failureThreshold: '0'), failed(failureThreshold: '0') ],
         tools: [JUnit(pattern: '/ftest/**/nosetests.xml') ])
