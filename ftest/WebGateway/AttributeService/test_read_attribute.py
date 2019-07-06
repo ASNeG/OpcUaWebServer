@@ -61,7 +61,7 @@ class TestReadAttribute(WebGatewayTestCase):
         self.assertIsNotNone(res['Body']['Results'][0]['Value'])
         self.assertIsNotNone(res['Body']['Results'][1]['Value'])
 
-    @unittest.skip("Need the count")
+    @unittest.skip("what is the node count?")
     def test_big_size(self):
         NODE_COUNT = 2000
         nodesToRead = [

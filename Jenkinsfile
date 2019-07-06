@@ -31,7 +31,7 @@ pipeline {
       junit(testResults: 'ftest/nosetests.xml')
 
       sh 'docker-compose down --volumes --rmi local --remove-orphans'
-      sh 'docker-compose run stack sh build.sh -t clean'
+      sh 'docker-compose run webserver sh build.sh -t clean'
     }
   }
 }

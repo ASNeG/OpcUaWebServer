@@ -4,7 +4,6 @@ import json
 import time
 from websocket import create_connection
 
-
 class WebGatewayTestCase(unittest.TestCase):
 
     def setUp(self):
@@ -12,6 +11,10 @@ class WebGatewayTestCase(unittest.TestCase):
 
         self.WS_SERVER_URL = os.getenv('WS_SERVER_URL', "ws://127.0.0.1:8082")
         self.OPC_SERVER_URL = os.getenv('OPC_SERVER_URL', "opc.tcp://127.0.0.1:8889")
+        self.SERVER_PKI_ROOT_DIR = os.path.join(os.getenv('SERVER_PKI_ROOT_DIR', '/tmp/'),
+                                                'etc/OpcUaStack/ASNeG-Demo/pki')
+
+        # TODO: Here the certs of client and server should be exchanged
 
         #
         # open web socket connection

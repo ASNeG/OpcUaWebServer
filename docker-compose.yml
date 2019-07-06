@@ -33,10 +33,12 @@ services:
       - asneg-demo
       - webserver
     environment:
+      - SERVER_PKI_ROOT_DIR=/tmp/
       - WS_SERVER_URL=ws://webserver:8082
       - OPC_SERVER_URL=opc.tcp://asneg-demo:8889
     command: echo "Test client is ready"
     volumes:
+      - server_pki:/tmp/etc/OpcUaStack/ASNeG-Demo/pki
       - .:/code
 
 volumes:
