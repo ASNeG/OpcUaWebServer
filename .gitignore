@@ -19,5 +19,6 @@ build_package
 build_local*
 
 .idea
-src/cmake-build-*
+cmake-build-*
 __pycache__
+nosetests.xml
