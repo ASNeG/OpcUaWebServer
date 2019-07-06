@@ -1,15 +1,17 @@
 version: '2'
 services:
   asneg-demo:
-    image: asneg/asneg-demo:release-4
+    container_name: asneg-demo${BUILD_TAG}
     hostname: asneg-demo
+    image: asneg/asneg-demo:release-4
     expose:
       - "8889"
     volumes:
       - server_pki:/etc/OpcUaStack/ASNeG-Demo/pki
 
   webserver:
-    container_name: webserver-demo
+    container_name: webserver${BUILD_TAG}
+    hostname: webserver
     depends_on:
       - asneg-demo
     environment: 
@@ -30,6 +32,7 @@ services:
       - "7722:22"
 
   test_client:
+    container_name: test_client${BUILD_TAG}
     build: .
     depends_on:
       - asneg-demo
