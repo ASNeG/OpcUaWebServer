@@ -60,6 +60,8 @@ target_link_libraries(
     ${OPCUASTACK_LIBRARY_SERVER}
     ${OPCUASTACK_LIBRARY_PUBSUB}
     ${Boost_LIBRARIES}
+    ${OPENSSL_LIBRARIES}
+
 )
 
 # -----------------------------------------------------------------------------
