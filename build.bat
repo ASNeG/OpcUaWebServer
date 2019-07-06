@@ -76,34 +76,34 @@ if "%COMMAND%" == "" (
     call:build_local
 	
 	pause
-	goto:eof
+	goto:error_handle
 )
 
 if "%COMMAND%" == "local" (
     call:build_local
 	
 	pause
-	goto:eof
+	goto:error_handle
 )
 
 if "%COMMAND%" == "msi" (
     call:build_msi
 	
 	pause
-	goto:eof
+	goto:error_handle
 )
 
 if "%COMMAND%" == "tst" (
     call:build_tst
 	
 	pause
-	goto:eof
+	goto:error_handle
 )
 
 call:usage
 
 pause
-goto:eof
+goto:error_handle
 
 
 REM ---------------------------------------------------------------------------
@@ -125,7 +125,7 @@ REM ---------------------------------------------------------------------------
     
 	set DESTDIR=%INSTALL_PREFIX%
 	%CMAKE% --build build_local_%BUILD_DIR_SUFFIX% --target install --config %BUILD_TYPE%
-goto:eof
+goto:error_handle
 
 REM ---------------------------------------------------------------------------
 REM
@@ -144,7 +144,7 @@ REM ---------------------------------------------------------------------------
 	REM package OpcUaStack to MSI
 	REM    		
     %CMAKE% --build build_msi_%BUILD_DIR_SUFFIX% --target package --config %BUILD_TYPE%
-goto:eof
+goto:error_handle
 
 REM ---------------------------------------------------------------------------
 REM
@@ -163,7 +163,7 @@ REM ---------------------------------------------------------------------------
 	REM install OpcUaStack
 	REM    
 	%CMAKE% --build build_tst_%BUILD_DIR_SUFFIX% --config %BUILD_TYPE%
-goto:eof
+goto:error_handle
 
 
 REM ---------------------------------------------------------------------------
@@ -195,4 +195,11 @@ REM ---------------------------------------------------------------------------
    echo "--jobs, -j, /j JOB_COUNT: sets the number of the jobs of make"
    echo.
 
-goto:eof
+goto:error_handle
+
+:error_handle
+
+if errorlevel 1 (
+   echo finished with errocode %errorlevel%
+   exit /b %errorlevel%
+)
