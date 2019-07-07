@@ -1,0 +1,2 @@
+PR_TITLE_REGEX=/.*/i
+COMMIT_MESSAGE_REGEX=/^[a-z]*+(?<!ed)\s+[a-zA-Z0-9]+[^\.]*$/i
