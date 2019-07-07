@@ -75,34 +75,29 @@ set BUILD_DIR_SUFFIX=%ARCH%_vs%VisualStudioVersion%_%BUILD_TYPE%
 if "%COMMAND%" == "" (
     call:build_local
 	
-	pause
 	goto:error_handle
 )
 
 if "%COMMAND%" == "local" (
     call:build_local
 	
-	pause
 	goto:error_handle
 )
 
 if "%COMMAND%" == "msi" (
     call:build_msi
 	
-	pause
 	goto:error_handle
 )
 
 if "%COMMAND%" == "tst" (
     call:build_tst
 	
-	pause
 	goto:error_handle
 )
 
 call:usage
 
-pause
 goto:error_handle
 
 
