@@ -41,8 +41,10 @@ pipeline {
 
   post {
     always {
+      sh 'docker-compose run test_client bash -c "find /code/ | grep __pycache__ | xargs rm -rf"'
+      sh 'docker-compose run webserver bash -c "cd /code/ && sh build.sh -t clean"'
+
       sh 'docker-compose down --volumes --rmi local --remove-orphans'
-      deleteDir()
     }
   }
 }
