@@ -1,5 +1,9 @@
 pipeline {
   agent any
+  triggers {
+    pollSCM('* * * * *')
+    cron('30 23 * * *') 
+  }
   stages {
     stage('cppcheck') {
       steps {
