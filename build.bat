@@ -31,9 +31,9 @@ set STANDALONE=OFF
     if "%~1"=="-t"               set COMMAND=%2
     if "%~1"=="--target"         set COMMAND=%2
 
-    if "%~1"=="/i"               set INSTALL_PREFIX="%~2"
-    if "%~1"=="-i"               set INSTALL_PREFIX="%~2"
-    if "%~1"=="--install-prefix" set INSTALL_PREFIX="%~2"
+    if "%~1"=="/i"               set INSTALL_PREFIX=%~2
+    if "%~1"=="-i"               set INSTALL_PREFIX=%~2
+    if "%~1"=="--install-prefix" set INSTALL_PREFIX=%~2
 
     if "%~1"=="/s"               set STACK_PREFIX="%~2"
     if "%~1"=="-s"               set STACK_PREFIX="%~2"
