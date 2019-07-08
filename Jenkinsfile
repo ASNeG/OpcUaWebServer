@@ -36,23 +36,27 @@ pipeline {
         junit(testResults: 'ftest/nosetests.xml')
       }
 
+      post {
+        always {
+          sh 'docker-compose run test_client bash -c "find /code/ | grep __pycache__ | xargs rm -rf"'
+        }
+      }
+
     }
   }
 
   post {
-    unsuccessful {
-      slackSend "Build Unsuccessful - ${env.JOB_NAME} ${env.BUILD_NUMBER} (<${env.BUILD_URL}|Open>)"
-    }
-
     fixed {
       slackSend "Build Fixed - ${env.JOB_NAME} ${env.BUILD_NUMBER} (<${env.BUILD_URL}|Open>)"
     }
 
-    /* cleanup { */
-    /*   sh 'docker-compose run test_client bash -c "find /code/ | grep __pycache__ | xargs rm -rf"' */
-    /*   sh 'docker-compose run webserver bash -c "cd /code/ && sh build.sh -t clean"' */
-    /*  */
-    /*   sh 'docker-compose down --volumes --rmi local --remove-orphans' */
-    /* } */
+    failure {
+      slackSend "Build Unsuccessful - ${env.JOB_NAME} ${env.BUILD_NUMBER} (<${env.BUILD_URL}|Open>)"
+    }
+
+    cleanup {
+      sh 'docker-compose down --volumes --rmi local --remove-orphans'
+      deleteDir()
+    }
   }
 }
