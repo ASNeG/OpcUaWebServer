@@ -3,6 +3,7 @@ pipeline {
   stages {
     stage('cppcheck') {
       steps {
+        slackSend "Build Unsuccessful - ${env.JOB_NAME} ${env.BUILD_NUMBER} (<${env.BUILD_URL}|Open>)"
         sh 'cppcheck --xml --xml-version=2 ./src 2> cppcheck.xml'
       }
     }
