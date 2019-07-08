@@ -40,6 +40,13 @@ pipeline {
   }
 
   post {
+    failure {
+      slackSend "Build Failure - ${env.JOB_NAME} ${env.BUILD_NUMBER} (<${env.BUILD_URL}|Open>)"
+    }
+    fixed {
+      slackSend "Build Fixed - ${env.JOB_NAME} ${env.BUILD_NUMBER} (<${env.BUILD_URL}|Open>)"
+    }
+
     always {
       sh 'docker-compose run test_client bash -c "find /code/ | grep __pycache__ | xargs rm -rf"'
       sh 'docker-compose run webserver bash -c "cd /code/ && sh build.sh -t clean"'
