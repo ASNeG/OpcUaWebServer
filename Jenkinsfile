@@ -40,7 +40,7 @@ pipeline {
   }
 
   post {
-    failure {
+    unsuccessful {
       slackSend "Build Failure - ${env.JOB_NAME} ${env.BUILD_NUMBER} (<${env.BUILD_URL}|Open>)"
     }
     fixed {
