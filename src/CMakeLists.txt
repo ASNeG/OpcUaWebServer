@@ -124,7 +124,7 @@ install(FILES ${CMAKE_SOURCE_DIR}/icon/asneg_install.ico DESTINATION ${INSTALL_P
 install(FILES ${CMAKE_SOURCE_DIR}/icon/asneg_uninstall.ico DESTINATION ${INSTALL_PREFIX}/share/icons/OpcUaWebServer)
 install(FILES ${CMAKE_SOURCE_DIR}/Copyright.txt DESTINATION ${INSTALL_PREFIX}/share/OpcUaWebServer)
 install(FILES ${CMAKE_SOURCE_DIR}/../NOTICE DESTINATION ${INSTALL_PREFIX}/share/OpcUaWebServer)
-
+rttre
 
 # -----------------------------------------------------------------------------
 # -----------------------------------------------------------------------------
