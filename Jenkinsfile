@@ -51,7 +51,7 @@ pipeline {
     }
 
     failure {
-      slackSend(color:'#FF9FA1', message:"Build Unsuccessful - ${env.JOB_NAME} ${env.BUILD_NUMBER} (<${env.BUILD_URL}|Open>)")
+      slackSend(color:'#FF9FA1', message:"Build Failed - ${env.JOB_NAME} ${env.BUILD_NUMBER} (<${env.BUILD_URL}|Open>)")
     }
 
     cleanup {
