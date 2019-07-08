@@ -10,9 +10,7 @@ pipeline {
       parallel {
         stage('build_linux') {
           steps {
-            catchError {
-              sh 'docker-compose build --pull'
-            }
+            sh 'docker-compose build --pull'
           }
         }
 
@@ -23,9 +21,7 @@ pipeline {
               env.BUILDDIRNAME = 'C:\\build\\' + readFile('DIRNAME.txt').trim()
             }
 
-            catchError {
-              sh 'ssh 127.0.0.1 -l vagrant -p 2222 "cd $BUILDDIRNAME && C:\\build_vs.bat -t local -B Release -s C:\\ASNeG -i $BUILDDIRNAME\\ASNeG  -vs \\"Visual Studio 15 2017 Win64\\" -j 2"'
-            }
+            sh 'ssh 127.0.0.1 -l vagrant -p 2222 "cd $BUILDDIRNAME && C:\\build_vs.bat -t local -B Release -s C:\\ASNeG -i $BUILDDIRNAME\\ASNeG  -vs \\"Visual Studio 15 2017 Win64\\" -j 2"'
           }
         }
       }
@@ -47,15 +43,16 @@ pipeline {
     unsuccessful {
       slackSend "Build Unsuccessful - ${env.JOB_NAME} ${env.BUILD_NUMBER} (<${env.BUILD_URL}|Open>)"
     }
+
     fixed {
       slackSend "Build Fixed - ${env.JOB_NAME} ${env.BUILD_NUMBER} (<${env.BUILD_URL}|Open>)"
     }
 
-    cleanup {
-      sh 'docker-compose run test_client bash -c "find /code/ | grep __pycache__ | xargs rm -rf"'
-      sh 'docker-compose run webserver bash -c "cd /code/ && sh build.sh -t clean"'
-
-      sh 'docker-compose down --volumes --rmi local --remove-orphans'
-    }
+    /* cleanup { */
+    /*   sh 'docker-compose run test_client bash -c "find /code/ | grep __pycache__ | xargs rm -rf"' */
+    /*   sh 'docker-compose run webserver bash -c "cd /code/ && sh build.sh -t clean"' */
+    /*  */
+    /*   sh 'docker-compose down --volumes --rmi local --remove-orphans' */
+    /* } */
   }
 }
