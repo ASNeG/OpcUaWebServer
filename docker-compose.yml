@@ -1,28 +1,45 @@
 version: '2'
 services:
   asneg-demo:
-    image: asneg/asneg-demo:release-4
+    container_name: asneg-demo${BUILD_TAG}
     hostname: asneg-demo
+    image: asneg/asneg-demo:release-4
     expose:
       - "8889"
     volumes:
       - server_pki:/etc/OpcUaStack/ASNeG-Demo/pki
+
   webserver:
-    container_name: webserver-demo
+    container_name: webserver${BUILD_TAG}
+    hostname: webserver
     depends_on:
       - asneg-demo
     environment: 
       - SERVER_PKI_ROOT_DIR=/tmp/
+      - SSH_AUTH_SOCK=/ssh-agent
     build: .
     volumes:
       - server_pki:/tmp/etc/OpcUaStack/ASNeG-Demo/pki
+      - .:/code
     command: >-
       bash -c "sed -i 's/127.0.0.1:8889/asneg-demo:8889/' /etc/OpcUaStack/OpcUaWebServer/OpcUaClient0.xml
       && sed -i 's/127.0.0.1:8889/asneg-demo:8889/' /etc/OpcUaStack/OpcUaWebServer/OpcUaClient1.xml 
       && OpcUaServer4 /etc/OpcUaStack/OpcUaWebServer/OpcUaServer.xml"
-    ports: 
-      - "8080:8080"
-      - "8081:8081"
-      - "8082:8082"
+
+  test_client:
+    container_name: test_client${BUILD_TAG}
+    build: .
+    depends_on:
+      - asneg-demo
+      - webserver
+    environment:
+      - SERVER_PKI_ROOT_DIR=/tmp/
+      - WS_SERVER_URL=ws://webserver:8082
+      - OPC_SERVER_URL=opc.tcp://asneg-demo:8889
+    command: echo "Test client is ready"
+    volumes:
+      - server_pki:/tmp/etc/OpcUaStack/ASNeG-Demo/pki
+      - .:/code
+
 volumes:
   server_pki:

@@ -605,14 +605,14 @@ namespace OpcUaWebServer
 		char lengthBytes[8];
 		is.read(lengthBytes, 8);
 
-		uint64_t length = ((lengthBytes[0] & 0xFF) << 56)
-						+ ((lengthBytes[1] & 0xFF) << 48)
-						+ ((lengthBytes[2] & 0xFF) << 40)
-						+ ((lengthBytes[3] & 0xFF) << 32)
-						+ ((lengthBytes[4] & 0xFF) << 24)
-						+ ((lengthBytes[5] & 0xFF) << 16)
-				        + ((lengthBytes[6] & 0xFF) << 8)
-				        + ((lengthBytes[7] & 0xFF));
+		uint64_t length = (static_cast<uint64_t>((lengthBytes[0] & 0xFF)) << 56)
+						+ (static_cast<uint64_t>((lengthBytes[1] & 0xFF)) << 48)
+						+ (static_cast<uint64_t>((lengthBytes[2] & 0xFF)) << 40)
+						+ (static_cast<uint64_t>((lengthBytes[3] & 0xFF)) << 32)
+						+ (static_cast<uint64_t>((lengthBytes[4] & 0xFF)) << 24)
+						+ (static_cast<uint64_t>((lengthBytes[5] & 0xFF)) << 16)
+				        + (static_cast<uint64_t>((lengthBytes[6] & 0xFF)) << 8)
+				        + (lengthBytes[7] & 0xFF);
 
 		// start request timer
 		webSocketChannel->slotTimerElement_->expireFromNow(webSocketConfig_->requestTimeout());

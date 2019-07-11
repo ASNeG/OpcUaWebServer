@@ -171,6 +171,8 @@ namespace OpcUaWebServer
 					deleteSubscription();
 				}
 				break;
+			default:
+				Log(Warning, "session state changed to unexpected conditional");
 		}
 	}
 

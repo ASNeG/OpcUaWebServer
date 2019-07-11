@@ -25,7 +25,7 @@
 namespace OpcUaWebServer
 {
 
-	class WebSocketServerBase
+	class DLLEXPORT WebSocketServerBase
 	{
 	  public:
 		typedef enum {

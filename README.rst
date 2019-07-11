@@ -29,6 +29,7 @@ Features
 * **WebSocket Gateway** with a JSON-OPC UA mapping
 * **Web Panel** to visualize the process data by using graphical JavaScript library
 * Configuration with XML files
+* Supports Linux and Windows
 
 For more information see `Overview <https://opcuawebserver.readthedocs.io/en/latest/1_getting_started/overview.html>`_
 section.
@@ -72,10 +73,17 @@ Usage
 If you have installed the server locally, you can run it by using
 the following command:
 
-::
+On Linux
 
+::
+  
   $ OpcUaServer4 ~/ASNEG_INSTALL_DIR/etc/OpcUaStack/OpcUaWebServer/OpcUaServer.xml
 
+On Windows
+
+::
+
+  $ OpcUaServer4 CONSOLE ASNEG_INSTALL_DIR\etc\OpcUaStack\OpcUaWebServer\OpcUaServer.xml
 
 Also you can use Docker without installing any dependencies:
 
@@ -93,7 +101,7 @@ it `here <http://jenkins.asneg.de:8083/>`_ or run on your machine:
 
 ::
 
-  $ docker-compose run -d -p 8083:8080 -p 8081:8081 -p 8082:8082 webserver
+  $ docker-compose run -d -p 8080:8080 -p 8081:8081 -p 8082:8082 webserver
 
 Then open the link http://127.0.0.1:8080 with your web browser.
 
