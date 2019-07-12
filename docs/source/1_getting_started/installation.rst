@@ -7,7 +7,7 @@ OpcUaWebServer provides different ways of installation.
 Source Code
 --------------
 
-In order to compile and install the OpcUaWebServer from the source code, you should meet
+To compile and install the OpcUaWebServer from the source code, you should meet
 the following requirements:
 
 * `ASNeG OPC UA Stack`_ >= 4.0.0
@@ -21,12 +21,12 @@ installation of the ASNeG Demo Server is optional.
 
 **Linux (Ubuntu or Debian)**
 
-To install the requirments, follow the instructions in the following documents.
+To install the requirements, follow the instructions in the following documents.
 
 * `Installation OpcUaStack <https://opcuastack.readthedocs.io/en/release4/1_getting_started/installation.html>`_.
 * `Installation ASNeG Demo Server <https://asnegdemoserver.readthedocs.io/en/release4/1_getting_started/installation.html>`_. 
 
-The next stept is the compilation of the source code and its installation. You should 
+The next step is the compilation of the source code and its installation. You should 
 run in the root directory of the sources:
 
 ::
@@ -55,22 +55,21 @@ The OpcUaWebServer provides the following communication interfaces:
 
 **Windows**
 
-In order to compile the project, you should install MSBuild Tools, then run in the environment which
-is suitable for your target platform (e.g. Native x86) the following command:
+To compile the project, you should install MSBuild Tools, then run in the environment which
+is suitable for your target platform (e.g., Native x86) the following command:
 
 ::
 
   $ build.bat -t local
 
-If you would like to build x64 version you should set the suitable CMake generator for your environment 
-with option *-vs*. For example:
+If you would like to build x64 version, you should set the suitable CMake generator for your environment with option *-vs*. For example:
 
 ::
 
   $ build.bat -t local -vs "Visual Studio 15 2017 Win64"
 
 
-By default, the server is istalled into *C:\\ASNeG* directory. You also can change it with option *-i*:
+By default, the server is installed into *C:\\ASNeG* directory. You also can change it with option *-i*:
 
 ::
 
