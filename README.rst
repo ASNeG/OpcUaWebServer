@@ -62,7 +62,7 @@ Then type the following command:
 
     $ build.bat local -s ASNEG_INSTALL_DIR
 
-*ASNEG_INSTALL_DIR* is a path where ASNeG OPC UA Stack is installed.
+*ASNEG_INSTALL_DIR* is the path where ASNeG OPC UA Stack is installed.
 
 For more information see `Installation <https://opcuawebserver.readthedocs.io/en/latest/1_getting_started/installation.html>`_
 section.
