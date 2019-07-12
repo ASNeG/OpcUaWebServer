@@ -72,7 +72,6 @@ with option *-vs*. For example:
 
 By default, the server is istalled into *C:\\ASNeG* directory. You also can change it with option *-i*:
 
-
 ::
 
   $ build.bat -t local -i C:\another\path\to\install
@@ -86,7 +85,6 @@ Now the OpcUaWebServer can be started.
   $ OpcUaServer4 CONSOLE C:\ASNeG\etc\OpcUaStack\OpcUaWebServer\OpcUaServer.xml
 
 This example is for the default case where the stack and the server are installed in *C:\\ASNeG* directory.
-
 
 DEP Packages
 --------------
@@ -109,7 +107,22 @@ todo
 Docker
 -----------
 
-todo
+You can use Docker image instead of installing the web server on you machine:
+
+:: 
+
+  $ docker build -t OpcUaWebServer:latest . 
+  $ docker run -d -p 8890:8890 -p 8080:8080 -p 8081:8081 -p 8082:8082 OpcUaWebServer:latest
+
+
+If you want to run the server with the demo server as a data source, use *docker-compose*:
+
+::
+
+  $ docker-compose run -d -p 8080:8080 -p 8081:8081 -p 8082:8082 webserver
+
+Then open the link http://127.0.0.1:8080 with your web browser.
+
 
 References
 -----------
@@ -119,7 +132,4 @@ References
 
 .. _`ASNeG OPC UA Stack`: https://asneg.github.io/projects/opcuastack
 .. _`ASNeG Demo Server`: https://asneg.github.io/projects/asnegdemo
-
-
-
 
