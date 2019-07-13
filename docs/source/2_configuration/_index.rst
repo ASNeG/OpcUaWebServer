@@ -57,8 +57,9 @@ The configuration has the following settings:
 +--------------------------------+-------------------------------------------------------------+
 | WebDirectory                   | Root directory. It should have *index.html* file.           |
 +--------------------------------+-------------------------------------------------------------+
-| RequestTimeout                 | Time in milliseconds, that the server waits for a request   |
-|                                | from the clien before closing the connection.               |
+| RequestTimeout                 | Time after the TCP connection establishment in milliseconds,|
+|                                | that the server waits for the request                       |
+|                                | from the client before closing the connection.              |
 +----------+---------------------+-------------------------------------------------------------+
 | IPLogger |                     | IP Logger registers all IP addresses of the clients that    |
 |          |                     | have connected with the server.                             |
@@ -102,17 +103,19 @@ The configuration has the following settings:
 +--------------------------------+-------------------------------------------------------------+
 | Port                           | Port bound by the WebSocket server                          |
 +--------------------------------+-------------------------------------------------------------+
-| RequestTimeout                 | Time in milliseconds, that the server waits for a request   |
-|                                | from the clien before closing the connection.               |
+| RequestTimeout                 | Time after the TCP connection establishment in milliseconds,|
+|                                | that the server waits for the request                       |
+|                                | from the client before closing the connection.              |
 +--------------------------------+-------------------------------------------------------------+
-| IdleTimeout                    | TODO                                                        |
+| IdleTimeout                    | Time after the last message in milliseconds                 |
+|                                | that the server waits before closing the connection.        |
 +--------------------------------+-------------------------------------------------------------+
 
 
 WebSocket Gateway
 -----------------
 
-The **WebSocket Gateway** provides a :term:`JSON API` via bidirectional WebSocket protocol for access to :term:`OPC UA` server services.
+The **WebSocket Gateway** provides a :term:`JSON API` via bidirectional WebSocket protocol for access to :term:`OPC UA` server :term:`Service`\ s.
 Its configuration starts with XML tag *WebSocketGateway* in **OpcUaWebServerModel.xml**.
 
 The default configuration:
@@ -134,3 +137,79 @@ The configuration has the following settings:
 | Port                           | Port bound by the WebSocket gateway                         |
 +--------------------------------+-------------------------------------------------------------+
 
+OPC UA Client
+-------------
+
+In order to have access to :term:`OPC UA` servers we have to include its communication settings and nodes in **OpcUaClient** part 
+into **OpcUaWebServerModel.xml** file:
+
+
+.. code-block:: xml
+
+  <OpcUaClient>
+    <ClientConfigFile>@CONF_DIR@/OpcUaClient0.xml</ClientConfigFile>
+    <ClientConfigFile>@CONF_DIR@/OpcUaClient1.xml</ClientConfigFile>
+  </OpcUaClient>
+
+
+An example of the  client configuration file:
+
+.. code-block:: xml
+
+  <?xml version="1.0" encoding="utf-8"?>
+  <OpcUaClient Name="ASNeG-Demo_0" xmlns="http://ASNeG/OpcUaClient.xsd">
+    <Endpoint>
+      <ServerUri>opc.tcp://127.0.0.1:8889</ServerUri>
+    </Endpoint>
+    <NamespaceUri>
+      <Uri>http://ASNeG-Demo.de/Test-Server-Lib/</Uri>
+    </NamespaceUri>
+    <NodeList>
+      <Node ValueName="TimerInterval" NodeId="ns=1;i=3" NodeType="UInt32">
+        <MetaData>
+          <DisplayName>TimerInterval</DisplayName>
+        </MetaData>
+      </Node>
+      <Node ValueName="Boolean" NodeId="ns=1;i=220" NodeType="Boolean">
+        <MetaData>
+          <DisplayName>Switch</DisplayName>
+          <Limits>
+            <Min>0</Min>
+            <Max>1</Max>
+          </Limits>
+        </MetaData>
+      </Node>
+    </NodeList>
+  </OpcUaClient>
+
+
+The **OpcUaClient** configuration has the following format:
+
++--------------------------------+-------------------------------------------------------------+
+| XML tag                        | Description                                                 |
++================================+=============================================================+
+| Endpoint                       | :term:`Endpoint` of the :term:`OPC UA` Server, which        |
+|                                | the client connect to                                        |  
++--------+-----------------------+-------------------------------------------------------------+
+|        |  ServerUri            | URI of the :term:`OPC UA` Server                            |
++--------+-----------------------+-------------------------------------------------------------+
+| NamespaceUri                   | List of Namespace URIs                                      |
++--------+-----------------------+-------------------------------------------------------------+
+|        | Uri                   | Namespace URI                                               |
++--------+-----------------------+-------------------------------------------------------------+
+| NodeList                       | List of OPC UA :term:`Variable`\ s for access from          |
+|                                | *WebSocket Server*. **Notice:** Not needed for the Gateway  |
++--------+-----------------------+-------------------------------------------------------------+
+|        | Node                  | OPC UA :term:`Variable`\ s                                  |
++--------+------+----------------+-------------------------------------------------------------+
+|        | Attr | ValueName      | Name of the variable to access with :term:`JSON API`        |               
++--------+------+----------------+-------------------------------------------------------------+
+|        | Attr | NodeId         | ID of the corresponding :term:`Variable` in the OPCUA Server|               
++--------+------+----------------+-------------------------------------------------------------+
+|        | Attr | ValueType      | Type of the OPC UA :term:`Variable`. Use OPC UA names       |
++--------+------+----------------+-------------------------------------------------------------+
+|        | Attr | Array          | Equals 1 if the variable is an array                        |
++--------+------+----------------+-------------------------------------------------------------+
+|        |      | MetaData       | Additional data that can be available through               |
+|        |      |                | :term:`JSON API`.                                           |
++--------+------+----------------+-------------------------------------------------------------+
