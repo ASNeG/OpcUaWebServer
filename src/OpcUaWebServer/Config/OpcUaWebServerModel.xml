@@ -19,7 +19,7 @@
   
   <HttpServer>
   	<Address>0.0.0.0</Address>
-  	<Port>8080</Addreess>
+  	<Port>8080</Port>
   	<WebDirectory>@CONF_DIR@/../../../var/www/OpcUaWebServer</WebDirectory>
   	<RequestTimeout>5000</RequestTimeout>
   		
@@ -34,7 +34,7 @@
   	
   <WebSocketServer>
   	<Address>0.0.0.0</Address>
-  	<Port>8081</Addreess>
+  	<Port>8081</Port>
   	<RequestTimeout>5000</RequestTimeout>
   	<IdleTimeout>3600000</IdleTimeout>
   </WebSocketServer>
@@ -46,7 +46,7 @@
   
   <WebGateway>
     <Address>0.0.0.0</Address>
-  	<Port>8082</Addreess>
+  	<Port>8082</Port>
   </WebGateway>
   
 </OpcUaWebServerModel>
