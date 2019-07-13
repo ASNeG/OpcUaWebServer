@@ -14,7 +14,7 @@ Contents
    :maxdepth: 2
 
    1_getting_started/_index
-   2_http_server/_index
+   2_configuration/_index
    3_websocket_server/_index
    4_websocket_gateway/_index
 

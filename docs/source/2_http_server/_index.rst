@@ -1,6 +1,0 @@
-HTTP Server
-====================
-
-.. toctree::
-
-  overview
