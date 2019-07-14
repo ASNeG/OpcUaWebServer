@@ -204,7 +204,7 @@ The **OpcUaClient** configuration has the following format:
 |        | ServerUri             | URI of the :term:`OPC UA` Server                            |
 +--------+-----------------------+-------------------------------------------------------------+
 |        | SecurityMode          | Security Mode can be "None", "Sign" and "SignAndCrypt".     |
-|        |                       | Default value is "None".                                   |
+|        |                       | Default value is "None".                                    |
 +--------+-----------------------+-------------------------------------------------------------+
 |        | SecurityPolicyUri     | Security Policy URI used to encrypt OPC UA messages.        |
 |        |                       | See https://opcfoundation.org/UA/SecurityPolicy/            |
