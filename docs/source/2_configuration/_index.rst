@@ -152,7 +152,7 @@ into **OpcUaWebServerModel.xml** file:
   </OpcUaClient>
 
 
-An example of the  client configuration file:
+An example of the client configuration file:
 
 .. code-block:: xml
 
@@ -160,6 +160,14 @@ An example of the  client configuration file:
   <OpcUaClient Name="ASNeG-Demo_0" xmlns="http://ASNeG/OpcUaClient.xsd">
     <Endpoint>
       <ServerUri>opc.tcp://127.0.0.1:8889</ServerUri>
+      <SecurityMode>SignAndEncrypt</SecurityMode>
+      <SecurityPolicyUri>http://opcfoundation.org/UA/SecurityPolicy#Basic128Rsa15</SecurityPolicyUri>
+      <UserAuth>
+        <Type>UserName</Type>
+        <UserName>user1</UserName>
+        <Password>password1</Password>
+        <SecurityPolicyUri>http://opcfoundation.org/UA/SecurityPolicy#Basic128Rsa15<SecurityPolicyUri>
+      </UserAuth>
     </Endpoint>
     <NamespaceUri>
       <Uri>http://ASNeG-Demo.de/Test-Server-Lib/</Uri>
@@ -182,6 +190,9 @@ An example of the  client configuration file:
     </NodeList>
   </OpcUaClient>
 
+.. note::
+  You need client configuration files only for **WebSocket Server**. **WebSocket Gateway** receives the
+  information about communication and security through :term:`JSON API`.
 
 The **OpcUaClient** configuration has the following format:
 
@@ -189,16 +200,35 @@ The **OpcUaClient** configuration has the following format:
 | XML tag                        | Description                                                 |
 +================================+=============================================================+
 | Endpoint                       | :term:`Endpoint` of the :term:`OPC UA` Server, which        |
-|                                | the client connect to                                        |  
+|                                | the client connect to                                       |  
 +--------+-----------------------+-------------------------------------------------------------+
-|        |  ServerUri            | URI of the :term:`OPC UA` Server                            |
+|        | ServerUri             | URI of the :term:`OPC UA` Server                            |
 +--------+-----------------------+-------------------------------------------------------------+
+|        | SecurityMode          | Security Mode can be "None", "Sign" and "SignAndCrypt".     |
+|        |                       | Defuault value is "None".                                   |
++--------+-----------------------+-------------------------------------------------------------+
+|        | SecurityPolicyUri     | Security Policy URI used to encrypt OPC UA messages.        |
+|        |                       | See https://opcfoundation.org/UA/SecurityPolicy/            |
++--------+-----------------------+-------------------------------------------------------------+
+|        | UserAuth              | Authentication settings, which the client use to connect    |
+|        |                       | with the OPC UA server                                      |
++--------+------+----------------+-------------------------------------------------------------+
+|        |      | Type           | Type of the authentication can be "Anonymous" or "UserName" |
++--------+------+----------------+-------------------------------------------------------------+
+|        |      | Username       | Name of the authenticated user. Only for "Username" type.   |
++--------+------+----------------+-------------------------------------------------------------+
+|        |      | Password       | Password of the authenticated user. Only for "Username"     |
+|        |      |                | type.                                                       |
++--------+------+----------------+-------------------------------------------------------------+
+|        |      | SecurityPolicy | Security Policy URI used to encrypt password. If it is      |
+|        |      |                | empty the password is not encrypted.                        |
++--------+------+----------------+-------------------------------------------------------------+
 | NamespaceUri                   | List of Namespace URIs                                      |
 +--------+-----------------------+-------------------------------------------------------------+
 |        | Uri                   | Namespace URI                                               |
 +--------+-----------------------+-------------------------------------------------------------+
 | NodeList                       | List of OPC UA :term:`Variable`\ s for access from          |
-|                                | *WebSocket Server*. **Notice:** Not needed for the Gateway  |
+|                                | *WebSocket Server*.                                         |
 +--------+-----------------------+-------------------------------------------------------------+
 |        | Node                  | OPC UA :term:`Variable`\ s                                  |
 +--------+------+----------------+-------------------------------------------------------------+
@@ -213,3 +243,6 @@ The **OpcUaClient** configuration has the following format:
 |        |      | MetaData       | Additional data that can be available through               |
 |        |      |                | :term:`JSON API`.                                           |
 +--------+------+----------------+-------------------------------------------------------------+
+
+
+
