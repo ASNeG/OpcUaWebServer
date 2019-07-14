@@ -1,7 +1,7 @@
 Configuration
 =============
 
-ASNeG OPC UA Web Server has flexible configuration in XML format. In this document you'll
+ASNeG OPC UA Web Server has a flexible configuration in XML format. In this document, you'll
 learn how to configure HTTP and WebSocket servers and describe data sources. The main configuration
 file is **OpcUaWebServerModel.xml**. You can find in the sources:
 
@@ -9,7 +9,7 @@ file is **OpcUaWebServerModel.xml**. You can find in the sources:
 
   src/OpcUaWebServer/Config/OpcUaWebServerModel.xml
 
-or in the direcotry where the server was installed (**@CONF_DIR**)
+or in the directory where the server was installed (**@CONF_DIR**)
 
 ::
   
@@ -31,18 +31,18 @@ The default configuration:
 .. code-block:: xml
 
   <HttpServer>
-  	<Address>0.0.0.0</Address>
-  	<Port>8080</Port>
-  	<WebDirectory>@CONF_DIR@/../../../var/www/OpcUaWebServer</WebDirectory>
-  	<RequestTimeout>5000</RequestTimeout>
-  		
-  	<IPLogger>
+      <Address>0.0.0.0</Address>
+      <Port>8080</Port>
+      <WebDirectory>@CONF_DIR@/../../../var/www/OpcUaWebServer</WebDirectory>
+      <RequestTimeout>5000</RequestTimeout>
+          
+      <IPLogger>
       <LogFileName>@CONF_DIR@/../../../var/log/OpcUaStack/OpcUaWebServer/access.log</LogFileName>
       <MaxLogFileNumber>5</MaxLogFileNumber>
       <MaxLogFileSize>100000</MaxLogFileSize>
       <MaxIPAge>3600000</MaxIPAge>
     </IPLogger>
-  		
+          
   </HttpServer>
 
 
@@ -88,10 +88,10 @@ The default configuration:
 .. code-block:: xml
 
   <WebSocketServer>
-  	<Address>0.0.0.0</Address>
-  	<Port>8081</Port>
-  	<RequestTimeout>5000</RequestTimeout>
-  	<IdleTimeout>3600000</IdleTimeout>
+      <Address>0.0.0.0</Address>
+      <Port>8081</Port>
+      <RequestTimeout>5000</RequestTimeout>
+      <IdleTimeout>3600000</IdleTimeout>
   </WebSocketServer>
 
 The configuration has the following settings:
@@ -124,7 +124,7 @@ The default configuration:
 
   <WebGateway>
     <Address>0.0.0.0</Address>
-  	<Port>8082</Port>
+      <Port>8082</Port>
   </WebGateway>
 
 The configuration has the following settings:
@@ -191,8 +191,7 @@ An example of the client configuration file:
   </OpcUaClient>
 
 .. note::
-  You need client configuration files only for **WebSocket Server**. **WebSocket Gateway** receives the
-  information about communication and security through :term:`JSON API`.
+  You need client configuration files only for **WebSocket Server**. **WebSocket Gateway** receives the information about communication and security through :term:`JSON API`.
 
 The **OpcUaClient** configuration has the following format:
 
@@ -205,7 +204,7 @@ The **OpcUaClient** configuration has the following format:
 |        | ServerUri             | URI of the :term:`OPC UA` Server                            |
 +--------+-----------------------+-------------------------------------------------------------+
 |        | SecurityMode          | Security Mode can be "None", "Sign" and "SignAndCrypt".     |
-|        |                       | Defuault value is "None".                                   |
+|        |                       | Default value is "None".                                   |
 +--------+-----------------------+-------------------------------------------------------------+
 |        | SecurityPolicyUri     | Security Policy URI used to encrypt OPC UA messages.        |
 |        |                       | See https://opcfoundation.org/UA/SecurityPolicy/            |
