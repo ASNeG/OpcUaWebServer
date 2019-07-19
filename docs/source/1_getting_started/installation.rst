@@ -19,14 +19,16 @@ The ASNeG Demo Server is only used for testing the OpcUaWebServer. For this reas
 installation of the ASNeG Demo Server is optional.
 
 
-**Linux (Ubuntu or Debian)**
 
 To install the requirements, follow the instructions in the following documents.
 
 * `Installation OpcUaStack <https://opcuastack.readthedocs.io/en/release4/1_getting_started/installation.html>`_.
 * `Installation ASNeG Demo Server <https://asnegdemoserver.readthedocs.io/en/release4/1_getting_started/installation.html>`_. 
 
-The next step is the compilation of the source code and its installation. You should 
+
+**Linux (Ubuntu or Debian)**
+
+To compile the source code and install OpcUaWebServer locally, you should 
 run in the root directory of the sources:
 
 ::
@@ -85,23 +87,66 @@ Now the OpcUaWebServer can be started.
 
 This example is for the default case where the stack and the server are installed in *C:\\ASNeG* directory.
 
+
 DEP Packages
 --------------
 
-todo
+You can install OpcUaWebServer by using a DEP package, which you can download `here <https://github.com/ASNeG/OpcUaWebServer/releases/`_ or build yourself by the following command:
+
+::
+
+  $ sh build.sh -t deb -s ASNEG_INSTALL_DIR 
+
+Then OpcUaWebServer is available for installation by the command:
+
+::
+
+  $ dpkg -i OpcUaWebServer-x.y.z-x86_64.deb 
+
+OpcUaWebServer will be installed as a service, and you can check its status typing:
+
+::
+
+  $ service OpcUaWebServer status
 
 
 RPM Packages
 -------------
 
-todo
+Users of RPM distributives can install OpcUaWebServer by using an RPM package, which can be downloaded `here <https://github.com/ASNeG/OpcUaWebServer/releases/`_ or built by the following command:
 
+::
+
+  $ sh build.sh -t rpm -s ASNEG_INSTALL_DIR 
+
+Then OpcUaWebServer is available for installing by the command:
+
+::
+
+  $ rpm -i OpcUaWebServer-x.y.z-x86_64.rpm 
+
+ 
 
 MSI Packages
 --------------
 
-todo
+On Windows, OpcUaWebServer can be installed with MSI packages. The MSI packages belong to two kinds: a *usual* package without `ASNeG OPC UA Stack`_ and a *standalone* package including `ASNeG OPC UA Stack`_ and the all needed dependencies. The *usual* package is more suitable for a machine with several
+OPC UA applications and you would like to update the stack and the dependencies for all of them. The *standalone* package is easy for distribution, so you
+don't need to install anything except OpcUaWebServer.
 
+You can download the packages `here <https://github.com/ASNeG/OpcUaWebServer/releases/`_ or build them.
+
+To build the *usual* package, use the command:
+
+::
+
+  $ build.bat -t msi
+
+For building the *standalone* one:
+
+::
+
+  $ build.bat -t msi -S
 
 Docker
 -----------
