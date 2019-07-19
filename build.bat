@@ -183,7 +183,7 @@ REM ---------------------------------------------------------------------------
    echo --vs-generator, -vs, /vs VS_GENERATOR:  is the name of cmake generator
    echo \t witch cmake uses during the building of the project. By default, cmake tries to figure out the generator from the environment.
    echo.
-   echo --build-type, -B, /B BUILD_TYPE:  set the build types (Debug | Release). By default, it is Debug type.
+   echo --build-type, -B, /B BUILD_TYPE:  set the build types Debug or Release. By default, it is Debug type.
    echo.
    echo --standalone, -S, /S:  includes OpcUaStack and its dependencies in MSI package of the application
    echo.
