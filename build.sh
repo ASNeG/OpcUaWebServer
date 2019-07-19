@@ -169,6 +169,7 @@ build_deb()
  
         cmake ../src \
             "${CMAKE_GENERATOR_LOCAL}" \
+            -DOPCUASTACK_INSTALL_PREFIX="${STACK_PREFIX}" \
             -DCMAKE_BUILD_TYPE="${BUILD_TYPE}" \
             "-DCPACK_BINARY_DEB=1" \
             "-DCPACK_BINARY_RPM=0" \
@@ -245,6 +246,7 @@ build_rpm()
     then
         cmake ../src \
             "${CMAKE_GENERATOR_LOCAL}" \
+            -DOPCUASTACK_INSTALL_PREFIX="${STACK_PREFIX}" \
             -DCMAKE_BUILD_TYPE="${BUILD_TYPE}" \
             "-DCPACK_BINARY_DEB=0" \
             "-DCPACK_BINARY_RPM=1" \
