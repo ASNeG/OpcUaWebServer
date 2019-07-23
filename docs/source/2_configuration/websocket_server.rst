@@ -93,6 +93,8 @@ Example of OpcUaClient Configuration File
 .. note::
   You need client configuration files only for **WebSocket Server**. **WebSocket Gateway** receives the information about communication and security through :term:`JSON API`.
 
+.. _opcuaclient_config:
+
 OpcUaClient Configuration Settings
 ``````````````````````````````````
 

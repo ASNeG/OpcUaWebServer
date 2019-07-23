@@ -22,7 +22,7 @@ Development Status
 ----------------------------------------------
 
 ASNeG OPC UA Web Server is in the development stage. Moreover it dependents on OpcUaStack 4, which
-is also being developing and not released.
+is also being developed and not released.
 
 
 Contribution

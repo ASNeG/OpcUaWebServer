@@ -18,8 +18,6 @@ the following requirements:
 The ASNeG Demo Server is only used for testing the OpcUaWebServer. For this reason the 
 installation of the ASNeG Demo Server is optional.
 
-
-
 To install the requirements, follow the instructions in the following documents.
 
 * `Installation OpcUaStack <https://opcuastack.readthedocs.io/en/release4/1_getting_started/installation.html>`_.
