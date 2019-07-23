@@ -2,7 +2,6 @@
 
 {%- block extrahead %}
     <meta name="google-site-verification" content="bUDMPBn4rTuF6NW-6pWLXWjl5q9l3UI83tZVFD6w0Zc" />
-    <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
     <script src="https://is-this-helpful.herokuapp.com/ith_widget.js"></script>
 {% endblock %}
 
@@ -12,9 +11,9 @@
 {% endblock %}
 
 {% block footer %}
-    <div id="itu-widget"></div>
+    <div id="ith-widget"></div>
     <script>
-        ituWidget();
+        ithWidget();
     </script>
     {{ super() }}
 {% endblock footer %}
