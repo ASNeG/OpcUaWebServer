@@ -20,7 +20,7 @@
 # -- Project information -----------------------------------------------------
 
 project = 'ASNeG OpcUaWebServer'
-copyright = '2018-2019, Kai Hübl, Aleksey Timin'
+copyright = '2019, Kai Hübl, Aleksey Timin'
 author = 'Kai Hübl, Aleksey Timin'
 
 # The short X.Y version
