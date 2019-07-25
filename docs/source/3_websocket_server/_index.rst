@@ -3,12 +3,37 @@
 WebSocket Server
 ================
 
-TODO
+TODO Introduce and notation
+
+Message Format
+``````````````
+All the JSON messages have the following structures:
+
++------------------------------+----------------------------------------------------+
+| Field                        | Description                                        | 
++============+=================+====================================================+
+| **Header** |                 |                                                    |
++------------+-----------------+----------------------------------------------------+
+|            | MessageType     | Type of the JSON message. It can be:               |
+
++------------+-----------------+----------------------------------------------------+
+|            | ClientHandler   | An identifier of the message which is set by       |
+|            |                 | the client in the request. The server copy its     |
+|            |                 | value to the corresponding response.               |
++------------+-----------------+----------------------------------------------------+
+| **Body**   |                 | Empty                                              |
++------------+-----------------+----------------------------------------------------+
+|            | [StatusCode]    | Is sent if an error occurs by processing the       |
+|            |                 | request from the client.                           |
++------------+-----------------+----------------------------------------------------+
+
+
 
 JSON API
 --------
 
-TODO
+.. _message_format:
+
 
 ValueList
 `````````
@@ -22,11 +47,11 @@ With *ValueList* request the client can get the list of OPC UA :term:`Variable`\
 +============+=================+====================================================+
 | **Header** |                 |                                                    |
 +------------+-----------------+----------------------------------------------------+
-|            | MessageType     | Should be *VALUELIST_REQUEST*                      |
+|            | MessageType     | Should be *VALUELIST_REQUEST*.                     |
 +------------+-----------------+----------------------------------------------------+
-|            | ClientHandler   | See :ref:`header_format`                           |
+|            | ClientHandler   | See :ref:`message_format`.                         |
 +------------+-----------------+----------------------------------------------------+
-| **Body**   |                 | Empty                                              |
+| **Body**   |                 | Empty.                                             |
 +------------+-----------------+----------------------------------------------------+
 
 **Response**
@@ -36,13 +61,13 @@ With *ValueList* request the client can get the list of OPC UA :term:`Variable`\
 +============+=================+====================================================+
 | **Header** |                 |                                                    |
 +------------+-----------------+----------------------------------------------------+
-|            | MessageType     | Should be *VALUELIST_RESPONSE*                     |
+|            | MessageType     | Should be *VALUELIST_RESPONSE*.                    |
 +------------+-----------------+----------------------------------------------------+
-|            | ClientHandler   | See :ref:`header_format`                           |
+|            | ClientHandler   | See :ref:`message_format`.                         |
 +------------+-----------------+----------------------------------------------------+
 | **Body**   |                 |                                                    |
 +------------+-----------------+----------------------------------------------------+
-|            | Variables       | List of the variable names                         |
+|            | @Variables      | List of the variable names.                        |
 +------------+-----------------+----------------------------------------------------+
 
 
