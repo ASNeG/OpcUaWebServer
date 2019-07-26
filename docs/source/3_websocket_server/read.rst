@@ -1,8 +1,7 @@
-ValueInfo
+Read
 =========
 
-Knowing the variable names the client can get the information about the configuration of the variables
-by using *ValueInfo* request.
+To read the value of a variable the client should use *Read* request.
 
 Request
 -------
@@ -12,13 +11,13 @@ Request
 +============+=================+====================================================+
 | **Header** |                 |                                                    |
 +------------+-----------------+----------------------------------------------------+
-|            | MessageType     | Should be *VALUEINFO_REQUEST*.                     |
+|            | MessageType     | Should be *READ_REQUEST*.                          |
 +------------+-----------------+----------------------------------------------------+
 |            | ClientHandler   | See :ref:`message_format`.                         |
 +------------+-----------------+----------------------------------------------------+
 | **Body**   |                 |                                                    |
 +------------+-----------------+----------------------------------------------------+
-|            | @Variables      | List of the variable names.                        |
+|            | Variable        | Variable to read                                   |
 +------------+-----------------+----------------------------------------------------+
 
 Response
@@ -29,25 +28,26 @@ Response
 +============+=================+====================================================+
 | **Header** |                 |                                                    |
 +------------+-----------------+----------------------------------------------------+
-|            | MessageType     | Should be *VALUEINFO_RESPONSE*.                    |
+|            | MessageType     | Should be *READ_RESPONSE*.                         |
 +------------+-----------------+----------------------------------------------------+
 |            | ClientHandler   | See :ref:`message_format`.                         |
 +------------+-----------------+----------------------------------------------------+
 | **Body**   |                 |                                                    |
 +------------+-----------------+----------------------------------------------------+
-|            | @Variables      | List of objects representing the configuration.    |
+|            | [StatusCode]    | ??????????????????????????????????????????????     |
++------------+-----------------+----------------------------------------------------+
+|            | Value           |                                                    |
 +------------+---+-------------+----------------------------------------------------+
-|            |   | [StatusCode]| The error occurs by getting the configuration.     |
+|            |   | Body        | The value of the variable.                         |
 +------------+---+-------------+----------------------------------------------------+
-|            |   | Variable    | The name of the variable.                          |
+|            |   | Type        | The value of the variable.                         |
 +------------+---+-------------+----------------------------------------------------+
-|            |   | Type        | The type of the variable.                          |
-+------------+---+-------------+----------------------------------------------------+
-|            |   | IsArray     | Equals 'true' if the variable is an array.         |
-+------------+---+-------------+----------------------------------------------------+
-|            |   | MetaData    | Additional information described in the            |
-|            |   |             | configuration as metadata.                         |
-+------------+---+-------------+----------------------------------------------------+
+|            | SourceTimestamp | The time of the value given by the source in ISO   |
+|            |                 | 8601 format. Example: "2015-09-06T09:03:21.237123" |
++------------+-----------------+----------------------------------------------------+
+|            | ServerTimestamp | The time of the value given by the server in ISO   |
+|            |                 | 8601 format. Example: "2015-09-06T09:03:21.237123" |
++------------+-----------------+----------------------------------------------------+
 
 Status Codes
 ------------
@@ -73,35 +73,29 @@ Example in Python
 
    msg = {
       'Header': {
-        'MessageType':'VALUEINFO_REQUEST',
+        'MessageType':'READ_REQUEST',
         'ClientHandle':'1'
       },
-      'Body': { 'Variables' : ['Boolean']}
+      'Body': { 'Variable' : 'Boolean'}
    }
 
  
   ws = websocket.create_connection('ws://127.0.0.1:8081')
   ws.send(json.dumps(msg)) 
   resp = ws.recv()  
-  json.loads(resp)  #=> { 
-                    # 'Header': {
-                    #   'ClientHandle': '1', 
-                    #   'MessageType': 'VALUEINFO_RESPONSE'
+  json.loads(resp)  #=> {
+                    # "Header": {
+                    #    "MessageType": "READ_RESPONSE",
+                    #    "ClientHandle": "1"
                     # },
-                    # 
-                    # 'Body': {
-                    #   'Variables': [
-                    #     {
-                    #       'Variable': 'Boolean',
-                    #       'Type': 'Boolean',
-                    #       'IsArray': 'false',
-                    #       'MetaData': {
-                    #         'DisplayName': ' Switch',
-                    #          'Limits': {'Max': ' 1', 'Min': ' 0'}
-                    #          }
-                    #     }
-                    #   ] 
+                    # "Body": {
+                    #    "Value": {
+                    #        "Type": "Boolean",
+                    #        "Body": true
+                    #    },
+                    #    "SourceTimestamp": "2019-07-26T11:10:20Z",
+                    #    "ServerTimestamp": "2019-07-26T11:10:20Z"
                     # }
-                    #}
+}
 
 
