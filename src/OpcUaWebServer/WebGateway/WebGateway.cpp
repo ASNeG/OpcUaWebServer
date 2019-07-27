@@ -165,6 +165,29 @@ namespace OpcUaWebServer
 		}
 		webGatewayConfig_.port(port);
 
+		// read max connections
+		std::string maxConnectionsString;
+		success = config->getConfigParameter("OpcUaWebServerModel.WebGateway.MaxConnections", maxConnectionsString);
+		if (!success) {
+			Log(Error, "missing web gateway parameter in configuration file")
+				.parameter("Parameter", "OpcUaWebServerModel.WebGateway.MaxConnections")
+				.parameter("ConfigurationFile", config->configFileName());
+			return false;
+		}
+
+		uint32_t maxConnections;
+		try {
+			maxConnections = boost::lexical_cast<uint32_t>(maxConnectionsString);
+		}
+		catch (boost::bad_lexical_cast &) {
+			Log(Error, "invalid web socket parameter in configuration file")
+				.parameter("Port", portString)
+				.parameter("Parameter", "OpcUaWebServerModel.WebSocketServer.MaxConnections")
+				.parameter("ConfigurationFileName", config->configFileName());
+			return false;
+		}
+		webGatewayConfig_.maxConnections(maxConnections);
+
 		return true;
 	}
 
