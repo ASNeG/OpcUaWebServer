@@ -47,6 +47,8 @@ namespace OpcUaWebServer
 		IOThread::SPtr& ioThread(void);
 		void maxConnections(uint32_t maxConnections);
 		uint32_t maxConnections(void);
+		void maxPacketLength(uint32_t maxPacketLength);
+		uint32_t maxPacketLength(void);
 
 	  private:
 		bool enable_;
@@ -56,6 +58,7 @@ namespace OpcUaWebServer
 		uint32_t idleTimeout_;
 		IOThread::SPtr ioThread_;
 		uint32_t maxConnections_ = 100;
+		uint32_t maxPacketLength_ = 0;
 	};
 
 }

@@ -80,4 +80,16 @@ namespace OpcUaWebServer
 		return maxConnections_;
 	}
 
+	void
+	WebGatewayConfig::maxPacketLength(uint32_t maxPacketLength)
+	{
+		maxPacketLength_ = maxPacketLength;
+	}
+
+	uint32_t
+	WebGatewayConfig::maxPacketLength(void)
+	{
+		return maxPacketLength_;
+	}
+
 }

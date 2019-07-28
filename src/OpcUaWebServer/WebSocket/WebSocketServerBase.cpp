@@ -179,9 +179,25 @@ namespace OpcUaWebServer
 	}
 
 	void
-	WebSocketServerBase::handleReceiveHandshakeHeader(const boost::system::error_code& error, std::size_t bytes_transfered, WebSocketChannel* webSocketChannel)
+	WebSocketServerBase::handleReceiveHandshakeHeader(
+		const boost::system::error_code& error,
+		std::size_t bytes_transfered,
+		WebSocketChannel* webSocketChannel
+	)
 	{
 		if (webSocketChannel->timeout_) {
+			closeWebSocketChannel(webSocketChannel);
+			return;
+		}
+
+		if (webSocketConfig_->maxPacketLength() != 0 && bytes_transfered > webSocketConfig_->maxPacketLength()) {
+			Log(Debug, "WebSocketServer receive invalid packet size")
+				.parameter("Address", webSocketChannel->partner_.address().to_string())
+				.parameter("Port", webSocketChannel->partner_.port())
+				.parameter("ChannelId", webSocketChannel->id_)
+				.parameter("MaxPacketSize", webSocketConfig_->maxPacketLength())
+				.parameter("PacketSize", bytes_transfered);
+
 			closeWebSocketChannel(webSocketChannel);
 			return;
 		}
@@ -237,6 +253,18 @@ namespace OpcUaWebServer
 				.parameter("Port", webSocketChannel->partner_.port());
 
 			closeWebSocketChannel(webSocketChannel);
+		}
+
+		if (webSocketConfig_->maxPacketLength() != 0 && (contentLength-numAdditionalBytes) > webSocketConfig_->maxPacketLength()) {
+			Log(Debug, "WebSocketServer receive invalid content size")
+				.parameter("Address", webSocketChannel->partner_.address().to_string())
+				.parameter("Port", webSocketChannel->partner_.port())
+				.parameter("ChannelId", webSocketChannel->id_)
+				.parameter("MaxPacketSize", webSocketConfig_->maxPacketLength())
+				.parameter("ContentSize", (contentLength-numAdditionalBytes));
+
+			closeWebSocketChannel(webSocketChannel);
+			return;
 		}
 
 		// start request timer
