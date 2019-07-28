@@ -36,11 +36,15 @@ namespace OpcUaWebServer
 		std::string& address(void);
 		void port(uint32_t port);
 		uint32_t port(void);
+		void maxConnections(uint32_t maxConnections);
+		uint32_t maxConnections(void);
 
 	  private:
 		bool active_;
 		std::string address_;
 		uint32_t port_;
+
+		uint32_t maxConnections_ = 0;
 	};
 
 }

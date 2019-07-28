@@ -68,4 +68,16 @@ namespace OpcUaWebServer
 		return port_;
 	}
 
+	void
+	WebGatewayConfig::maxConnections(uint32_t maxConnections)
+	{
+		maxConnections_ = maxConnections;
+	}
+
+	uint32_t
+	WebGatewayConfig::maxConnections(void)
+	{
+		return maxConnections_;
+	}
+
 }

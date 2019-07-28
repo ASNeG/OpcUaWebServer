@@ -1,5 +1,5 @@
 /*
-   Copyright 2015 Kai Huebl (kai@huebl-sgh.de)
+   Copyright 2015-2019 Kai Huebl (kai@huebl-sgh.de)
 
    Lizenziert gemäß Apache Licence Version 2.0 (die „Lizenz“); Nutzung dieser
    Datei nur in Übereinstimmung mit der Lizenz erlaubt.
@@ -45,6 +45,8 @@ namespace OpcUaWebServer
 		uint32_t idleTimeout(void);
 		void ioThread(const IOThread::SPtr& ioThread);
 		IOThread::SPtr& ioThread(void);
+		void maxConnections(uint32_t maxConnections);
+		uint32_t maxConnections(void);
 
 	  private:
 		bool enable_;
@@ -53,6 +55,7 @@ namespace OpcUaWebServer
 		uint32_t requestTimeout_;
 		uint32_t idleTimeout_;
 		IOThread::SPtr ioThread_;
+		uint32_t maxConnections_ = 100;
 	};
 
 }

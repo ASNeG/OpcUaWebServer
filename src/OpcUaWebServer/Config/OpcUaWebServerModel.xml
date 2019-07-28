@@ -47,6 +47,7 @@
   <WebGateway>
     <Address>0.0.0.0</Address>
   	<Port>8082</Port>
+  	<MaxConnections>100</MaxConnections>
   </WebGateway>
   
 </OpcUaWebServerModel>
