@@ -119,4 +119,16 @@ namespace OpcUaWebServer
 		return maxConnections_;
 	}
 
+	void
+	WebSocketConfig::maxPacketLength(uint32_t maxPacketLength)
+	{
+		maxPacketLength_ = maxPacketLength;
+	}
+
+	uint32_t
+	WebSocketConfig::maxPacketLength(void)
+	{
+		return maxPacketLength_;
+	}
+
 }

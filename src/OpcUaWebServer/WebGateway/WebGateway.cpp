@@ -82,6 +82,7 @@ namespace OpcUaWebServer
 		webSocketConfig_.port(webGatewayConfig_.port());
 		webSocketConfig_.ioThread(ioThread);
 		webSocketConfig_.maxConnections(webGatewayConfig_.maxConnections());
+		webSocketConfig_.maxPacketLength(webGatewayConfig_.maxPacketLength());
 
 		auto receiveMessageCallback = [this](WebSocketMessage& webSocketMessage) {
 			clientManager_.receiveMessage(webSocketMessage);
