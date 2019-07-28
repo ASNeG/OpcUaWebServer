@@ -131,6 +131,8 @@ namespace OpcUaWebServer
 		webSocketChannelMap_.insert(std::make_pair(webSocketChannel->id_, webSocketChannel));
 		Log(Debug, "create web socket")
 		    .parameter("ChannelId", webSocketChannel->id_);
+
+		addWebSocketChannel(webSocketChannelMap_.size());
 	}
 
 	void
@@ -140,9 +142,11 @@ namespace OpcUaWebServer
 
 		Log(Debug, "delete web socket")
 		    .parameter("ChannelId", webSocketChannel->id_);
+
 		auto it = webSocketChannelMap_.find(webSocketChannel->id_);
 		if (it != webSocketChannelMap_.end()) {
 			webSocketChannelMap_.erase(it);
+			delWebSocketChannel(webSocketChannelMap_.size());
 		}
 	}
 

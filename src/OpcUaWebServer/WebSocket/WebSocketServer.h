@@ -40,10 +40,14 @@ namespace OpcUaWebServer
 		bool startup(void);
 		bool shutdown(void);
 
+		void addWebSocketChannel(uint32_t count) override;
+		void delWebSocketChannel(uint32_t count) override;
+
 	  private:
 		void accept(void);
 		void handleAccept(const boost::system::error_code& error, WebSocketChannel* webSocketChannel);
 
+		bool active_ = true;
 		WebSocketConfig* webSocketConfig_;
 	};
 

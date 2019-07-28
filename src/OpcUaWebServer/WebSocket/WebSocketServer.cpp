@@ -65,6 +65,10 @@ namespace OpcUaWebServer
 	WebSocketServer::handleAccept(const boost::system::error_code& error, WebSocketChannel* webSocketChannel)
 	{
 		if (error) {
+			Log(Info, "handle accept error")
+				.parameter("Address", webSocketConfig_->address())
+				.parameter("Port", webSocketConfig_->port());
+
 			delete webSocketChannel;
 			return;
 		}
@@ -72,12 +76,51 @@ namespace OpcUaWebServer
 		webSocketChannel->partner_ = webSocketChannel->socket().remote_endpoint();
 		Log(Debug, "WebSocketServer accept connection from client")
 			.parameter("Address", webSocketChannel->partner_.address().to_string())
-			.parameter("Port", webSocketChannel->partner_.port());
+			.parameter("Port", webSocketChannel->partner_.port())
+			.parameter("Connections", webSocketChannelMap_.size());
 
 		initWebSocketChannel(webSocketChannel);
 		receiveHandshake(webSocketChannel);
 
+		if (!active_) {
+			return;
+		}
+
 		accept();
+	}
+
+	void
+	WebSocketServer::addWebSocketChannel(uint32_t count)
+	{
+		if (webSocketConfig_->maxConnections() == 0) {
+			return;
+		}
+
+		if (count >= webSocketConfig_->maxConnections() && active_) {
+			Log(Warning, "close websocket listener socket, because max connection limit reached")
+				.parameter("Address", webSocketConfig_->address())
+				.parameter("Port", webSocketConfig_->port())
+				.parameter("MaxConnections", count);
+			active_ = false;
+		}
+	}
+
+	void
+	WebSocketServer::delWebSocketChannel(uint32_t count)
+	{
+		if (webSocketConfig_->maxConnections() == 0) {
+			return;
+		}
+
+		if (count < webSocketConfig_->maxConnections() && !active_) {
+			Log(Info, "open websocket listener socket")
+				.parameter("Address", webSocketConfig_->address())
+				.parameter("Port", webSocketConfig_->port())
+				.parameter("MaxConnections", count);
+
+			active_ = true;
+			accept();
+		}
 	}
 
 }

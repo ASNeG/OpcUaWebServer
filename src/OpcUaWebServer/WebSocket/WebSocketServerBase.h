@@ -45,6 +45,9 @@ namespace OpcUaWebServer
 		void receiveMessageCallback(const ReceiveMessageCallback& receiveMessageCallback);
 		bool sendMessage(WebSocketMessage& webSocketMessage);
 
+		virtual void addWebSocketChannel(uint32_t count) = 0;
+		virtual void delWebSocketChannel(uint32_t count) = 0;
+
 	  protected:
 		void receiveHandshake(WebSocketChannel* webSocketChannel);
 
