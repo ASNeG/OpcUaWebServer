@@ -38,6 +38,8 @@ namespace OpcUaWebServer
 		uint32_t port(void);
 		void maxConnections(uint32_t maxConnections);
 		uint32_t maxConnections(void);
+		void maxPacketLength(uint32_t maxPacketLength);
+		uint32_t maxPacketLength(void);
 
 	  private:
 		bool active_;
@@ -45,6 +47,7 @@ namespace OpcUaWebServer
 		uint32_t port_;
 
 		uint32_t maxConnections_ = 0;
+		uint32_t maxPacketLength_ = 0;
 	};
 
 }
