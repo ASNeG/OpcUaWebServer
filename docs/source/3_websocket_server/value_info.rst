@@ -71,7 +71,7 @@ Example in Python
   import websocket
   import json
 
-   msg = {
+  msg = {
       'Header': {
         'MessageType':'VALUEINFO_REQUEST',
         'ClientHandle':'1'
