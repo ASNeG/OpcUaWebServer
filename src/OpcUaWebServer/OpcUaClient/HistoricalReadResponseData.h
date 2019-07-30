@@ -24,8 +24,6 @@
 #include "OpcUaStackCore/BuildInTypes/OpcUaDataValue.h"
 #include "OpcUaWebServer/OpcUaClient/ValueInfo.h"
 
-using namespace OpcUaStackCore;
-
 namespace OpcUaWebServer
 {
 
@@ -46,7 +44,7 @@ namespace OpcUaWebServer
 
 	  private:
 		std::string statusCode_;
-		OpcUaDataValueArray::SPtr dataValueArray_;
+		OpcUaStackCore::OpcUaDataValueArray::SPtr dataValueArray_;
 		ValueInfoEntry::SPtr valueInfoEntry_;
 	};
 

@@ -49,7 +49,7 @@ namespace OpcUaWebServer
 		virtual ~Client(void);
 
 		std::string id(void);
-		void ioThread(IOThread::SPtr& ioThread);
+		//void ioThread(IOThread::SPtr& ioThread);
 		void cryptoManager(CryptoManager::SPtr& cryptoManager);
 
 		//

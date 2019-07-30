@@ -24,8 +24,6 @@
 #include "OpcUaStackCore/BuildInTypes/OpcUaDataValue.h"
 #include "OpcUaWebServer/OpcUaClient/ValueInfo.h"
 
-using namespace OpcUaStackCore;
-
 namespace OpcUaWebServer
 {
 
@@ -35,8 +33,8 @@ namespace OpcUaWebServer
 		MonitorUpdateData(void);
 		~MonitorUpdateData(void);
 
-		void dataValue(OpcUaDataValue::SPtr dataValue);
-		OpcUaDataValue::SPtr dataValue(void);
+		void dataValue(OpcUaStackCore::OpcUaDataValue::SPtr dataValue);
+		OpcUaStackCore::OpcUaDataValue::SPtr dataValue(void);
 		void valueInfoEntry(const ValueInfoEntry::SPtr& valueInfoEntry);
 		ValueInfoEntry::SPtr& valueInfoEntry(void);
 
@@ -44,7 +42,7 @@ namespace OpcUaWebServer
 		bool jsonEncode(boost::property_tree::ptree& pt);
 
 	  private:
-		OpcUaDataValue::SPtr dataValue_;
+		OpcUaStackCore::OpcUaDataValue::SPtr dataValue_;
 		ValueInfoEntry::SPtr valueInfoEntry_;
 	};
 

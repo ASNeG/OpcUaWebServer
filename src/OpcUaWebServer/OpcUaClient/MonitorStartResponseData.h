@@ -22,8 +22,6 @@
 #include <boost/property_tree/ptree.hpp>
 #include <string>
 
-using namespace OpcUaStackCore;
-
 namespace OpcUaWebServer
 {
 
