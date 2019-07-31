@@ -32,22 +32,42 @@ namespace OpcUaWebServer
 	class WebSocket
 	{
 	  public:
+		typedef std::function<void (bool error)> StartupCompleteCallback;
+		typedef std::function<void (bool error)> ShutdownCompleteCallback;
+		typedef std::function<void (bool error)> SendCompleteCallback;
+
 		WebSocket(void);
 		~WebSocket(void);
 
-		bool startup(
+		void startup(
 			Config* config,
 			const IOThread::SPtr& ioThread,
-			const WebSocketServer::ReceiveMessageCallback& receiveMessageCallback
+			const WebSocketServer::ReceiveMessageCallback& receiveMessageCallback,
+			const StartupCompleteCallback& startupCompleteCallback
 		);
-		bool shutdown(void);
+		bool shutdown(
+			void
+		);
 
-		bool sendMessage(WebSocketMessage& webSocketMessage);
+		bool sendMessage(
+		    WebSocketMessage& webSocketMessage
+		);
 
 	  private:
+		void startupStrand(
+			Config* config,
+			const IOThread::SPtr& ioThread,
+			const WebSocketServer::ReceiveMessageCallback& receiveMessageCallback,
+			const StartupCompleteCallback& startupCompleteCallback
+		);
+
 		bool getWebSocketConfig(Config* config);
 
-		WebSocketServer::SPtr webSocketServer_;
+		boost::shared_ptr<boost::asio::strand> strand_ = nullptr;
+		StartupCompleteCallback startupCompleteCallback_;
+		ShutdownCompleteCallback shutdownCompleteCallback_;
+
+		WebSocketServer::SPtr webSocketServer_ = nullptr;
 		WebSocketConfig webSocketConfig_;
 	};
 

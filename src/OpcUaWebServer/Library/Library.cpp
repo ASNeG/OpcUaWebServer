@@ -15,6 +15,7 @@
    Autor: Kai Huebl (kai@huebl-sgh.de)
  */
 
+#include <future>
 #include "OpcUaStackCore/Base/os.h"
 #include "OpcUaStackCore/Base/Log.h"
 #include "OpcUaStackCore/Base/ConfigXml.h"
@@ -68,19 +69,16 @@ namespace OpcUaWebServer
 			return false;
 		}
 
-		Log(Info, "startup web socket");
-		rc = webSocket_.startup(
-			&config,
-			ioThread_,
-			[this](WebSocketMessage& webSocketMessage) {
-				std::cout << "WebSocketMessage: " << webSocketMessage.message_ << std::endl;
-				messageServer_.receiveMessage(webSocketMessage.channelId_, webSocketMessage.message_);
-			}
-		);
-		if (!rc) {
+		//
+		// startup websocket
+		//
+		if (!startupWebSocket(config)) {
 			return false;
 		}
 
+		//
+		// startup web gateway
+		//
 		Log(Info, "startup web gateway");
 		rc = webGateway_.startup(
 			&config, ioThread_,
@@ -97,6 +95,34 @@ namespace OpcUaWebServer
 
 		Log(Info, "startup opc ua client manager");
 		if (!opcUaClientManager_.startup(&config, this, ioThread_, cryptoManager())) {
+			return false;
+		}
+
+		return true;
+	}
+
+	bool
+	Library::startupWebSocket(Config& config)
+	{
+		Log(Info, "startup web socket");
+
+		std::promise<bool> prom;
+		auto future = prom.get_future();
+		auto startupCompleteCallback = [&prom](bool error) {
+			prom.set_value(error);
+		};
+		auto receiveMessageCallback = [this](WebSocketMessage& webSocketMessage) {
+			std::cout << "WebSocketMessage: " << webSocketMessage.message_ << std::endl;
+			messageServer_.receiveMessage(webSocketMessage.channelId_, webSocketMessage.message_);
+		};
+		webSocket_.startup(
+			&config,
+			ioThread_,
+			receiveMessageCallback,
+			startupCompleteCallback
+		);
+		future.wait();
+		if (!future.get()) {
 			return false;
 		}
 

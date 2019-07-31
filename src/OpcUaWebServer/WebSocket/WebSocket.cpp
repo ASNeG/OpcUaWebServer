@@ -35,34 +35,58 @@ namespace OpcUaWebServer
 	{
 	}
 
-	bool
+	void
 	WebSocket::startup(
 		Config* config,
 		const IOThread::SPtr& ioThread,
-		const WebSocketServer::ReceiveMessageCallback& receiveMessageCallback
+		const WebSocketServer::ReceiveMessageCallback& receiveMessageCallback,
+		const StartupCompleteCallback& startupCompleteCallback
 	)
 	{
-		if (!getWebSocketConfig(config)) {
-			return false;
-		}
+		strand_ = ioThread->createStrand();
+		strand_->post(
+			[this, config, ioThread, receiveMessageCallback, startupCompleteCallback]() {
+				startupStrand(config, ioThread, receiveMessageCallback, startupCompleteCallback);
+			}
+		);
+	}
 
-		if (!webSocketConfig_.enable()) {
-			return true;
-		}
-
+	void
+	WebSocket::startupStrand(
+		Config* config,
+		const IOThread::SPtr& ioThread,
+		const WebSocketServer::ReceiveMessageCallback& receiveMessageCallback,
+		const StartupCompleteCallback& startupCompleteCallback
+	)
+	{
+		startupCompleteCallback_ = startupCompleteCallback;
 		webSocketConfig_.ioThread(ioThread);
 
-		webSocketServer_ = constructSPtr<WebSocketServer>(&webSocketConfig_);
-		webSocketServer_->receiveMessageCallback(receiveMessageCallback);
-		if (!webSocketServer_->startup()) {
-			return false;
-		}
+        if (!getWebSocketConfig(config)) {
+	        startupCompleteCallback_(false);
+	        return;
+        }
 
-		return true;
+        if (!webSocketConfig_.enable()) {
+	        startupCompleteCallback_(true);
+	        return;
+        }
+
+        webSocketServer_ = constructSPtr<WebSocketServer>(&webSocketConfig_);
+        webSocketServer_->receiveMessageCallback(receiveMessageCallback);
+        if (!webSocketServer_->startup()) {
+	         startupCompleteCallback_(false);
+	         return;
+        }
+
+        startupCompleteCallback_(true);
+        return;
 	}
 
 	bool
-	WebSocket::shutdown(void)
+	WebSocket::shutdown(
+		void
+	)
 	{
 		if (!webSocketConfig_.enable()) {
 			return true;
@@ -145,7 +169,9 @@ namespace OpcUaWebServer
 	}
 
 	bool
-	WebSocket::sendMessage(WebSocketMessage& webSocketMessage)
+	WebSocket::sendMessage(
+		WebSocketMessage& webSocketMessage
+	)
 	{
 		return webSocketServer_->sendMessage(webSocketMessage);
 	}

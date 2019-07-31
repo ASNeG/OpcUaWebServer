@@ -56,6 +56,8 @@ namespace OpcUaWebServer
 		//- OpcUaClientManagerIf ----------------------------------------------
 
 	  private:
+		bool startupWebSocket(Config& config);
+
 		IOThread::SPtr ioThread_;
 		WebServer webServer_;
 		WebSocket webSocket_;
