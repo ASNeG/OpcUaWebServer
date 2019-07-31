@@ -34,7 +34,8 @@ services:
       - webserver
     environment:
       - SERVER_PKI_ROOT_DIR=/tmp/
-      - WS_SERVER_URL=ws://webserver:8082
+      - WS_GATEWAY_URL=ws://webserver:8082
+      - WS_SERVER_URL=ws://webserver:8081
       - OPC_SERVER_URL=opc.tcp://asneg-demo:8889
     command: echo "Test client is ready"
     volumes:

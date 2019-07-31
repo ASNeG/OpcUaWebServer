@@ -7,7 +7,7 @@ class TestMaxConnections(unittest.TestCase):
 
     def test_max_connections(self):
         self.ws = []
-        self.WS_SERVER_URL = os.getenv('WS_SERVER_URL', "ws://127.0.0.1:8082")
+        self.WS_GATEWAY_URL = os.getenv('WS_GATEWAY_URL', "ws://127.0.0.1:8082")
   
 
         #
@@ -20,7 +20,7 @@ class TestMaxConnections(unittest.TestCase):
             except:
                 print("timeout error")
                 self.assertTrue(False)
-            self.ws.append(local_ws);
+            self.ws.append(local_ws)
             print("CONNECT: ", idx, self.ws[idx])
 
 
@@ -35,19 +35,19 @@ class TestMaxConnections(unittest.TestCase):
             timeout = True
         self.assertTrue(timeout)
 
-	#
-	# close one conntion
+        #
+        # close one connection
         #
         print("close first connection")
         self.ws[0].close()
 
-	#
+        #
         # test connect
         #
         print("open connection")
         timeout = False
         try:
-            self.ws[0] = create_connection(self.WS_SERVER_URL, timeout=1)
+            self.ws[0] = create_connection(self.WS_GATEWAY_URL, timeout=1)
         except:
             timeout = True
         self.assertFalse(timeout)
@@ -58,5 +58,3 @@ class TestMaxConnections(unittest.TestCase):
         print("close all connections")
         for idx in range(0, 100, 1):
             self.ws[idx].close()
-
-        
