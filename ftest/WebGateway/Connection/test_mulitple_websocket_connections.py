@@ -9,7 +9,7 @@ class TestMultipleWebSocketConnections(unittest.TestCase):
     def test_multiple_websocket_connections(self):
         self.ws = []
         self.sessionId = []
-        self.WS_SERVER_URL = os.getenv('WS_SERVER_URL', "ws://127.0.0.1:8082")
+        self.WS_GATEWAY_URL = os.getenv('WS_GATEWAY_URL', "ws://127.0.0.1:8082")
         self.OPC_SERVER_URL = os.getenv('OPC_SERVER_URL', "opc.tcp://127.0.0.1:8889")
 
         #
@@ -18,7 +18,7 @@ class TestMultipleWebSocketConnections(unittest.TestCase):
         print("open 5 connectins")
         for idx in range(0, 5, 1):
             try:
-                local_ws = create_connection(self.WS_SERVER_URL, timeout=1)
+                local_ws = create_connection(self.WS_GATEWAY_URL, timeout=1)
             except:
                 print("timeout error")
                 self.assertTrue(False)
