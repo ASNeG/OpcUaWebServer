@@ -25,3 +25,4 @@ class TestHistoryReadAttribute(WebServerTestCase):
 
         self.assertEqual('ERROR', resp['Header']['MessageType'])
         self.assertEqual('BadRequestHeaderInvalid', resp['Header']['StatusCode'])
+git 
