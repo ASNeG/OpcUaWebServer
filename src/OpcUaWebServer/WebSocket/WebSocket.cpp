@@ -16,6 +16,7 @@
 
  */
 
+#include <boost/make_shared.hpp>
 #include <boost/lexical_cast.hpp>
 #include "OpcUaStackCore/Base/Log.h"
 #include "OpcUaWebServer/WebSocket/WebSocket.h"
@@ -61,6 +62,7 @@ namespace OpcUaWebServer
 	{
 		startupCompleteCallback_ = startupCompleteCallback;
 		webSocketConfig_.ioThread(ioThread);
+		webSocketConfig_.strand(strand_);
 
         if (!getWebSocketConfig(config)) {
 	        startupCompleteCallback_(false);
@@ -72,7 +74,7 @@ namespace OpcUaWebServer
 	        return;
         }
 
-        webSocketServer_ = constructSPtr<WebSocketServer>(&webSocketConfig_);
+        webSocketServer_ = boost::make_shared<WebSocketServer>(&webSocketConfig_);
         webSocketServer_->receiveMessageCallback(receiveMessageCallback);
         if (!webSocketServer_->startup()) {
 	         startupCompleteCallback_(false);

@@ -108,6 +108,18 @@ namespace OpcUaWebServer
 	}
 
 	void
+	WebSocketConfig::strand(const boost::shared_ptr<boost::asio::strand>& strand)
+	{
+		strand_ = strand;
+	}
+
+	boost::shared_ptr<boost::asio::strand>&
+	WebSocketConfig::strand(void)
+	{
+		return strand_;
+	}
+
+	void
 	WebSocketConfig::maxConnections(uint32_t maxConnections)
 	{
 		maxConnections_ = maxConnections;

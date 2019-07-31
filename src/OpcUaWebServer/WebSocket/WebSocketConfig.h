@@ -45,6 +45,8 @@ namespace OpcUaWebServer
 		uint32_t idleTimeout(void);
 		void ioThread(const IOThread::SPtr& ioThread);
 		IOThread::SPtr& ioThread(void);
+		void strand(const boost::shared_ptr<boost::asio::strand>& strand);
+		boost::shared_ptr<boost::asio::strand>& strand(void);
 		void maxConnections(uint32_t maxConnections);
 		uint32_t maxConnections(void);
 		void maxPacketLength(uint32_t maxPacketLength);
@@ -57,6 +59,7 @@ namespace OpcUaWebServer
 		uint32_t requestTimeout_;
 		uint32_t idleTimeout_;
 		IOThread::SPtr ioThread_;
+		boost::shared_ptr<boost::asio::strand> strand_;
 		uint32_t maxConnections_ = 100;
 		uint32_t maxPacketLength_ = 0;
 	};
