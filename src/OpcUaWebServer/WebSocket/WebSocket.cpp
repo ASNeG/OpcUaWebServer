@@ -83,16 +83,30 @@ namespace OpcUaWebServer
         return;
 	}
 
-	bool
+	void
 	WebSocket::shutdown(
-		void
+		const ShutdownCompleteCallback& shutdownCompleteCallback
+	)
+	{
+		strand_->post(
+			[this, shutdownCompleteCallback]() {
+				shutdownStrand(shutdownCompleteCallback);
+			}
+		);
+	}
+
+	void
+	WebSocket::shutdownStrand(
+		const ShutdownCompleteCallback& shutdownCompleteCallback
 	)
 	{
 		if (!webSocketConfig_.enable()) {
-			return true;
+			shutdownCompleteCallback(true);
+			return;
 		}
 
-		return true;
+		shutdownCompleteCallback(true);
+		return;
 	}
 
 	bool

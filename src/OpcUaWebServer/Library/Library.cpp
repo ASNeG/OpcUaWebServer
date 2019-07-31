@@ -143,8 +143,7 @@ namespace OpcUaWebServer
 		Log(Info, "shutdown web gateway");
 		if (!webGateway_.shutdown()) return false;
 
-		Log(Info, "shutdown web socket");
-		if (!webSocket_.shutdown()) return false;
+		if (!shutdownWebSocket()) return false;
 
 		Log(Info, "shutdown web server");
 		if (!webServer_.shutdown()) return false;
@@ -152,6 +151,26 @@ namespace OpcUaWebServer
 		Log(Info, "shutdown io thread");
 		if (!ioThread_->shutdown()) return false;
 		ioThread_.reset();
+
+		return true;
+	}
+
+	bool
+	Library::shutdownWebSocket(void)
+	{
+		Log(Info, "shutdown web socket");
+
+		std::promise<bool> prom;
+		auto future = prom.get_future();
+		auto shutdownCompleteCallback = [&prom](bool error) {
+			prom.set_value(error);
+		};
+		webSocket_.shutdown(shutdownCompleteCallback);
+
+		future.wait();
+		if (!future.get()) {
+			return false;
+		}
 
 		return true;
 	}

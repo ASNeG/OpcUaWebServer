@@ -45,8 +45,8 @@ namespace OpcUaWebServer
 			const WebSocketServer::ReceiveMessageCallback& receiveMessageCallback,
 			const StartupCompleteCallback& startupCompleteCallback
 		);
-		bool shutdown(
-			void
+		void shutdown(
+			const ShutdownCompleteCallback& shutdownCompleteCallback
 		);
 
 		bool sendMessage(
@@ -59,6 +59,9 @@ namespace OpcUaWebServer
 			const IOThread::SPtr& ioThread,
 			const WebSocketServer::ReceiveMessageCallback& receiveMessageCallback,
 			const StartupCompleteCallback& startupCompleteCallback
+		);
+		void shutdownStrand(
+			const ShutdownCompleteCallback& shutdownCompleteCallback
 		);
 
 		bool getWebSocketConfig(Config* config);

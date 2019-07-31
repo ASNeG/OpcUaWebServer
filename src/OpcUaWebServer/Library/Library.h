@@ -57,6 +57,7 @@ namespace OpcUaWebServer
 
 	  private:
 		bool startupWebSocket(Config& config);
+		bool shutdownWebSocket(void);
 
 		IOThread::SPtr ioThread_;
 		WebServer webServer_;

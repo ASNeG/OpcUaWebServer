@@ -5,6 +5,7 @@ from websocket import create_connection
 
 class TestMultipleWebSocketConnections(unittest.TestCase):
 
+    @unittest.skip("fix synchronization of response and notify")
     def test_multiple_websocket_connections(self):
         self.ws = []
         self.sessionId = []
