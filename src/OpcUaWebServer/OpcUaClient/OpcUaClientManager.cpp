@@ -135,6 +135,12 @@ namespace OpcUaWebServer
 					.parameter("MessageType", requestMessage->messageType());
 
 				// send error message to channel
+
+				Message::SPtr responseMessage = constructSPtr<Message>(Message::MT_Error);
+				responseMessage->channelId(requestMessage->channelId());
+				responseMessage->clientHandle(requestMessage->clientHandle());
+				responseMessage->statusCode(OpcUaStatusCodeMap::shortString(BadRequestHeaderInvalid));
+				opcUaClientManagerIf_->clientManagerMessage(responseMessage);
 			}
 		}
 	}
