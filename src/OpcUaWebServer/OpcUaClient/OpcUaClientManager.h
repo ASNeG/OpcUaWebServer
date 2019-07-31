@@ -12,9 +12,9 @@
    Informationen über die jeweiligen Bedingungen für Genehmigungen und Einschränkungen
    im Rahmen der Lizenz finden Sie in der Lizenz.
 
-   Autor: Kai Huebl (kai@huebl-sgh.de)
+   Autor: Kai Huebl (kai@huebl-sgh.de), Aleksey Timin (atimin@gmail.com)
 
- */
+*/
 
 #ifndef __OpcUaWebServer_OpcUaClientManager_h__
 #define __OpcUaWebServer_OpcUaClientManager_h__
@@ -24,9 +24,6 @@
 #include "OpcUaWebServer/OpcUaClient/OpcUaClientManagerIf.h"
 #include "OpcUaWebServer/OpcUaClient/OpcUaClientConfig.h"
 #include "OpcUaWebServer/OpcUaClient/OpcUaClient.h"
-
-using namespace OpcUaStackCore;
-using namespace OpcUaStackClient;
 
 namespace OpcUaWebServer
 {
@@ -63,6 +60,8 @@ namespace OpcUaWebServer
 		void receiveChannelCloseMessage(Message::SPtr& requestMessage);
 		bool readClientConfig(void);
 		bool startupClient(void);
+		void sendErrorMessage(Message::SPtr &requestMessage, Message messageType,
+				OpcUaStackCore::OpcUaStatusCode statusCode) const;
 
 		bool enable_;
 
@@ -74,6 +73,7 @@ namespace OpcUaWebServer
 		OpcUaClientConfig::Map opcUaClientConfigMap_;
 		OpcUaClient::Map opcUaClientMap_;
 		ValueInfoEntry::Map valueInfoEntryMap_;
+
 	};
 
 }
