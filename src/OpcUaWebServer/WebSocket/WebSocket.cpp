@@ -60,29 +60,26 @@ namespace OpcUaWebServer
 		const StartupCompleteCallback& startupCompleteCallback
 	)
 	{
-		startupCompleteCallback_ = startupCompleteCallback;
 		webSocketConfig_.ioThread(ioThread);
 		webSocketConfig_.strand(strand_);
 
         if (!getWebSocketConfig(config)) {
-	        startupCompleteCallback_(false);
+	        startupCompleteCallback(false);
 	        return;
         }
 
         if (!webSocketConfig_.enable()) {
-	        startupCompleteCallback_(true);
+	        startupCompleteCallback(true);
 	        return;
         }
 
         webSocketServer_ = boost::make_shared<WebSocketServer>(&webSocketConfig_);
         webSocketServer_->receiveMessageCallback(receiveMessageCallback);
-        if (!webSocketServer_->startup()) {
-	         startupCompleteCallback_(false);
-	         return;
-        }
-
-        startupCompleteCallback_(true);
-        return;
+        webSocketServer_->startup(
+        	[this, startupCompleteCallback](bool error) {
+        		startupCompleteCallback(error);
+        	}
+        );
 	}
 
 	void
@@ -107,8 +104,11 @@ namespace OpcUaWebServer
 			return;
 		}
 
-		shutdownCompleteCallback(true);
-		return;
+        webSocketServer_->shutdown(
+        	[this, shutdownCompleteCallback](bool error) {
+        		shutdownCompleteCallback(error);
+        	}
+        );
 	}
 
 	bool

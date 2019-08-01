@@ -38,22 +38,41 @@ namespace OpcUaWebServer
 	{
 	}
 
-	bool
+	void
 	WebGateway::startup(
 		Config* config,
 		IOThread::SPtr ioThread,
-		CryptoManager::SPtr& cryptoManager
+		CryptoManager::SPtr cryptoManager,
+		const StartupCompleteCallback& startupCompleteCallback
+	)
+	{
+		strand_ = ioThread->createStrand();
+		strand_->post(
+			[this, config, ioThread, cryptoManager, startupCompleteCallback]() {
+				startupStrand(config, ioThread, cryptoManager, startupCompleteCallback);
+			}
+		);
+	}
+
+	void
+	WebGateway::startupStrand(
+		Config* config,
+		IOThread::SPtr ioThread,
+		CryptoManager::SPtr cryptoManager,
+		const StartupCompleteCallback& startupCompleteCallback
 	)
 	{
 		//
 		// get gateway configuration from configuration file
 		//
 		if (!getWebGatewayConfig(config)) {
-			return false;
+			startupCompleteCallback(false);
+			return;
 		}
 
 		if (!webGatewayConfig_.active()) {
-			return true;
+			startupCompleteCallback(true);
+			return;
 		}
 
 		//
@@ -71,7 +90,8 @@ namespace OpcUaWebServer
 		clientManager_.sendMessageCallback(sendMessageCallback);
 		clientManager_.disconnectChannelCallback(disconnectChannelCallback);
 		if (!clientManager_.startup(ioThread, cryptoManager)) {
-			return false;
+			startupCompleteCallback(false);
+			return;
 		}
 
 		//
@@ -90,31 +110,52 @@ namespace OpcUaWebServer
 
 		webSocketServer_ = constructSPtr<WebSocketServer>(&webSocketConfig_);
 		webSocketServer_->receiveMessageCallback(receiveMessageCallback);
-		if (!webSocketServer_->startup()) {
-			return false;
-		}
-
-		return true;
+        webSocketServer_->startup(
+        	[this, startupCompleteCallback](bool error) {
+        		startupCompleteCallback(error);
+        	}
+        );
 	}
 
-	bool
-	WebGateway::shutdown(void)
+	void
+	WebGateway::shutdown(
+		const ShutdownCompleteCallback& shutdownCompleteCallback
+	)
+	{
+		strand_->post(
+			[this, shutdownCompleteCallback]() {
+				shutdownStrand(shutdownCompleteCallback);
+			}
+		);
+	}
+
+	void
+	WebGateway::shutdownStrand(
+		const ShutdownCompleteCallback& shutdownCompleteCallback
+	)
 	{
 		if (!webGatewayConfig_.active()) {
-			return true;
+			shutdownCompleteCallback(true);
+			return;
+		}
+
+		if (!webSocketConfig_.enable()) {
+			shutdownCompleteCallback(true);
+			return;
 		}
 
 		// shutdown web socket server
 		Log(Debug, "web socket server shutdown");
-		if (webSocketServer_) {
-			webSocketServer_->shutdown();
-		}
+        webSocketServer_->shutdown(
+        	[this, shutdownCompleteCallback](bool error) {
 
-		// shutdown client manager
-		Log(Debug, "client manager shutdown");
-		clientManager_.shutdown();
+        	    // shutdown client manager
+    		    Log(Debug, "client manager shutdown");
+    		    clientManager_.shutdown();
 
-		return true;
+        		shutdownCompleteCallback(true);
+        	}
+        );
 	}
 
 	bool

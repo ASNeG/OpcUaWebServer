@@ -26,14 +26,25 @@ namespace OpcUaWebServer
 	: WebSocketServerBase(webSocketConfig)
 	, webSocketConfig_(webSocketConfig)
 	{
+		if (webSocketConfig_->strand().get() == nullptr) {
+			webSocketConfig_->strand(webSocketConfig_->ioThread()->createStrand());
+		}
 	}
 
 	WebSocketServer::~WebSocketServer(void)
 	{
 	}
 
-	bool
-	WebSocketServer::startup(void)
+	void
+	WebSocketServer::startup(const StartupCompleteCallback& startupCompleteCallback)
+	{
+		webSocketConfig_->strand()->dispatch(
+			[this, startupCompleteCallback](){ startupStrand(startupCompleteCallback); }
+		);
+	}
+
+	void
+	WebSocketServer::startupStrand(const StartupCompleteCallback& startupCompleteCallback)
 	{
 		Log(Info, "open websocket listener socket")
 			.parameter("Address", webSocketConfig_->address())
@@ -42,13 +53,21 @@ namespace OpcUaWebServer
 		tcpAcceptor_.listen();
 		accept();
 
-		return true;
+		startupCompleteCallback(true);
 	}
 
-	bool
-	WebSocketServer::shutdown(void)
+	void
+	WebSocketServer::shutdown(const ShutdownCompleteCallback& shutdownCompleteCallback)
 	{
-		return true;
+		webSocketConfig_->strand()->dispatch(
+				[this, shutdownCompleteCallback](){ shutdownStrand(shutdownCompleteCallback); }
+		);
+	}
+
+	void
+	WebSocketServer::shutdownStrand(const ShutdownCompleteCallback& shutdownCompleteCallback)
+	{
+		shutdownCompleteCallback(true);
 	}
 
 	void

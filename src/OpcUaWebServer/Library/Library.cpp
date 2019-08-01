@@ -79,12 +79,7 @@ namespace OpcUaWebServer
 		//
 		// startup web gateway
 		//
-		Log(Info, "startup web gateway");
-		rc = webGateway_.startup(
-			&config, ioThread_,
-			cryptoManager()
-		);
-		if (!rc) {
+		if (!startupWebGateway(config)) {
 			return false;
 		}
 
@@ -130,6 +125,30 @@ namespace OpcUaWebServer
 	}
 
 	bool
+	Library::startupWebGateway(Config& config)
+	{
+		Log(Info, "startup web gateway");
+
+		std::promise<bool> prom;
+		auto future = prom.get_future();
+		auto startupCompleteCallback = [&prom](bool error) {
+			prom.set_value(error);
+		};
+		webGateway_.startup(
+			&config,
+			ioThread_,
+			cryptoManager(),
+			startupCompleteCallback
+		);
+		future.wait();
+		if (!future.get()) {
+			return false;
+		}
+
+		return true;
+	}
+
+	bool
 	Library::shutdown(void)
 	{
 		Log(Debug, "Library::shutdown");
@@ -140,9 +159,7 @@ namespace OpcUaWebServer
 		Log(Info, "shutdown message server");
 		if (!messageServer_.shutdown()) return false;
 
-		Log(Info, "shutdown web gateway");
-		if (!webGateway_.shutdown()) return false;
-
+		if (!shutdownWebGateway()) return false;
 		if (!shutdownWebSocket()) return false;
 
 		Log(Info, "shutdown web server");
@@ -166,6 +183,26 @@ namespace OpcUaWebServer
 			prom.set_value(error);
 		};
 		webSocket_.shutdown(shutdownCompleteCallback);
+
+		future.wait();
+		if (!future.get()) {
+			return false;
+		}
+
+		return true;
+	}
+
+	bool
+	Library::shutdownWebGateway(void)
+	{
+		Log(Info, "shutdown web gateway");
+
+		std::promise<bool> prom;
+		auto future = prom.get_future();
+		auto shutdownCompleteCallback = [&prom](bool error) {
+			prom.set_value(error);
+		};
+		webGateway_.shutdown(shutdownCompleteCallback);
 
 		future.wait();
 		if (!future.get()) {

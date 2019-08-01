@@ -34,23 +34,41 @@ namespace OpcUaWebServer
 	class WebGateway
 	{
 	  public:
+		typedef std::function<void (bool error)> StartupCompleteCallback;
+		typedef std::function<void (bool error)> ShutdownCompleteCallback;
+
 		WebGateway(void);
 		virtual ~WebGateway(void);
 
-		bool startup(
+		void startup(
 			Config* config,
 			IOThread::SPtr ioThread,
-			CryptoManager::SPtr& cryptoManager
+			CryptoManager::SPtr cryptoManager,
+			const StartupCompleteCallback& startupCompleteCallback
 		);
-		bool shutdown(void);
+		void shutdown(
+			const ShutdownCompleteCallback& shutdownCompleteCallback
+		);
 
 		bool getWebGatewayConfig(Config* config);
 
 	  private:
+		void startupStrand(
+			Config* config,
+			IOThread::SPtr ioThread,
+			CryptoManager::SPtr cryptoManager,
+			const StartupCompleteCallback& startupCompleteCallback
+		);
+		void shutdownStrand(
+			const ShutdownCompleteCallback& shutdownCompleteCallback
+		);
+
 		WebGatewayConfig webGatewayConfig_;
 
 		WebSocketConfig webSocketConfig_;
 		WebSocketServer::SPtr webSocketServer_;
+
+		boost::shared_ptr<boost::asio::strand> strand_ = nullptr;
 
 		ClientManager clientManager_;
 
