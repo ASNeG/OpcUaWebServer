@@ -11,6 +11,40 @@ class TestValueInfo(WebServerTestCase):
     def tearDown(self):
         WebServerTestCase.tearDown(self)
 
+    def test_wrong_format(self):
+        msg = {
+            'Header': {
+                'MessageType': 'VALUEINFO_REQUEST',
+                'ClientHandle': '1'
+            },
+            'Body': {
+                'WRONG_FIELD': 'WRONG_VALUE'
+            }
+        }
+
+        self.ws.send(json.dumps(msg))
+        resp = json.loads(self.ws.recv())
+
+        self.assertEqual('VALUEINFO_RESPONSE', resp['Header']['MessageType'])
+        self.assertEqual('BadAttributeIdInvalid', resp['Header']['StatusCode'])
+
+    def test_variable_not_found(self):
+        msg = {
+            'Header': {
+                'MessageType': 'VALUEINFO_REQUEST',
+                'ClientHandle': '1'
+            },
+            'Body': {
+                'Variables': ['NOT_EXIST']
+            }
+        }
+
+        self.ws.send(json.dumps(msg))
+        resp = json.loads(self.ws.recv())
+
+        self.assertEqual('VALUEINFO_RESPONSE', resp['Header']['MessageType'])
+        self.assertEqual('BadNodeIdUnknown', resp['Body']['Variables'][0]['StatusCode'])
+
     def test_value_info(self):
         msg = {
             'Header': {
@@ -50,4 +84,5 @@ class TestValueInfo(WebServerTestCase):
         variables = resp['Body']['Variables']
         self.assertEqual(1, len(variables))
 
+        # TODO: Trim the value
         self.assertEqual(' Switch', variables[0]['MetaData']['DisplayName'])
