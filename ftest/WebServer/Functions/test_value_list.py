@@ -23,7 +23,6 @@ class TestValueList(WebServerTestCase):
         self.ws.send(json.dumps(msg))
         resp = json.loads(self.ws.recv())
 
-
         self.assertEqual('VALUELIST_RESPONSE', resp['Header']['MessageType'])
         self.assertEqual(74, len(resp['Body']['Variables']))
         self.assertIn('Boolean', resp['Body']['Variables'])
