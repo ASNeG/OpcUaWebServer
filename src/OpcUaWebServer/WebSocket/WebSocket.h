@@ -48,9 +48,9 @@ namespace OpcUaWebServer
 		void shutdown(
 			const ShutdownCompleteCallback& shutdownCompleteCallback
 		);
-
-		bool sendMessage(
-		    WebSocketMessage& webSocketMessage
+		void sendMessage(
+		    WebSocketMessage::SPtr& webSocketMessage,
+			const SendCompleteCallback& sendCompleteCallback
 		);
 
 	  private:
@@ -62,6 +62,10 @@ namespace OpcUaWebServer
 		);
 		void shutdownStrand(
 			const ShutdownCompleteCallback& shutdownCompleteCallback
+		);
+		void sendMessageStrand(
+		    WebSocketMessage::SPtr& webSocketMessage,
+			const SendCompleteCallback& sendCompleteCallback
 		);
 
 		bool getWebSocketConfig(Config* config);

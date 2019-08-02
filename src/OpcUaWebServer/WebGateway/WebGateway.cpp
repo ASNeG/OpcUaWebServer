@@ -79,8 +79,8 @@ namespace OpcUaWebServer
 		// startup client manager
 		//
 		Log(Debug, "client manager startup");
-		auto sendMessageCallback = [this](WebSocketMessage& webSocketMessage) {
-			webSocketServer_->sendMessage(webSocketMessage);
+		auto sendMessageCallback = [this](WebSocketMessage::SPtr& webSocketMessage) {
+			webSocketServer_->sendMessage(webSocketMessage, [](bool error){});
 		};
 
 		auto disconnectChannelCallback = [this](uint32_t channelId) {
@@ -104,7 +104,7 @@ namespace OpcUaWebServer
 		webSocketConfig_.maxConnections(webGatewayConfig_.maxConnections());
 		webSocketConfig_.maxPacketLength(webGatewayConfig_.maxPacketLength());
 
-		auto receiveMessageCallback = [this](WebSocketMessage& webSocketMessage) {
+		auto receiveMessageCallback = [this](WebSocketMessage::SPtr& webSocketMessage) {
 			clientManager_.receiveMessage(webSocketMessage);
 		};
 

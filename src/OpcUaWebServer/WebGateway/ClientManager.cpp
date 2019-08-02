@@ -130,11 +130,11 @@ namespace OpcUaWebServer
 	}
 
 	void
-	ClientManager::receiveMessage(WebSocketMessage& webSocketMessage)
+	ClientManager::receiveMessage(WebSocketMessage::SPtr& webSocketMessage)
 	{
-		std::cout << "Command=" << webSocketMessage.command_ << std::endl;
-		std::cout << "ChannelId=" << webSocketMessage.channelId_ << std::endl;
-		std::cout << "ReceivedMessage=" << webSocketMessage.message_ << std::endl;
+		std::cout << "Command=" << webSocketMessage->command_ << std::endl;
+		std::cout << "ChannelId=" << webSocketMessage->channelId_ << std::endl;
+		std::cout << "ReceivedMessage=" << webSocketMessage->message_ << std::endl;
 
 		if (shutdownCallback_) {
 			// we want to shutdown and ignore all packages
@@ -143,11 +143,11 @@ namespace OpcUaWebServer
 
 		// parse json message
 		boost::property_tree::ptree pt;
-		if (!Json::fromString(webSocketMessage.message_, pt, true)) {
+		if (!Json::fromString(webSocketMessage->message_, pt, true)) {
 			Log(Error, "json decode error")
-				.parameter("ChannelId", webSocketMessage.channelId_);
+				.parameter("ChannelId", webSocketMessage->channelId_);
 			if (disconnectChannelCallback_) {
-				disconnectChannelCallback_(webSocketMessage.channelId_);
+				disconnectChannelCallback_(webSocketMessage->channelId_);
 			}
 			return;
 		}
@@ -157,7 +157,7 @@ namespace OpcUaWebServer
 		if (!requestHeader.jsonDecode(pt, "Header")) {
 			Log(Error, "message header error");
 			if (disconnectChannelCallback_) {
-				disconnectChannelCallback_(webSocketMessage.channelId_);
+				disconnectChannelCallback_(webSocketMessage->channelId_);
 			}
 			return;
 		}
@@ -166,28 +166,28 @@ namespace OpcUaWebServer
 		boost::optional<boost::property_tree::ptree&> body = pt.get_child_optional("Body");
 		if (!body) {
 			Log(Error, "message do not contain message body");
-			sendErrorResponse(webSocketMessage.channelId_, requestHeader, BadInvalidArgument);
+			sendErrorResponse(webSocketMessage->channelId_, requestHeader, BadInvalidArgument);
 			return;
 		}
 
 		auto messageType = requestHeader.messageType().toStdString();
 		if (messageType == "CHANNELCLOSE_MESSAGE") {
-			handleChannelClose(webSocketMessage.channelId_, requestHeader, *body);
+			handleChannelClose(webSocketMessage->channelId_, requestHeader, *body);
 			return;
 		}
 
 		else if (messageType == "GW_LoginRequest") {
-			handleLogin(webSocketMessage.channelId_, requestHeader, *body);
+			handleLogin(webSocketMessage->channelId_, requestHeader, *body);
 			return;
 		}
 
 		else if (messageType == "GW_LogoutRequest") {
-			handleLogout(webSocketMessage.channelId_, requestHeader, *body);
+			handleLogout(webSocketMessage->channelId_, requestHeader, *body);
 			return;
 		}
 
 		else {
-			handleRequest(webSocketMessage.channelId_, requestHeader, *body);
+			handleRequest(webSocketMessage->channelId_, requestHeader, *body);
 		}
 	}
 
@@ -510,9 +510,9 @@ namespace OpcUaWebServer
 		}
 
 		// create web socket message
-		WebSocketMessage webSocketMessage;
-		webSocketMessage.channelId_ = channelId;
-		webSocketMessage.message_ = msg;
+		auto webSocketMessage = boost::make_shared<WebSocketMessage>();
+		webSocketMessage->channelId_ = channelId;
+		webSocketMessage->message_ = msg;
 
 		if (sendMessageCallback_) {
 			sendMessageCallback_(webSocketMessage);
@@ -550,9 +550,9 @@ namespace OpcUaWebServer
 		}
 
 		// create web socket message
-		WebSocketMessage webSocketMessage;
-		webSocketMessage.channelId_ = channelId;
-		webSocketMessage.message_ = msg;
+		auto webSocketMessage = boost::make_shared<WebSocketMessage>();
+		webSocketMessage->channelId_ = channelId;
+		webSocketMessage->message_ = msg;
 
 		if (sendMessageCallback_) {
 			sendMessageCallback_(webSocketMessage);
@@ -590,9 +590,9 @@ namespace OpcUaWebServer
 		}
 
 		// create web socket message
-		WebSocketMessage webSocketMessage;
-		webSocketMessage.channelId_ = channelId;
-		webSocketMessage.message_ = msg;
+		auto webSocketMessage = boost::make_shared<WebSocketMessage>();
+		webSocketMessage->channelId_ = channelId;
+		webSocketMessage->message_ = msg;
 
 		if (sendMessageCallback_) {
 			sendMessageCallback_(webSocketMessage);

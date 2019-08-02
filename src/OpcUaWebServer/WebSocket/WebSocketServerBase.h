@@ -36,14 +36,20 @@ namespace OpcUaWebServer
 			OP_PING_FRAME = 9
 		} OpCode;
 
-		typedef std::function<void (WebSocketMessage& webSocketMessag)> ReceiveMessageCallback;
+		typedef std::function<void (bool error)> SendCompleteCallback;
+		typedef std::function<void (WebSocketMessage::SPtr& webSocketMessag)> ReceiveMessageCallback;
 
 		WebSocketServerBase(WebSocketConfig* webSocketConfig);
 		virtual ~WebSocketServerBase(void);
 
 		void disconnect(uint32_t channelId);
-		void receiveMessageCallback(const ReceiveMessageCallback& receiveMessageCallback);
-		bool sendMessage(WebSocketMessage& webSocketMessage);
+		void receiveMessageCallback(
+			const ReceiveMessageCallback& receiveMessageCallback
+		);
+		void sendMessage(
+			WebSocketMessage::SPtr& webSocketMessage,
+			const SendCompleteCallback& sendCompleteCallback
+		);
 
 		virtual void addWebSocketChannel(uint32_t count) = 0;
 		virtual void delWebSocketChannel(uint32_t count) = 0;
@@ -89,11 +95,17 @@ namespace OpcUaWebServer
 		// handle send message
 		//
 		bool sendMessage(
-			WebSocketMessage& webSocketMessage,
+			WebSocketMessage::SPtr& webSocketMessage,
 			WebSocketChannel* webSocketChannel,
+			const SendCompleteCallback& sendCompleteCallback,
 			char headerByte = 0x00
 		);
-		void handleWriteMessageComplete(const boost::system::error_code& error, WebSocketChannel* httpChannel);
+		void handleWriteMessageComplete(
+			const boost::system::error_code& error,
+			std::size_t bytes_transferred,
+			WebSocketChannel* webSocketChannel,
+			const SendCompleteCallback& sendCompleteCallback
+		);
 
 
 

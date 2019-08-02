@@ -34,7 +34,7 @@ namespace OpcUaWebServer
 	class ClientManager
 	{
 	  public:
-		typedef std::function<void (WebSocketMessage& webSocketMessag)> SendMessageCallback;
+		typedef std::function<void (WebSocketMessage::SPtr& webSocketMessage)> SendMessageCallback;
 		typedef std::function<void (uint32_t channelId)> DisconnectChannelCallback;
 		typedef std::function<void (void)> ShutdownCallback;
 
@@ -49,7 +49,7 @@ namespace OpcUaWebServer
 
 		void sendMessageCallback(const SendMessageCallback& sendMessageCallback);
 		void disconnectChannelCallback(const DisconnectChannelCallback& disconnectChannelCallback);
-		void receiveMessage(WebSocketMessage& webSocketMessag);
+		void receiveMessage(WebSocketMessage::SPtr& webSocketMessage);
 
 	  private:
 		void handleChannelClose(

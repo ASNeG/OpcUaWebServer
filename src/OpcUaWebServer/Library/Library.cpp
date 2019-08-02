@@ -16,6 +16,7 @@
  */
 
 #include <future>
+#include <boost/make_shared.hpp>
 #include "OpcUaStackCore/Base/os.h"
 #include "OpcUaStackCore/Base/Log.h"
 #include "OpcUaStackCore/Base/ConfigXml.h"
@@ -106,9 +107,9 @@ namespace OpcUaWebServer
 		auto startupCompleteCallback = [&prom](bool error) {
 			prom.set_value(error);
 		};
-		auto receiveMessageCallback = [this](WebSocketMessage& webSocketMessage) {
-			std::cout << "WebSocketMessage: " << webSocketMessage.message_ << std::endl;
-			messageServer_.receiveMessage(webSocketMessage.channelId_, webSocketMessage.message_);
+		auto receiveMessageCallback = [this](WebSocketMessage::SPtr& webSocketMessage) {
+			std::cout << "WebSocketMessage: " << webSocketMessage->message_ << std::endl;
+			messageServer_.receiveMessage(webSocketMessage->channelId_, webSocketMessage->message_);
 		};
 		webSocket_.startup(
 			&config,
@@ -237,10 +238,13 @@ namespace OpcUaWebServer
 	void
 	Library::messageServerMessage(uint32_t channelId, const std::string& message)
 	{
-		WebSocketMessage webSocketMessage;
-		webSocketMessage.channelId_ = channelId;
-		webSocketMessage.message_ = message;
-		webSocket_.sendMessage(webSocketMessage);
+		auto webSocketMessage = boost::make_shared<WebSocketMessage>();
+		webSocketMessage->channelId_ = channelId;
+		webSocketMessage->message_ = message;
+		webSocket_.sendMessage(
+			webSocketMessage,
+			[](bool error) {}
+		);
 	}
 
 	// ------------------------------------------------------------------------

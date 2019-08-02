@@ -20,6 +20,7 @@
 #include <openssl/bio.h>
 #include <openssl/evp.h>
 #include <openssl/buffer.h>
+#include <boost/make_shared.hpp>
 #include <boost/lexical_cast.hpp>
 #include <boost/algorithm/string.hpp>
 
@@ -72,8 +73,11 @@ namespace OpcUaWebServer
 		receiveMessageCallback_ = receiveMessageCallback;
 	}
 
-	bool
-	WebSocketServerBase::sendMessage(WebSocketMessage& webSocketMessage)
+	void
+	WebSocketServerBase::sendMessage(
+		WebSocketMessage::SPtr& webSocketMessage,
+		const SendCompleteCallback& sendCompleteCallback
+	)
 	{
 		WebSocketChannel* webSocketChannel;
 
@@ -81,17 +85,17 @@ namespace OpcUaWebServer
 			boost::mutex::scoped_lock g(mutex_);
 
 			// get web socket channel
-			auto it = webSocketChannelMap_.find(webSocketMessage.channelId_);
+			auto it = webSocketChannelMap_.find(webSocketMessage->channelId_);
 			if (it == webSocketChannelMap_.end()) {
 				Log(Error, "web socket channel not exist - ignore send message")
-					.parameter("ChannelId", webSocketMessage.channelId_);
-				return false;
+					.parameter("ChannelId", webSocketMessage->channelId_);
+				sendCompleteCallback(false);
 			}
 			webSocketChannel = it->second;
 		}
 
 		// send message to client
-		return sendMessage(webSocketMessage, webSocketChannel);
+		sendMessage(webSocketMessage, webSocketChannel, sendCompleteCallback);
 	}
 
 	void
@@ -104,9 +108,9 @@ namespace OpcUaWebServer
 		cleanupWebSocketChannel(webSocketChannel);
 
 		// send channel close message to opc ua client
-		WebSocketMessage webSocketMessage;
-		webSocketMessage.channelId_ = webSocketChannel->id_;
-		webSocketMessage.message_ = "{\"Header\":{\"MessageType\": \"CHANNELCLOSE_MESSAGE\",\"ClientHandle\": \"---\"},\"Body\":{}}";
+		auto webSocketMessage = boost::make_shared<WebSocketMessage>();
+		webSocketMessage->channelId_ = webSocketChannel->id_;
+		webSocketMessage->message_ = "{\"Header\":{\"MessageType\": \"CHANNELCLOSE_MESSAGE\",\"ClientHandle\": \"---\"},\"Body\":{}}";
 		if (receiveMessageCallback_) {
 			receiveMessageCallback_(webSocketMessage);
 		}
@@ -685,9 +689,9 @@ namespace OpcUaWebServer
 			return;
 		}
 
-		WebSocketMessage webSocketMessage;
-		webSocketMessage.channelId_ = webSocketChannel->id_;
-		webSocketMessage.message_ = "";
+		auto webSocketMessage = boost::make_shared<WebSocketMessage>();
+		webSocketMessage->channelId_ = webSocketChannel->id_;
+		webSocketMessage->message_ = "";
 
 		std::istream is(&webSocketChannel->recvBuffer_);
 
@@ -711,12 +715,22 @@ namespace OpcUaWebServer
 				pos++;
 			}
 
-			webSocketMessage.message_.append(buffer, bufferLen);
+			webSocketMessage->message_.append(buffer, bufferLen);
 		}
 
 		if (webSocketChannel->opcode_ == OP_PING_FRAME) {
-			sendMessage(webSocketMessage, webSocketChannel, 0x8A);
-			receiveMessage(webSocketChannel);
+			// send answer to client
+			sendMessage(
+				webSocketMessage,
+				webSocketChannel,
+				[](bool error){},
+				0x8A
+			);
+
+			// receive next message
+			receiveMessage(
+				webSocketChannel
+			);
 			return;
 		}
 
@@ -746,8 +760,9 @@ namespace OpcUaWebServer
 	// ------------------------------------------------------------------------
 	bool
 	WebSocketServerBase::sendMessage(
-		WebSocketMessage& webSocketMessage,
+		WebSocketMessage::SPtr& webSocketMessage,
 		WebSocketChannel* webSocketChannel,
+		const SendCompleteCallback& sendCompleteCallback,
 		char headerByte
 	)
 	{
@@ -765,7 +780,7 @@ namespace OpcUaWebServer
 
 		// set length
 		uint32_t headerLength;
-		uint64_t length = webSocketMessage.message_.length();
+		uint64_t length = webSocketMessage->message_.length();
 		if (length <= 125) {
 			headerLength = 2;
 			headerBytes[1] = (uint8_t)length;
@@ -813,19 +828,30 @@ namespace OpcUaWebServer
 		os.write(headerBytes, headerLength);
 
 		// set message
-		os.write(webSocketMessage.message_.c_str(), length);
+		os.write(webSocketMessage->message_.c_str(), length);
 
 		// send message
 		webSocketChannel->async_write(
 			webSocketChannel->sendBuffer_,
-			boost::bind(&WebSocketServerBase::handleWriteMessageComplete, this, boost::asio::placeholders::error, webSocketChannel)
+			[this, sendCompleteCallback, webSocketChannel](const boost::system::error_code& error, std::size_t bytes_transferred) {
+				this->webSocketConfig_->strand()->dispatch(
+					[this, error, bytes_transferred, sendCompleteCallback, webSocketChannel]() {
+					    handleWriteMessageComplete(error, bytes_transferred, webSocketChannel, sendCompleteCallback);
+				    }
+				);
+			}
 		);
 
 		return true;
 	}
 
 	void
-	WebSocketServerBase::handleWriteMessageComplete(const boost::system::error_code& error, WebSocketChannel* webSocketChannel)
+	WebSocketServerBase::handleWriteMessageComplete(
+		const boost::system::error_code& error,
+		std::size_t bytes_transferred,
+		WebSocketChannel* webSocketChannel,
+		const SendCompleteCallback& sendCompleteCallback
+	)
 	{
 		if (error) {
 			Log(Debug, "WebSocketServer send response error; close channel")
@@ -834,8 +860,10 @@ namespace OpcUaWebServer
 				.parameter("ChannelId", webSocketChannel->id_);
 
 			closeWebSocketChannel(webSocketChannel);
+			sendCompleteCallback(false);
 			return;
 		}
+		sendCompleteCallback(true);
 	}
 
 }

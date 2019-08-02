@@ -60,7 +60,7 @@ namespace OpcUaWebServer
 	WebSocketServer::shutdown(const ShutdownCompleteCallback& shutdownCompleteCallback)
 	{
 		webSocketConfig_->strand()->dispatch(
-				[this, shutdownCompleteCallback](){ shutdownStrand(shutdownCompleteCallback); }
+			[this, shutdownCompleteCallback](){ shutdownStrand(shutdownCompleteCallback); }
 		);
 	}
 
@@ -68,6 +68,31 @@ namespace OpcUaWebServer
 	WebSocketServer::shutdownStrand(const ShutdownCompleteCallback& shutdownCompleteCallback)
 	{
 		shutdownCompleteCallback(true);
+	}
+
+	void
+	WebSocketServer::sendMessage(
+	    WebSocketMessage::SPtr& webSocketMessage,
+		const SendCompleteCallback& sendCompleteCallback
+	)
+	{
+		webSocketConfig_->strand()->dispatch(
+			[this, webSocketMessage, sendCompleteCallback](void) mutable {
+			    sendMessageStrand(webSocketMessage, sendCompleteCallback);
+		    }
+		);
+	}
+
+	void
+	WebSocketServer::sendMessageStrand(
+	    WebSocketMessage::SPtr& webSocketMessage,
+		const SendCompleteCallback& sendCompleteCallback
+	)
+	{
+		WebSocketServerBase::sendMessage(
+			webSocketMessage,
+			sendCompleteCallback
+		);
 	}
 
 	void

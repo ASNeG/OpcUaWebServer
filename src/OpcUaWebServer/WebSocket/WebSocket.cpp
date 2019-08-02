@@ -184,12 +184,28 @@ namespace OpcUaWebServer
 		return true;
 	}
 
-	bool
+	void
 	WebSocket::sendMessage(
-		WebSocketMessage& webSocketMessage
+		WebSocketMessage::SPtr& webSocketMessage,
+		const SendCompleteCallback& sendCompleteCallback
 	)
 	{
-		return webSocketServer_->sendMessage(webSocketMessage);
+		strand_->post(
+			[this, &webSocketMessage, sendCompleteCallback]() {
+				sendMessageStrand(webSocketMessage, sendCompleteCallback);
+			}
+		);
+
+
+	}
+
+	void
+	WebSocket::sendMessageStrand(
+	    WebSocketMessage::SPtr& webSocketMessage,
+		const SendCompleteCallback& sendCompleteCallback
+	)
+	{
+		webSocketServer_->sendMessage(webSocketMessage, sendCompleteCallback);
 	}
 
 }

@@ -34,20 +34,37 @@ namespace OpcUaWebServer
 	  public:
 		typedef std::function<void (bool error)> StartupCompleteCallback;
 		typedef std::function<void (bool error)> ShutdownCompleteCallback;
+		typedef std::function<void (bool error)> SendCompleteCallback;
 		typedef boost::shared_ptr<WebSocketServer> SPtr;
 
 		WebSocketServer(WebSocketConfig* webSocketConfig);
 		~WebSocketServer(void);
 
-		void startup(const StartupCompleteCallback& startupCompleteCallback);
-		void shutdown(const ShutdownCompleteCallback& shutdownCompleteCallback);
+		void startup(
+			const StartupCompleteCallback& startupCompleteCallback
+		);
+		void shutdown(
+			const ShutdownCompleteCallback& shutdownCompleteCallback
+		);
+		void sendMessage(
+		    WebSocketMessage::SPtr& webSocketMessage,
+			const SendCompleteCallback& sendCompleteCallback
+		);
 
 		void addWebSocketChannel(uint32_t count) override;
 		void delWebSocketChannel(uint32_t count) override;
 
 	  private:
-		void startupStrand(const StartupCompleteCallback& startupCompleteCallback);
-		void shutdownStrand(const ShutdownCompleteCallback& shutdownCompleteCallback);
+		void startupStrand(
+			const StartupCompleteCallback& startupCompleteCallback
+		);
+		void shutdownStrand(
+			const ShutdownCompleteCallback& shutdownCompleteCallback
+		);
+		void sendMessageStrand(
+		    WebSocketMessage::SPtr& webSocketMessage,
+			const SendCompleteCallback& sendCompleteCallback
+		);
 
 		void accept(void);
 		void handleAccept(const boost::system::error_code& error, WebSocketChannel* webSocketChannel);
