@@ -98,10 +98,16 @@ namespace OpcUaWebServer
 	void
 	WebSocketServer::accept(void)
 	{
-		WebSocketChannel* webSocketChannel = new WebSocketChannel(webSocketConfig_->ioThread()->ioService()->io_service());
+		auto webSocketChannel = new WebSocketChannel(webSocketConfig_->ioThread()->ioService()->io_service());
 		tcpAcceptor_.async_accept(
 			webSocketChannel->socket(),
-			boost::bind(&WebSocketServer::handleAccept, this, boost::asio::placeholders::error, webSocketChannel)
+			[this, webSocketChannel](const boost::system::error_code& error) {
+				webSocketConfig_->strand()->dispatch(
+					[this, error, webSocketChannel](void) {
+						handleAccept(error, webSocketChannel);
+					}
+				);
+			}
 		);
 	}
 
