@@ -37,7 +37,6 @@ namespace OpcUaWebServer
 	, tcpAcceptor_(webSocketConfig->ioThread()->ioService()->io_service(), webSocketConfig->address(), webSocketConfig->port())
 	, receiveMessageCallback_()
 	, webSocketChannelMap_()
-	, mutex_()
 	{
 	}
 
@@ -51,8 +50,6 @@ namespace OpcUaWebServer
 		WebSocketChannel* webSocketChannel;
 
 		{
-			boost::mutex::scoped_lock g(mutex_);
-
 			// get web socket channel
 			auto it = webSocketChannelMap_.find(channelId);
 			if (it == webSocketChannelMap_.end()) {
@@ -82,8 +79,6 @@ namespace OpcUaWebServer
 		WebSocketChannel* webSocketChannel;
 
 		{
-			boost::mutex::scoped_lock g(mutex_);
-
 			// get web socket channel
 			auto it = webSocketChannelMap_.find(webSocketMessage->channelId_);
 			if (it == webSocketChannelMap_.end()) {
@@ -130,8 +125,6 @@ namespace OpcUaWebServer
 	void
 	WebSocketServerBase::initWebSocketChannel(WebSocketChannel* webSocketChannel)
 	{
-		boost::mutex::scoped_lock g(mutex_);
-
 		webSocketChannelMap_.insert(std::make_pair(webSocketChannel->id_, webSocketChannel));
 		Log(Debug, "create web socket")
 		    .parameter("ChannelId", webSocketChannel->id_);
@@ -142,8 +135,6 @@ namespace OpcUaWebServer
 	void
 	WebSocketServerBase::cleanupWebSocketChannel(WebSocketChannel* webSocketChannel)
 	{
-		boost::mutex::scoped_lock g(mutex_);
-
 		Log(Debug, "delete web socket")
 		    .parameter("ChannelId", webSocketChannel->id_);
 
