@@ -157,7 +157,10 @@ namespace OpcUaWebServer
 	{
 		// start timer
 		webSocketChannel->slotTimerElement_->expireFromNow(webSocketConfig_->requestTimeout());
-		webSocketChannel->slotTimerElement_->callback().reset(boost::bind(&WebSocketServerBase::handleReceiveHandshakeHeaderTimeout, this, webSocketChannel));
+		webSocketChannel->slotTimerElement_->timeoutCallback(
+			webSocketConfig_->strand(),
+			[this, webSocketChannel](void) { requestTimeoutWebSocketChannel(webSocketChannel, "request header"); }
+		);
 		webSocketConfig_->ioThread()->slotTimer()->start(webSocketChannel->slotTimerElement_);
 
 		webSocketChannel->async_read_until(
@@ -165,12 +168,6 @@ namespace OpcUaWebServer
 			boost::bind(&WebSocketServerBase::handleReceiveHandshakeHeader, this, boost::asio::placeholders::error, boost::asio::placeholders::bytes_transferred, webSocketChannel),
 			"\r\n\r\n"
 		);
-	}
-
-	void
-	WebSocketServerBase::handleReceiveHandshakeHeaderTimeout(WebSocketChannel* webSocketChannel)
-	{
-		requestTimeoutWebSocketChannel(webSocketChannel, "request header");
 	}
 
 	void
@@ -264,7 +261,10 @@ namespace OpcUaWebServer
 
 		// start request timer
 		webSocketChannel->slotTimerElement_->expireFromNow(webSocketConfig_->requestTimeout());
-		webSocketChannel->slotTimerElement_->callback().reset(boost::bind(&WebSocketServerBase::handleReceiveHandshakeContentTimeout, this, webSocketChannel));
+		webSocketChannel->slotTimerElement_->timeoutCallback(
+			webSocketConfig_->strand(),
+			[this, webSocketChannel](void){ requestTimeoutWebSocketChannel(webSocketChannel, "request content"); }
+		);
 		webSocketConfig_->ioThread()->slotTimer()->start(webSocketChannel->slotTimerElement_);
 
 		webSocketChannel->async_read_exactly(
@@ -272,12 +272,6 @@ namespace OpcUaWebServer
 			boost::bind(&WebSocketServerBase::handleReceiveHandshakeContent, this, boost::asio::placeholders::error, boost::asio::placeholders::bytes_transferred, webSocketChannel),
 			contentLength-numAdditionalBytes
 		);
-	}
-
-	void
-	WebSocketServerBase::handleReceiveHandshakeContentTimeout(WebSocketChannel* webSocketChannel)
-	{
-		requestTimeoutWebSocketChannel(webSocketChannel, "request content");
 	}
 
 	void
@@ -425,7 +419,10 @@ namespace OpcUaWebServer
 	{
 		// start request timer
 		webSocketChannel->slotTimerElement_->expireFromNow(webSocketConfig_->idleTimeout());
-		webSocketChannel->slotTimerElement_->callback().reset(boost::bind(&WebSocketServerBase::handleIdleTimeout, this, webSocketChannel));
+		webSocketChannel->slotTimerElement_->timeoutCallback(
+			webSocketConfig_->strand(),
+			[this, webSocketChannel](void){ idleTimeoutWebSocketChannel(webSocketChannel, "json header"); }
+		);
 		webSocketConfig_->ioThread()->slotTimer()->start(webSocketChannel->slotTimerElement_);
 
 		webSocketChannel->async_read_exactly(
@@ -433,12 +430,6 @@ namespace OpcUaWebServer
 			boost::bind(&WebSocketServerBase::handleReceiveMessageHeader, this, boost::asio::placeholders::error, boost::asio::placeholders::bytes_transferred, webSocketChannel),
 			2
 		);
-	}
-
-	void
-	WebSocketServerBase::handleIdleTimeout(WebSocketChannel* webSocketChannel)
-	{
-		idleTimeoutWebSocketChannel(webSocketChannel, "json header");
 	}
 
 	void
@@ -518,7 +509,10 @@ namespace OpcUaWebServer
 		if (length <= 125) {
 			// start request timer
 			webSocketChannel->slotTimerElement_->expireFromNow(webSocketConfig_->requestTimeout());
-			webSocketChannel->slotTimerElement_->callback().reset(boost::bind(&WebSocketServerBase::handleReceiveMessageContentTimeout, this, webSocketChannel));
+			webSocketChannel->slotTimerElement_->timeoutCallback(
+				webSocketConfig_->strand(),
+				[this, webSocketChannel](){ idleTimeoutWebSocketChannel(webSocketChannel, "json content"); }
+			);
 			webSocketConfig_->ioThread()->slotTimer()->start(webSocketChannel->slotTimerElement_);
 
 			webSocketChannel->async_read_exactly(
@@ -532,7 +526,10 @@ namespace OpcUaWebServer
 		if (length == 126) {
 			// start request timer
 			webSocketChannel->slotTimerElement_->expireFromNow(webSocketConfig_->requestTimeout());
-			webSocketChannel->slotTimerElement_->callback().reset(boost::bind(&WebSocketServerBase::handleReceiveMessageLength2Timeout, this, webSocketChannel));
+			webSocketChannel->slotTimerElement_->timeoutCallback(
+				webSocketConfig_->strand(),
+				[this, webSocketChannel](){ idleTimeoutWebSocketChannel(webSocketChannel, "json message length2"); }
+			);
 			webSocketConfig_->ioThread()->slotTimer()->start(webSocketChannel->slotTimerElement_);
 
 			webSocketChannel->async_read_exactly(
@@ -546,7 +543,10 @@ namespace OpcUaWebServer
 		if (length == 127) {
 			// start request timer
 			webSocketChannel->slotTimerElement_->expireFromNow(webSocketConfig_->requestTimeout());
-			webSocketChannel->slotTimerElement_->callback().reset(boost::bind(&WebSocketServerBase::handleReceiveMessageLength2Timeout, this, webSocketChannel));
+			webSocketChannel->slotTimerElement_->timeoutCallback(
+				webSocketConfig_->strand(),
+				[this, webSocketChannel](){ idleTimeoutWebSocketChannel(webSocketChannel, "json message length2"); }
+			);
 			webSocketConfig_->ioThread()->slotTimer()->start(webSocketChannel->slotTimerElement_);
 
 			webSocketChannel->async_read_exactly(
@@ -557,12 +557,6 @@ namespace OpcUaWebServer
 			return;
 		}
 
-	}
-
-	void
-	WebSocketServerBase::handleReceiveMessageLength2Timeout(WebSocketChannel* webSocketChannel)
-	{
-		idleTimeoutWebSocketChannel(webSocketChannel, "json message length2");
 	}
 
 	void
@@ -596,7 +590,10 @@ namespace OpcUaWebServer
 
 		// start request timer
 		webSocketChannel->slotTimerElement_->expireFromNow(webSocketConfig_->requestTimeout());
-		webSocketChannel->slotTimerElement_->callback().reset(boost::bind(&WebSocketServerBase::handleReceiveMessageContentTimeout, this, webSocketChannel));
+		webSocketChannel->slotTimerElement_->timeoutCallback(
+			webSocketConfig_->strand(),
+			[this, webSocketChannel](){ idleTimeoutWebSocketChannel(webSocketChannel, "json content"); }
+		);
 		webSocketConfig_->ioThread()->slotTimer()->start(webSocketChannel->slotTimerElement_);
 
 		webSocketChannel->async_read_exactly(
@@ -643,7 +640,10 @@ namespace OpcUaWebServer
 
 		// start request timer
 		webSocketChannel->slotTimerElement_->expireFromNow(webSocketConfig_->requestTimeout());
-		webSocketChannel->slotTimerElement_->callback().reset(boost::bind(&WebSocketServerBase::handleReceiveMessageContentTimeout, this, webSocketChannel));
+		webSocketChannel->slotTimerElement_->timeoutCallback(
+			webSocketConfig_->strand(),
+			[this, webSocketChannel](){ idleTimeoutWebSocketChannel(webSocketChannel, "json content"); }
+		);
 		webSocketConfig_->ioThread()->slotTimer()->start(webSocketChannel->slotTimerElement_);
 
 		webSocketChannel->async_read_exactly(
@@ -651,12 +651,6 @@ namespace OpcUaWebServer
 			boost::bind(&WebSocketServerBase::handleReceiveMessageContent, this, boost::asio::placeholders::error, boost::asio::placeholders::bytes_transferred, webSocketChannel),
 			length+4
 		);
-	}
-
-	void
-	WebSocketServerBase::handleReceiveMessageContentTimeout(WebSocketChannel* webSocketChannel)
-	{
-		idleTimeoutWebSocketChannel(webSocketChannel, "json content");
 	}
 
 	void

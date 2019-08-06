@@ -65,11 +65,8 @@ namespace OpcUaWebServer
 		//
 		// handle handshake
 		//
-		void handleReceiveHandshakeHeaderTimeout(WebSocketChannel* webSocketChannel);
 		void handleReceiveHandshakeHeader(const boost::system::error_code& error, std::size_t bytes_transfered, WebSocketChannel* webSocketChannel);
-		void handleReceiveHandshakeContentTimeout(WebSocketChannel* webSocketChannel);
 		void handleReceiveHandshakeContent(const boost::system::error_code& error, std::size_t bytes_transfered, WebSocketChannel* webSocketChannel);
-		void handleIdleTimeout(WebSocketChannel* webSocketChannel);
 		void processHandshake(WebSocketChannel* httpChannel, WebSocketRequest& webSocketRequest);
 		void handleWriteComplete(const boost::system::error_code& error, WebSocketChannel* httpChannel);
 		int base64Encode(const unsigned char* buffer, size_t length, char** b64text);
@@ -82,10 +79,8 @@ namespace OpcUaWebServer
 		//
 		void receiveMessage(WebSocketChannel* webSocketChannel);
 		void handleReceiveMessageHeader(const boost::system::error_code& error, std::size_t bytes_transfered, WebSocketChannel* webSocketChannel);
-		void handleReceiveMessageLength2Timeout(WebSocketChannel* webSocketChannel);
 		void handleReceiveMessageLength2(const boost::system::error_code& error, std::size_t bytes_transfered, WebSocketChannel* webSocketChannel);
 		void handleReceiveMessageLength8(const boost::system::error_code& error, std::size_t bytes_transfered, WebSocketChannel* webSocketChannel);
-		void handleReceiveMessageContentTimeout(WebSocketChannel* webSocketChannel);
 		void handleReceiveMessageContent(const boost::system::error_code& error, std::size_t bytes_transfered, WebSocketChannel* webSocketChannel);
 
 		void idleTimeoutWebSocketChannel(WebSocketChannel* webSocketChannel, const std::string& location);
