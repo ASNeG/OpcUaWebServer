@@ -18,3 +18,4 @@ build_*
 cmake-build-*
 __pycache__
 nosetests.xml
+venv
