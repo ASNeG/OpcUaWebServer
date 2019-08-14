@@ -1,3 +1,4 @@
 websocket
 websocket-client
 nose
+opcua
