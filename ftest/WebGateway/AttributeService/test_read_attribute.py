@@ -1,5 +1,6 @@
 import json
-import unittest
+from opcua import Client
+from opcua import ua
 
 from ..web_gateway_testcase import WebGatewayTestCase
 
@@ -9,6 +10,9 @@ class TestReadAttribute(WebGatewayTestCase):
     def setUp(self):
         WebGatewayTestCase.setUp(self)
 
+        self.opcua_client = Client(self.OPC_SERVER_URL)
+        self.opcua_client.connect()
+
     def tearDown(self):
         WebGatewayTestCase.tearDown(self)
 
@@ -16,6 +20,12 @@ class TestReadAttribute(WebGatewayTestCase):
         #
         # send read request to the opc ua server
         #
+        node = self.opcua_client.get_node("ns=2;i=208")
+        node.set_value(ua.DataValue(555))
+
+        node = self.opcua_client.get_node("ns=2;i=220")
+        node.set_value(ua.DataValue(True))
+
         req = {
             "Header": {
                 "MessageType": "GW_ReadRequest",
@@ -26,17 +36,17 @@ class TestReadAttribute(WebGatewayTestCase):
                 "NodesToRead": [
                     {
                         "NodeId": {
-                            "Namespace": "3",
-                            "Id": "218"
+                            "Namespace": "2",
+                            "Id": "208"
                         },
-                        "AttributeId": "14"
+                        "AttributeId": "13"
                     },
                     {
                         "NodeId": {
-                            "Namespace": "3",
-                            "Id": "219"
+                            "Namespace": "2",
+                            "Id": "220"
                         },
-                        "AttributeId": "14"
+                        "AttributeId": "13"
                     }
                 ]
             }
@@ -98,5 +108,5 @@ class TestReadAttribute(WebGatewayTestCase):
         self.assertEqual(res['Header']['SessionId'], self.sessionId)
         self.assertEqual(res['Header']['StatusCode'], "0")
         self.assertEqual(len(res['Body']['Results']), NODE_COUNT)
-        self.assertIsNotNone(res['Body']['Results'][0]['Value'])
-        self.assertIsNotNone(res['Body']['Results'][1]['Value'])
+        self.assertEqual('555', res['Body']['Results'][0]['Value']['Body'])
+        self.assertEqual('true', res['Body']['Results'][1]['Value']['Body'])
