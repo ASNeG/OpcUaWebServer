@@ -51,7 +51,7 @@ class TestValueInfo(WebServerTestCase):
                 'MessageType': 'VALUEINFO_REQUEST',
                 'ClientHandle': '1'
             },
-            'Body': {'Variables': ['Boolean', 'ByteArray']}
+            'Body': {'Variables': ['BooleanTest', 'ByteArrayTest']}
         }
 
         self.ws.send(json.dumps(msg))
@@ -61,11 +61,11 @@ class TestValueInfo(WebServerTestCase):
 
         variables = resp['Body']['Variables']
         self.assertEqual(2, len(variables))
-        self.assertEqual('Boolean', variables[0]['Variable'])
+        self.assertEqual('BooleanTest', variables[0]['Variable'])
         self.assertEqual('Boolean', variables[0]['Type'])
         self.assertEqual('false', variables[0]['IsArray'])
 
-        self.assertEqual('ByteArray', variables[1]['Variable'])
+        self.assertEqual('ByteArrayTest', variables[1]['Variable'])
         self.assertEqual('Byte', variables[1]['Type'])
         self.assertEqual('true', variables[1]['IsArray'])
 
