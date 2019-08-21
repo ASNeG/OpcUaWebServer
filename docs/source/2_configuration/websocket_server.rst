@@ -145,4 +145,6 @@ OpcUaClient Configuration Settings
 +--------+------+----------------+-------------------------------------------------------------+
 
 
+.. note:: *NodeId* has the format common for OPC UA standard (e.g. "i=208;ns=0"), but be
+  careful! "ns" means the namsespace index in *NapespaceUri* list not the name space of the server.
 
