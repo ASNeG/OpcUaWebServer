@@ -56,7 +56,7 @@ namespace OpcUaWebServer
 	{
 		// start timer
 		httpChannel->slotTimerElement_->expireFromNow(httpConfig_->requestTimeout());
-		httpChannel->slotTimerElement_->callback().reset(boost::bind(&HttpServerBase::handleReceiveRequestHeaderTimeout, this, httpChannel));
+		httpChannel->slotTimerElement_->timeoutCallback(boost::bind(&HttpServerBase::handleReceiveRequestHeaderTimeout, this, httpChannel));
 		httpConfig_->ioThread()->slotTimer()->start(httpChannel->slotTimerElement_);
 
 		// read data until \r\n\r\n
@@ -138,7 +138,7 @@ namespace OpcUaWebServer
 
 		// start request timer
 		httpChannel->slotTimerElement_->expireFromNow(httpConfig_->requestTimeout());
-		httpChannel->slotTimerElement_->callback().reset(boost::bind(&HttpServerBase::handleReceiveRequestContentTimeout, this, httpChannel));
+		httpChannel->slotTimerElement_->timeoutCallback(boost::bind(&HttpServerBase::handleReceiveRequestContentTimeout, this, httpChannel));
 		httpConfig_->ioThread()->slotTimer()->start(httpChannel->slotTimerElement_);
 
 		httpChannel->async_read_exactly(

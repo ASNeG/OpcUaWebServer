@@ -25,7 +25,7 @@ namespace OpcUaWebServer
 {
 
 	HistoricalReadResponseData::HistoricalReadResponseData(void)
-	: dataValueArray_(constructSPtr<OpcUaDataValueArray>())
+	: dataValueArray_(boost::make_shared<OpcUaDataValueArray>())
 	, valueInfoEntry_()
 	, statusCode_("")
 	{

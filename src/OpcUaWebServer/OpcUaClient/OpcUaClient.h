@@ -21,7 +21,6 @@
 
 #include <map>
 #include "OpcUaStackCore/Base/Config.h"
-#include "OpcUaStackCore/Base/ObjectPool.h"
 #include "OpcUaStackClient/ServiceSet/ServiceSetManager.h"
 #include "OpcUaWebServer/OpcUaClient/OpcUaClientConfig.h"
 #include "OpcUaWebServer/OpcUaClient/ValueInfo.h"

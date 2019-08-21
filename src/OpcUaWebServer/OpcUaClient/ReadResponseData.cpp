@@ -50,7 +50,7 @@ namespace OpcUaWebServer
 	void
 	ReadResponseData::dataValue(OpcUaDataValue& dataValue)
 	{
-		OpcUaDataValue::SPtr dataValueTmp = constructSPtr<OpcUaDataValue>();
+		OpcUaDataValue::SPtr dataValueTmp = boost::make_shared<OpcUaDataValue>();
 	    dataValueTmp->copyFrom(dataValue);
 	    this->dataValue(dataValueTmp);
 	}

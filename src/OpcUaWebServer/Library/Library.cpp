@@ -49,7 +49,7 @@ namespace OpcUaWebServer
 		bool rc;
 		Log(Debug, "Library::startup");
 
-		ioThread_ = constructSPtr<IOThread>();
+		ioThread_ = boost::make_shared<IOThread>();
 		ioThread_->numberThreads(2);
 		if (!ioThread_->startup()) {
 			return false;

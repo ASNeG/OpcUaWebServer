@@ -92,7 +92,7 @@ namespace OpcUaWebServer
 		//bool isArray = valueInfoEntry_->array_;
 
 		try {
-			dataValue_ = constructSPtr<OpcUaDataValue>();
+			dataValue_ = boost::make_shared<OpcUaDataValue>();
 			if (!dataValue_->jsonDecode(pt, "Value")) {
 				Log(Error, "data value error in write request");
 				return false;

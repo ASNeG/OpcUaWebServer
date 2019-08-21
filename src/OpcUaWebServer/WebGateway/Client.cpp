@@ -277,7 +277,7 @@ namespace OpcUaWebServer
 		if (!initAttributeService(messageResponseCallback)) return;
 
 		// decode read request from web socket
-		auto trx = constructSPtr<ServiceTransactionRead>();
+		auto trx = boost::make_shared<ServiceTransactionRead>();
 		auto req = trx->request();
 		if (!req->jsonDecode(requestBody)) {
 			Log(Error, "decode read request error")
@@ -331,7 +331,7 @@ namespace OpcUaWebServer
 		if (!initAttributeService(messageResponseCallback)) return;
 
 		// decode write request from web socket
-		auto trx = constructSPtr<ServiceTransactionWrite>();
+		auto trx = boost::make_shared<ServiceTransactionWrite>();
 		auto req = trx->request();
 		if (!req->jsonDecode(requestBody)) {
 			Log(Error, "decode write request error")
@@ -385,7 +385,7 @@ namespace OpcUaWebServer
 		if (!initAttributeService(messageResponseCallback)) return;
 
 		// decode history read request from web socket
-		auto trx = constructSPtr<ServiceTransactionHistoryRead>();
+		auto trx = boost::make_shared<ServiceTransactionHistoryRead>();
 		auto req = trx->request();
 		if (!req->jsonDecode(requestBody)) {
 			Log(Error, "decode history read request error")
@@ -457,7 +457,7 @@ namespace OpcUaWebServer
 		if (!initMethodService(messageResponseCallback)) return;
 
 		// decode method request from web socket
-		auto trx = constructSPtr<ServiceTransactionCall>();
+		auto trx = boost::make_shared<ServiceTransactionCall>();
 		auto req = trx->request();
 		if (!req->jsonDecode(requestBody)) {
 			Log(Error, "decode call request error")
@@ -589,7 +589,7 @@ namespace OpcUaWebServer
 		if (!initSubscriptionService(messageResponseCallback)) return;
 
 		// decode create subscription request from web socket
-		auto trx = constructSPtr<ServiceTransactionCreateSubscription>();
+		auto trx = boost::make_shared<ServiceTransactionCreateSubscription>();
 		auto req = trx->request();
 		if (!req->jsonDecode(requestBody)) {
 			Log(Error, "decode create subscription request error")
@@ -636,7 +636,7 @@ namespace OpcUaWebServer
 		if (!initSubscriptionService(messageResponseCallback)) return;
 
 		// decode delete subscriptions request from web socket
-		auto trx = constructSPtr<ServiceTransactionDeleteSubscriptions>();
+		auto trx = boost::make_shared<ServiceTransactionDeleteSubscriptions>();
 		auto req = trx->request();
 		if (!req->jsonDecode(requestBody)) {
 			Log(Error, "decode delete subscriptions request error")
@@ -709,7 +709,7 @@ namespace OpcUaWebServer
 		if (!initMonitoredItemService(messageResponseCallback)) return;
 
 		// decode create monitored items request from web socket
-		auto trx = constructSPtr<ServiceTransactionCreateMonitoredItems>();
+		auto trx = boost::make_shared<ServiceTransactionCreateMonitoredItems>();
 		auto req = trx->request();
 		if (!req->jsonDecode(requestBody)) {
 			Log(Error, "decode create monitored items request error")
@@ -756,7 +756,7 @@ namespace OpcUaWebServer
 		if (!initMonitoredItemService(messageResponseCallback)) return;
 
 		// decode delete monitored itmes request from web socket
-		auto trx = constructSPtr<ServiceTransactionDeleteMonitoredItems>();
+		auto trx = boost::make_shared<ServiceTransactionDeleteMonitoredItems>();
 		auto req = trx->request();
 		if (!req->jsonDecode(requestBody)) {
 			Log(Error, "decode delete monitored items request error")

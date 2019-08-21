@@ -24,7 +24,6 @@
 #include <map>
 #include <set>
 #include <stdint.h>
-#include "OpcUaStackCore/Base/ObjectPool.h"
 #include "OpcUaWebServer/OpcUaClient/ValueInfo.h"
 
 namespace OpcUaWebServer

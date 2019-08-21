@@ -1,5 +1,5 @@
 /*
-   Copyright 2015-2017 Kai Huebl (kai@huebl-sgh.de)
+   Copyright 2015-2019 Kai Huebl (kai@huebl-sgh.de)
 
    Lizenziert gemäß Apache Licence Version 2.0 (die „Lizenz“); Nutzung dieser
    Datei nur in Übereinstimmung mit der Lizenz erlaubt.
@@ -16,6 +16,7 @@
 
  */
 
+#include <boost/make_shared.hpp>
 #include <boost/lexical_cast.hpp>
 #include "OpcUaStackCore/Base/Log.h"
 #include "OpcUaWebServer/WebServer/WebServer.h"
@@ -53,11 +54,11 @@ namespace OpcUaWebServer
 
 		httpConfig_.ioThread(ioThread_);
 
-		httpContent_ = constructSPtr<HttpContent>();
+		httpContent_ = boost::make_shared<HttpContent>();
 		httpContent_->httpConfig(&httpConfig_);
 		if (!httpContent_->startup()) return false;
 
-		httpServer_ = constructSPtr<HttpServer>(&httpConfig_);
+		httpServer_ = boost::make_shared<HttpServer>(&httpConfig_);
 		httpServer_->addHttpServerIf("GET", httpContent_.get());
 		if (!httpServer_->startup()) return false;
 

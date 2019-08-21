@@ -1,5 +1,5 @@
 /*
-   Copyright 2015-2017 Kai Huebl (kai@huebl-sgh.de)
+   Copyright 2015-2019 Kai Huebl (kai@huebl-sgh.de)
 
    Lizenziert gemäß Apache Licence Version 2.0 (die „Lizenz“); Nutzung dieser
    Datei nur in Übereinstimmung mit der Lizenz erlaubt.
@@ -19,7 +19,6 @@
 #ifndef __OpcUaWebServer_HttpServer_h__
 #define __OpcUaWebServer_HttpServer_h__
 
-#include "OpcUaStackCore/Base/ObjectPool.h"
 #include "OpcUaWebServer/WebServer/HttpServerBase.h"
 #include "OpcUaWebServer/WebServer/IPLogger.h"
 

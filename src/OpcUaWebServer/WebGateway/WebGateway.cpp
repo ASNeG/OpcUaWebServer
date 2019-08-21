@@ -108,7 +108,7 @@ namespace OpcUaWebServer
 			clientManager_.receiveMessage(webSocketMessage);
 		};
 
-		webSocketServer_ = constructSPtr<WebSocketServer>(&webSocketConfig_);
+		webSocketServer_ = boost::make_shared<WebSocketServer>(&webSocketConfig_);
 		webSocketServer_->receiveMessageCallback(receiveMessageCallback);
         webSocketServer_->startup(
         	[this, startupCompleteCallback](bool error) {

@@ -79,7 +79,7 @@ namespace OpcUaWebServer
 				return false;
 			}
 
-			ValueInfoEntry::SPtr valueInfoEntry = constructSPtr<ValueInfoEntry>();
+			ValueInfoEntry::SPtr valueInfoEntry = boost::make_shared<ValueInfoEntry>();
 			valueInfoEntry->valueName_= it1->valueName_;
 			valueInfoEntry->nodeId_ = it1->nodeId_;
 			valueInfoEntry->type_ = it1->type_;

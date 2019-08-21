@@ -148,7 +148,7 @@ namespace OpcUaWebServer
 
 		ReadRequestData readRequestData;
 		if (!readRequestData.decode(requestMessage->body())) {
-			Message::SPtr responseMessage = constructSPtr<Message>(Message::MT_ReadResponse);
+			Message::SPtr responseMessage = boost::make_shared<Message>(Message::MT_ReadResponse);
 			responseMessage->channelId(requestMessage->channelId());
 			responseMessage->clientHandle(requestMessage->clientHandle());
 			responseMessage->statusCode(OpcUaStatusCodeMap::shortString(BadAttributeIdInvalid));
@@ -164,7 +164,7 @@ namespace OpcUaWebServer
 			ReadResponseData readResponseData;
 			readResponseData.statusCode(OpcUaStatusCodeMap::shortString(BadNodeIdUnknown));
 
-			Message::SPtr responseMessage = constructSPtr<Message>(Message::MT_ReadResponse);
+			Message::SPtr responseMessage = boost::make_shared<Message>(Message::MT_ReadResponse);
 			responseMessage->channelId(requestMessage->channelId());
 			responseMessage->clientHandle(requestMessage->clientHandle());
 
@@ -194,7 +194,7 @@ namespace OpcUaWebServer
 		// get variable name from write request
 		WriteRequestData writeRequestData;
 		if (!writeRequestData.decodeVariable(requestMessage->body())) {
-			Message::SPtr responseMessage = constructSPtr<Message>(Message::MT_WriteResponse);
+			Message::SPtr responseMessage = boost::make_shared<Message>(Message::MT_WriteResponse);
 			responseMessage->channelId(requestMessage->channelId());
 			responseMessage->clientHandle(requestMessage->clientHandle());
 			responseMessage->statusCode(OpcUaStatusCodeMap::shortString(BadAttributeIdInvalid));
@@ -209,7 +209,7 @@ namespace OpcUaWebServer
 			WriteResponseData writeResponseData;
 			writeResponseData.statusCode(OpcUaStatusCodeMap::shortString(BadNodeIdUnknown));
 
-			Message::SPtr responseMessage = constructSPtr<Message>(Message::MT_WriteResponse);
+			Message::SPtr responseMessage = boost::make_shared<Message>(Message::MT_WriteResponse);
 			responseMessage->channelId(requestMessage->channelId());
 			responseMessage->clientHandle(requestMessage->clientHandle());
 
@@ -227,7 +227,7 @@ namespace OpcUaWebServer
 
 		writeRequestData.valueInfoEntry(valueInfoEntry);
 		if (!writeRequestData.jsonDecode(requestMessage->body())) {
-			Message::SPtr responseMessage = constructSPtr<Message>(Message::MT_WriteResponse);
+			Message::SPtr responseMessage = boost::make_shared<Message>(Message::MT_WriteResponse);
 			responseMessage->channelId(requestMessage->channelId());
 			responseMessage->clientHandle(requestMessage->clientHandle());
 			responseMessage->statusCode(OpcUaStatusCodeMap::shortString(BadAttributeIdInvalid));
@@ -246,7 +246,7 @@ namespace OpcUaWebServer
 			.parameter("ChannelId", requestMessage->channelId())
 			.parameter("ClientHandle", requestMessage->clientHandle());
 
-		Message::SPtr responseMessage = constructSPtr<Message>(Message::MT_ValueListResponse);
+		Message::SPtr responseMessage = boost::make_shared<Message>(Message::MT_ValueListResponse);
 		responseMessage->channelId(requestMessage->channelId());
 		responseMessage->clientHandle(requestMessage->clientHandle());
 
@@ -275,7 +275,7 @@ namespace OpcUaWebServer
 			.parameter("ChannelId", requestMessage->channelId())
 			.parameter("ClientHandle", requestMessage->clientHandle());
 
-		Message::SPtr responseMessage = constructSPtr<Message>(Message::MT_ValueInfoResponse);
+		Message::SPtr responseMessage = boost::make_shared<Message>(Message::MT_ValueInfoResponse);
 		responseMessage->channelId(requestMessage->channelId());
 		responseMessage->clientHandle(requestMessage->clientHandle());
 
@@ -330,7 +330,7 @@ namespace OpcUaWebServer
 
 		MonitorStartRequestData monitorStartRequestData;
 		if (!monitorStartRequestData.decode(requestMessage->body())) {
-			Message::SPtr responseMessage = constructSPtr<Message>(Message::MT_MonitorStartResponse);
+			Message::SPtr responseMessage = boost::make_shared<Message>(Message::MT_MonitorStartResponse);
 			responseMessage->channelId(requestMessage->channelId());
 			responseMessage->clientHandle(requestMessage->clientHandle());
 			responseMessage->statusCode(OpcUaStatusCodeMap::shortString(BadAttributeIdInvalid));
@@ -345,7 +345,7 @@ namespace OpcUaWebServer
 			MonitorStartResponseData monitorStartResponseData;
 			monitorStartResponseData.statusCode(OpcUaStatusCodeMap::shortString(BadNodeIdUnknown));
 
-			Message::SPtr responseMessage = constructSPtr<Message>(Message::MT_MonitorStartResponse);
+			Message::SPtr responseMessage = boost::make_shared<Message>(Message::MT_MonitorStartResponse);
 			responseMessage->channelId(requestMessage->channelId());
 			responseMessage->clientHandle(requestMessage->clientHandle());
 
@@ -374,7 +374,7 @@ namespace OpcUaWebServer
 
 		MonitorStopRequestData monitorStopRequestData;
 		if (!monitorStopRequestData.decode(requestMessage->body())) {
-			Message::SPtr responseMessage = constructSPtr<Message>(Message::MT_MonitorStopResponse);
+			Message::SPtr responseMessage = boost::make_shared<Message>(Message::MT_MonitorStopResponse);
 			responseMessage->channelId(requestMessage->channelId());
 			responseMessage->clientHandle(requestMessage->clientHandle());
 			responseMessage->statusCode(OpcUaStatusCodeMap::shortString(BadAttributeIdInvalid));
@@ -389,7 +389,7 @@ namespace OpcUaWebServer
 			MonitorStopResponseData monitorStopResponseData;
 			monitorStopResponseData.statusCode(OpcUaStatusCodeMap::shortString(BadNodeIdUnknown));
 
-			Message::SPtr responseMessage = constructSPtr<Message>(Message::MT_MonitorStopResponse);
+			Message::SPtr responseMessage = boost::make_shared<Message>(Message::MT_MonitorStopResponse);
 			responseMessage->channelId(requestMessage->channelId());
 			responseMessage->clientHandle(requestMessage->clientHandle());
 
@@ -418,7 +418,7 @@ namespace OpcUaWebServer
 
 		HistoricalReadRequestData historicalReadRequestData;
 		if (!historicalReadRequestData.decode(requestMessage->body())) {
-			Message::SPtr responseMessage = constructSPtr<Message>(Message::MT_HistoricalReadResponse);
+			Message::SPtr responseMessage = boost::make_shared<Message>(Message::MT_HistoricalReadResponse);
 			responseMessage->channelId(requestMessage->channelId());
 			responseMessage->clientHandle(requestMessage->clientHandle());
 			responseMessage->statusCode(OpcUaStatusCodeMap::shortString(BadAttributeIdInvalid));
@@ -433,7 +433,7 @@ namespace OpcUaWebServer
 			HistoricalReadResponseData historicalReadResponseData;
 			historicalReadResponseData.statusCode(OpcUaStatusCodeMap::shortString(BadNodeIdUnknown));
 
-			Message::SPtr responseMessage = constructSPtr<Message>(Message::MT_HistoricalReadResponse);
+			Message::SPtr responseMessage = boost::make_shared<Message>(Message::MT_HistoricalReadResponse);
 			responseMessage->channelId(requestMessage->channelId());
 			responseMessage->clientHandle(requestMessage->clientHandle());
 
@@ -495,7 +495,7 @@ namespace OpcUaWebServer
 			Log(Debug, "parse client configuration")
 				.parameter("ConfigFileName", *it);
 
-			OpcUaClientConfig::SPtr opcUaClientConfig = constructSPtr<OpcUaClientConfig>();
+			OpcUaClientConfig::SPtr opcUaClientConfig = boost::make_shared<OpcUaClientConfig>();
 
 			if (!opcUaClientConfig->decode(*it)) {
 				Log(Error, "parse client configuration error")
@@ -515,7 +515,7 @@ namespace OpcUaWebServer
 	{
 		// start clients
 		for (auto it1 = opcUaClientConfigMap_.begin(); it1 != opcUaClientConfigMap_.end(); it1++) {
-			OpcUaClient::SPtr opcUaClient = constructSPtr<OpcUaClient>();
+			OpcUaClient::SPtr opcUaClient = boost::make_shared<OpcUaClient>();
 
 			Log(Info, "client startup")
 			    .parameter("ConfigFileName", it1->first);

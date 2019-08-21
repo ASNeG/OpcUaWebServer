@@ -117,7 +117,7 @@ namespace OpcUaWebServer
 		MonitorItem::Map::iterator it1;
 		it1 = monitorItemMap_.find(variable);
 		if (it1 == monitorItemMap_.end()) {
-			monitorItem = constructSPtr<MonitorItem>();
+			monitorItem = boost::make_shared<MonitorItem>();
 			monitorItem->valueInfoEntry(valueInfoEntry);
 			monitorItemMap_.insert(std::make_pair(variable, monitorItem));
 			monitorItemIdMap_.insert(std::make_pair(monitorItem->clientHandle(), monitorItem));

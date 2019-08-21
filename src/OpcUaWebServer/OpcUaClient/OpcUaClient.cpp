@@ -127,8 +127,8 @@ namespace OpcUaWebServer
 		// connect to server
 		sessionService_->asyncConnect();
 
-		slotTimerElement_ = constructSPtr<SlotTimerElement>();
-		slotTimerElement_->callback().reset(boost::bind(&OpcUaClient::timerLoop, this));
+		slotTimerElement_ = boost::make_shared<SlotTimerElement>();
+		slotTimerElement_->timeoutCallback(boost::bind(&OpcUaClient::timerLoop, this));
 		slotTimerElement_->expireTime(boost::posix_time::microsec_clock::local_time(), 900);
 		ioThread_->slotTimer()->start(slotTimerElement_);
 
@@ -189,7 +189,7 @@ namespace OpcUaWebServer
 		ReadResponseData readResponseData;
 		readResponseData.statusCode(OpcUaStatusCodeMap::shortString(statusCode));
 
-		Message::SPtr responseMessage = constructSPtr<Message>(Message::MT_ReadResponse);
+		Message::SPtr responseMessage = boost::make_shared<Message>(Message::MT_ReadResponse);
 		responseMessage->channelId(channelId);
 		responseMessage->clientHandle(clientHandle);
 
@@ -227,7 +227,7 @@ namespace OpcUaWebServer
 		nodeId.namespaceIndex(it->second);
 
 		// create opc ua read transaction and send request to the opc ua server
-		auto readTrx = constructSPtr<ServiceTransactionClientRead>();
+		auto readTrx = boost::make_shared<ServiceTransactionClientRead>();
 		readTrx->variable_ = readRequestData.variable();
 		readTrx->channelId_ = requestMessage->channelId();
 		readTrx->clientHandle_ = requestMessage->clientHandle();
@@ -242,7 +242,7 @@ namespace OpcUaWebServer
 		trxReq->maxAge(0);
 		trxReq->timestampsToReturn(2);
 
-		auto readValueId = constructSPtr<ReadValueId>();
+		auto readValueId = boost::make_shared<ReadValueId>();
 		nodeId.copyTo(*readValueId->nodeId());
 		readValueId->attributeId((OpcUaInt32) 13);
 		readValueId->dataEncoding().namespaceIndex((OpcUaInt16) 0);
@@ -289,7 +289,7 @@ namespace OpcUaWebServer
 		}
 
 		// send response
-		auto responseMessage = constructSPtr<Message>(Message::MT_ReadResponse);
+		auto responseMessage = boost::make_shared<Message>(Message::MT_ReadResponse);
 		responseMessage->channelId(trxRead->channelId_);
 		responseMessage->clientHandle(trxRead->clientHandle_);
 		responseMessage->body(pt);
@@ -309,7 +309,7 @@ namespace OpcUaWebServer
 		ReadResponseData readResponseData;
 		readResponseData.statusCode(OpcUaStatusCodeMap::shortString(statusCode));
 
-		auto responseMessage = constructSPtr<Message>(Message::MT_WriteResponse);
+		auto responseMessage = boost::make_shared<Message>(Message::MT_WriteResponse);
 		responseMessage->channelId(channelId);
 		responseMessage->clientHandle(clientHandle);
 
@@ -346,7 +346,7 @@ namespace OpcUaWebServer
 		nodeId.namespaceIndex(it->second);
 
 		// create opc ua write transaction and send request to the opc ua server
-		auto writeTrx = constructSPtr<ServiceTransactionClientWrite>();
+		auto writeTrx = boost::make_shared<ServiceTransactionClientWrite>();
 		writeTrx->variable_ = writeRequestData.variable();
 		writeTrx->channelId_ = requestMessage->channelId();
 		writeTrx->clientHandle_ = requestMessage->clientHandle();
@@ -358,7 +358,7 @@ namespace OpcUaWebServer
 
 		auto trxReq = writeTrx->request();
 
-		auto writeValue = constructSPtr<WriteValue>();
+		auto writeValue = boost::make_shared<WriteValue>();
 		nodeId.copyTo(*writeValue->nodeId());
 		writeValue->attributeId((OpcUaInt32) 13);
 		writeValue->dataValue(*writeRequestData.dataValue());
@@ -398,7 +398,7 @@ namespace OpcUaWebServer
 		trxRes->results()->get(0, statusCode);
 
 		// send response
-		auto responseMessage = constructSPtr<Message>(Message::MT_WriteResponse);
+		auto responseMessage = boost::make_shared<Message>(Message::MT_WriteResponse);
 		responseMessage->channelId(trxWrite->channelId_);
 		responseMessage->clientHandle(trxWrite->clientHandle_);
 		if (statusCode != Success) responseMessage->statusCode(OpcUaStatusCodeMap::shortString(statusCode));
@@ -418,7 +418,7 @@ namespace OpcUaWebServer
 		MonitorStartResponseData monitorStartResponseData;
 		monitorStartResponseData.statusCode(OpcUaStatusCodeMap::shortString(statusCode));
 
-		auto responseMessage = constructSPtr<Message>(Message::MT_MonitorStartResponse);
+		auto responseMessage = boost::make_shared<Message>(Message::MT_MonitorStartResponse);
 		responseMessage->channelId(channelId);
 		responseMessage->clientHandle(clientHandle);
 
@@ -445,7 +445,7 @@ namespace OpcUaWebServer
 		}
 
 		// send response
-		auto responseMessage = constructSPtr<Message>(Message::MT_MonitorStartResponse);
+		auto responseMessage = boost::make_shared<Message>(Message::MT_MonitorStartResponse);
 		responseMessage->channelId(requestMessage->channelId());
 		responseMessage->clientHandle(requestMessage->clientHandle());
 		opcUaClientIf_->clientMessage(responseMessage);
@@ -457,7 +457,7 @@ namespace OpcUaWebServer
 		MonitorStopResponseData monitorStopResponseData;
 		monitorStopResponseData.statusCode(OpcUaStatusCodeMap::shortString(statusCode));
 
-		auto responseMessage = constructSPtr<Message>(Message::MT_MonitorStopResponse);
+		auto responseMessage = boost::make_shared<Message>(Message::MT_MonitorStopResponse);
 		responseMessage->channelId(channelId);
 		responseMessage->clientHandle(clientHandle);
 
@@ -484,7 +484,7 @@ namespace OpcUaWebServer
 		}
 
 		// send response
-		auto responseMessage = constructSPtr<Message>(Message::MT_MonitorStopResponse);
+		auto responseMessage = boost::make_shared<Message>(Message::MT_MonitorStopResponse);
 		responseMessage->channelId(requestMessage->channelId());
 		responseMessage->clientHandle(requestMessage->clientHandle());
 		opcUaClientIf_->clientMessage(responseMessage);
@@ -526,12 +526,12 @@ namespace OpcUaWebServer
 	void
 	OpcUaClient::readNamespaceArray(void)
 	{
-		auto readTrx = constructSPtr<ServiceTransactionClientRead>();
+		auto readTrx = boost::make_shared<ServiceTransactionClientRead>();
 		auto req = readTrx->request();
 		req->maxAge(0);
 		req->timestampsToReturn(2);
 
-		ReadValueId::SPtr readValueId = constructSPtr<ReadValueId>();
+		ReadValueId::SPtr readValueId = boost::make_shared<ReadValueId>();
 		readValueId->nodeId((OpcUaInt16)0, (OpcUaInt32)2255);
 		readValueId->attributeId((OpcUaInt32) 13);
 		readValueId->dataEncoding().namespaceIndex((OpcUaInt16) 0);
@@ -690,7 +690,7 @@ namespace OpcUaWebServer
 			nodeId.namespaceIndex(it1->second);
 
 			// create opc ua read transaction and send request to the opc ua server
-			auto readTrx = constructSPtr<ServiceTransactionClientRead>();
+			auto readTrx = boost::make_shared<ServiceTransactionClientRead>();
 			readTrx->variable_ = it->first;
 			readTrx->channelId_ = 1;
 			readTrx->clientHandle_ = it->first;
@@ -703,7 +703,7 @@ namespace OpcUaWebServer
 			trxReq->maxAge(0);
 			trxReq->timestampsToReturn(2);
 
-			auto readValueId = constructSPtr<ReadValueId>();
+			auto readValueId = boost::make_shared<ReadValueId>();
 			nodeId.copyTo(*readValueId->nodeId());
 			readValueId->attributeId((OpcUaInt32) 13);
 			readValueId->dataEncoding().namespaceIndex((OpcUaInt16) 0);
@@ -728,7 +728,7 @@ namespace OpcUaWebServer
 		OpcUaStatusCode statusCode = trxRead->statusCode();
 		if (statusCode != Success) {
 			for (auto it = trxRead->channelIdSet_.begin(); it !=  trxRead->channelIdSet_.end(); it++) {
-				auto responseMessage = constructSPtr<Message>(Message::MT_MonitorUpdateMessage);
+				auto responseMessage = boost::make_shared<Message>(Message::MT_MonitorUpdateMessage);
 				responseMessage->channelId(*it);
 				responseMessage->clientHandle(trxRead->clientHandle_);
 				responseMessage->statusCode(OpcUaStatusCodeMap::shortString(statusCode));
@@ -739,7 +739,7 @@ namespace OpcUaWebServer
 
 		if (trxRes->dataValueArray()->size() != 1) {
 			for (auto it = trxRead->channelIdSet_.begin(); it !=  trxRead->channelIdSet_.end(); it++) {
-				auto responseMessage = constructSPtr<Message>(Message::MT_MonitorUpdateMessage);
+				auto responseMessage = boost::make_shared<Message>(Message::MT_MonitorUpdateMessage);
 				responseMessage->channelId(*it);
 				responseMessage->clientHandle(trxRead->clientHandle_);
 				responseMessage->statusCode(OpcUaStatusCodeMap::shortString(BadInternalError));
@@ -757,7 +757,7 @@ namespace OpcUaWebServer
 			readResponseData.dataValue(dataValue);
 			readResponseData.valueInfoEntry(trxRead->valueInfoEntry_);
 			if (!readResponseData.jsonEncode(pt)) {
-				auto responseMessage = constructSPtr<Message>(Message::MT_MonitorUpdateMessage);
+				auto responseMessage = boost::make_shared<Message>(Message::MT_MonitorUpdateMessage);
 				responseMessage->channelId(*it);
 				responseMessage->clientHandle(trxRead->clientHandle_);
 				responseMessage->statusCode(OpcUaStatusCodeMap::shortString(BadInternalError));
@@ -766,7 +766,7 @@ namespace OpcUaWebServer
 			}
 
 			// send response
-			auto responseMessage = constructSPtr<Message>(Message::MT_MonitorUpdateMessage);
+			auto responseMessage = boost::make_shared<Message>(Message::MT_MonitorUpdateMessage);
 			responseMessage->channelId(*it);
 			responseMessage->clientHandle(trxRead->clientHandle_);
 			responseMessage->body(pt);
@@ -792,7 +792,7 @@ namespace OpcUaWebServer
 	void
 	OpcUaClient::createSubscription(void)
 	{
-		auto trx = constructSPtr<ServiceTransactionCreateSubscription>();
+		auto trx = boost::make_shared<ServiceTransactionCreateSubscription>();
 
 		trx->resultHandler(
 			[this](ServiceTransactionCreateSubscription::SPtr& serviceTransactionCreateSubscription) {
@@ -815,7 +815,7 @@ namespace OpcUaWebServer
 			monitorItem->monitorItemState(MonitorItem::MIS_Close);
 		}
 
-		auto trx = constructSPtr<ServiceTransactionDeleteSubscriptions>();
+		auto trx = boost::make_shared<ServiceTransactionDeleteSubscriptions>();
 		auto req = trx->request();
 		req->subscriptionIds()->resize(1);
 		req->subscriptionIds()->set(0, subscriptionId_);
@@ -882,7 +882,7 @@ namespace OpcUaWebServer
 		}
 
 		for (auto it = monitorItem->channelIdSet().begin(); it != monitorItem->channelIdSet().end(); it++) {
-			auto updateMessage = constructSPtr<Message>(Message::MT_MonitorUpdateMessage);
+			auto updateMessage = boost::make_shared<Message>(Message::MT_MonitorUpdateMessage);
 			updateMessage->channelId(*it);
 			updateMessage->clientHandle(monitorItem->valueInfoEntry()->valueName_);
 
@@ -938,7 +938,7 @@ namespace OpcUaWebServer
 		    .parameter("Size", monitorItemVec.size());
 
 		// create monitored item transaction
-		auto trx = constructSPtr<ServiceTransactionCreateMonitoredItems>();
+		auto trx = boost::make_shared<ServiceTransactionCreateMonitoredItems>();
 		auto req = trx->request();
 		req->subscriptionId(subscriptionId_);
 		req->itemsToCreate()->resize(monitorItemVec.size());
@@ -962,7 +962,7 @@ namespace OpcUaWebServer
 			    .parameter("ApplId", monitorItem->valueInfoEntry()->valueName_)
 			    .parameter("ClientHandle", monitorItem->clientHandle());
 
-			auto monitoredItemCreateRequest = constructSPtr<MonitoredItemCreateRequest>();
+			auto monitoredItemCreateRequest = boost::make_shared<MonitoredItemCreateRequest>();
 			monitoredItemCreateRequest->itemToMonitor().nodeId()->copyFrom(nodeId);
 			monitoredItemCreateRequest->requestedParameters().clientHandle(monitorItem->clientHandle());
 			req->itemsToCreate()->push_back(monitoredItemCreateRequest);
@@ -1079,7 +1079,7 @@ namespace OpcUaWebServer
 		    .parameter("Size", monitorItemVec.size());
 
 		// delete monitored item transaction
-		auto trx = constructSPtr<ServiceTransactionDeleteMonitoredItems>();
+		auto trx = boost::make_shared<ServiceTransactionDeleteMonitoredItems>();
 		auto req = trx->request();
 		req->subscriptionId(subscriptionId_);
 		req->monitoredItemIds()->resize(monitorItemVec.size());

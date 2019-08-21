@@ -164,6 +164,7 @@ namespace OpcUaWebServer
 		webSocketConfig_->ioThread()->slotTimer()->start(webSocketChannel->slotTimerElement_);
 
 		webSocketChannel->async_read_until(
+			webSocketConfig_->strand(),
 			webSocketChannel->recvBuffer_,
 			boost::bind(&WebSocketServerBase::handleReceiveHandshakeHeader, this, boost::asio::placeholders::error, boost::asio::placeholders::bytes_transferred, webSocketChannel),
 			"\r\n\r\n"
@@ -268,6 +269,7 @@ namespace OpcUaWebServer
 		webSocketConfig_->ioThread()->slotTimer()->start(webSocketChannel->slotTimerElement_);
 
 		webSocketChannel->async_read_exactly(
+			webSocketConfig_->strand(),
 			webSocketChannel->recvBuffer_,
 			boost::bind(&WebSocketServerBase::handleReceiveHandshakeContent, this, boost::asio::placeholders::error, boost::asio::placeholders::bytes_transferred, webSocketChannel),
 			contentLength-numAdditionalBytes
@@ -349,6 +351,7 @@ namespace OpcUaWebServer
 		std::ostream os(&webSocketChannel->sendBuffer_);
 		webSocketChannel->webSocketResponse_.encodeRequestHeader(os);
 		webSocketChannel->async_write(
+			webSocketConfig_->strand(),
 			webSocketChannel->sendBuffer_,
 			boost::bind(&WebSocketServerBase::handleWriteComplete, this, boost::asio::placeholders::error, webSocketChannel)
 		);
@@ -426,6 +429,7 @@ namespace OpcUaWebServer
 		webSocketConfig_->ioThread()->slotTimer()->start(webSocketChannel->slotTimerElement_);
 
 		webSocketChannel->async_read_exactly(
+			webSocketConfig_->strand(),
 			webSocketChannel->recvBuffer_,
 			boost::bind(&WebSocketServerBase::handleReceiveMessageHeader, this, boost::asio::placeholders::error, boost::asio::placeholders::bytes_transferred, webSocketChannel),
 			2
@@ -516,6 +520,7 @@ namespace OpcUaWebServer
 			webSocketConfig_->ioThread()->slotTimer()->start(webSocketChannel->slotTimerElement_);
 
 			webSocketChannel->async_read_exactly(
+				webSocketConfig_->strand(),
 				webSocketChannel->recvBuffer_,
 				boost::bind(&WebSocketServerBase::handleReceiveMessageContent, this, boost::asio::placeholders::error, boost::asio::placeholders::bytes_transferred, webSocketChannel),
 				length+4
@@ -533,6 +538,7 @@ namespace OpcUaWebServer
 			webSocketConfig_->ioThread()->slotTimer()->start(webSocketChannel->slotTimerElement_);
 
 			webSocketChannel->async_read_exactly(
+				webSocketConfig_->strand(),
 				webSocketChannel->recvBuffer_,
 				boost::bind(&WebSocketServerBase::handleReceiveMessageLength2, this, boost::asio::placeholders::error, boost::asio::placeholders::bytes_transferred, webSocketChannel),
 				2
@@ -550,6 +556,7 @@ namespace OpcUaWebServer
 			webSocketConfig_->ioThread()->slotTimer()->start(webSocketChannel->slotTimerElement_);
 
 			webSocketChannel->async_read_exactly(
+				webSocketConfig_->strand(),
 				webSocketChannel->recvBuffer_,
 				boost::bind(&WebSocketServerBase::handleReceiveMessageLength8, this, boost::asio::placeholders::error, boost::asio::placeholders::bytes_transferred, webSocketChannel),
 				8
@@ -597,6 +604,7 @@ namespace OpcUaWebServer
 		webSocketConfig_->ioThread()->slotTimer()->start(webSocketChannel->slotTimerElement_);
 
 		webSocketChannel->async_read_exactly(
+			webSocketConfig_->strand(),
 			webSocketChannel->recvBuffer_,
 			boost::bind(&WebSocketServerBase::handleReceiveMessageContent, this, boost::asio::placeholders::error, boost::asio::placeholders::bytes_transferred, webSocketChannel),
 			length+4
@@ -647,6 +655,7 @@ namespace OpcUaWebServer
 		webSocketConfig_->ioThread()->slotTimer()->start(webSocketChannel->slotTimerElement_);
 
 		webSocketChannel->async_read_exactly(
+			webSocketConfig_->strand(),
 			webSocketChannel->recvBuffer_,
 			boost::bind(&WebSocketServerBase::handleReceiveMessageContent, this, boost::asio::placeholders::error, boost::asio::placeholders::bytes_transferred, webSocketChannel),
 			length+4
@@ -817,13 +826,10 @@ namespace OpcUaWebServer
 
 		// send message
 		webSocketChannel->async_write(
+			webSocketConfig_->strand(),
 			webSocketChannel->sendBuffer_,
 			[this, sendCompleteCallback, webSocketChannel](const boost::system::error_code& error, std::size_t bytes_transferred) {
-				this->webSocketConfig_->strand()->dispatch(
-					[this, error, bytes_transferred, sendCompleteCallback, webSocketChannel]() {
-					    handleWriteMessageComplete(error, bytes_transferred, webSocketChannel, sendCompleteCallback);
-				    }
-				);
+			    handleWriteMessageComplete(error, bytes_transferred, webSocketChannel, sendCompleteCallback);
 			}
 		);
 
