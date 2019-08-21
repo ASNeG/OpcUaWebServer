@@ -73,7 +73,7 @@ class TestRead(WebServerTestCase):
         resp = self.read_('Int32Test')
         print(resp)
 
-        self.assertEqual('6', resp['Body']['Value']['Type'])
+        self.assertEqual('8', resp['Body']['Value']['Type'])
         self.assertEqual('555', resp['Body']['Value']['Body'])
 
         node.set_value(ua.DataValue(-450))
