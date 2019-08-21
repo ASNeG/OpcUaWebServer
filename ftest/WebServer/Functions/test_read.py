@@ -80,6 +80,20 @@ class TestRead(WebServerTestCase):
         resp = self.read_('Int32Test')
         self.assertEqual('-450', resp['Body']['Value']['Body'])
 
+    def test_read_float(self):
+        node = self.opcua_client.get_node("ns=2;i=216")
+        node.set_value(ua.DataValue(2.8))
+
+        resp = self.read_('FloatTest')
+        print(resp)
+
+        self.assertEqual('11', resp['Body']['Value']['Type'])
+        self.assertEqual('2.8', resp['Body']['Value']['Body'])
+
+        node.set_value(ua.DataValue(-30.0))
+        resp = self.read_('FloatTest')
+        self.assertEqual('-30', resp['Body']['Value']['Body'])
+
     def read_(self, variable):
         msg = {
             'Header': {
