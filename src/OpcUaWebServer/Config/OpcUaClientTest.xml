@@ -27,12 +27,12 @@
 	</NamespaceUri>
 	
 	<NodeList>
-	    <Node ValueName="TimerIntervalTest" NodeId="ns=2;i=3" NodeType="UInt32">
+	    <Node ValueName="TimerIntervalTest" NodeId="ns=1;i=3" NodeType="UInt32">
 	    	<MetaData>
 				<DisplayName>TimerInterval</DisplayName>
 			</MetaData>
 		</Node>
-	    <Node ValueName="BooleanTest" NodeId="ns=2;i=220" NodeType="Boolean">
+	    <Node ValueName="BooleanTest" NodeId="ns=1;i=220" NodeType="Boolean">
 			<MetaData>
 				<DisplayName>Switch</DisplayName>
 				<Limits>
@@ -41,8 +41,8 @@
 			    </Limits>
 			</MetaData>
 		</Node>
-		<Node ValueName="BooleanArrayTest" NodeId="ns=2;i=221" NodeType="Boolean" Array="1"/>
-		<Node ValueName="Int16Test" NodeId="ns=2;i=204" NodeType="Int16">
+		<Node ValueName="BooleanArrayTest" NodeId="ns=1;i=221" NodeType="Boolean" Array="1"/>
+		<Node ValueName="Int16Test" NodeId="ns=1;i=204" NodeType="Int16">
 			<MetaData>
 				<DisplayName>Temperatur</DisplayName>
 				<Limits>
@@ -85,8 +85,8 @@
 			    <Threshold>50</Threshold>
 			</MetaData>
 		</Node>
-		<Node ValueName="Int16ArrayTest" NodeId="ns=2;i=205" NodeType="Int16" Array="1"/> 
-		<Node ValueName="UInt16Test" NodeId="ns=2;i=206" NodeType="UInt16">
+		<Node ValueName="Int16ArrayTest" NodeId="ns=1;i=205" NodeType="Int16" Array="1"/> 
+		<Node ValueName="UInt16Test" NodeId="ns=1;i=206" NodeType="UInt16">
 	    	<MetaData>
 				<DisplayName>Niederschlagsmenge</DisplayName>
 				<Limits>
@@ -129,8 +129,8 @@
 			    <Threshold>80</Threshold>
 			</MetaData>
 		</Node>
-	    <Node ValueName="UInt16ArrayTest" NodeId="ns=2;i=207" NodeType="UInt16" Array="1"/> 
-		<Node ValueName="Int32Test" NodeId="ns=2;i=208" NodeType="Int32">
+	    <Node ValueName="UInt16ArrayTest" NodeId="ns=1;i=207" NodeType="UInt16" Array="1"/> 
+		<Node ValueName="Int32Test" NodeId="ns=1;i=208" NodeType="Int32">
 	    	<MetaData>
 				<DisplayName>Wind</DisplayName>
 				<Limits>
@@ -173,8 +173,8 @@
 			    <Threshold>80</Threshold>
 			</MetaData>
 		</Node>
-	    <Node ValueName="Int32ArrayTest" NodeId="ns=2;i=209" NodeType="Int32" Array="1"/>
-		<Node ValueName="UInt32Test" NodeId="ns=2;i=210" NodeType="UInt32">
+	    <Node ValueName="Int32ArrayTest" NodeId="ns=1;i=209" NodeType="Int32" Array="1"/>
+		<Node ValueName="UInt32Test" NodeId="ns=1;i=210" NodeType="UInt32">
 			<MetaData>
 				<DisplayName>UInt32</DisplayName>
 				<Limits>
@@ -183,8 +183,8 @@
 			    </Limits>
 			</MetaData>
 		</Node>
-	    <Node ValueName="UInt32ArrayTest" NodeId="ns=2;i=211" NodeType="UInt32" Array="1"/>
-		<Node ValueName="Int64Test" NodeId="ns=2;i=212" NodeType="Int64">
+	    <Node ValueName="UInt32ArrayTest" NodeId="ns=1;i=211" NodeType="UInt32" Array="1"/>
+		<Node ValueName="Int64Test" NodeId="ns=1;i=212" NodeType="Int64">
 			<MetaData>
 				<DisplayName>Int64</DisplayName>
 				<Limits>
@@ -227,8 +227,8 @@
 			    <Threshold>500</Threshold>
 			</MetaData>
 		</Node>
-		<Node ValueName="Int64ArrayTest" NodeId="ns=2;i=213" NodeType="Int64" Array="1"/>
-		<Node ValueName="UInt64Test" NodeId="ns=2;i=214" NodeType="UInt64">
+		<Node ValueName="Int64ArrayTest" NodeId="ns=1;i=213" NodeType="Int64" Array="1"/>
+		<Node ValueName="UInt64Test" NodeId="ns=1;i=214" NodeType="UInt64">
 			<MetaData>
 				<DisplayName>UInt64</DisplayName>
 				<Limits>
@@ -271,8 +271,8 @@
 			    <Threshold>2000</Threshold>
 			</MetaData>
 		</Node>
-		<Node ValueName="UInt64ArrayTest" NodeId="ns=2;i=215" NodeType="UInt64" Array="1"/>
-		<Node ValueName="FloatTest" NodeId="ns=2;i=216" NodeType="Float">
+		<Node ValueName="UInt64ArrayTest" NodeId="ns=1;i=215" NodeType="UInt64" Array="1"/>
+		<Node ValueName="FloatTest" NodeId="ns=1;i=216" NodeType="Float">
 			<MetaData>
 				<DisplayName>Float</DisplayName>
 				<Limits>
@@ -315,8 +315,8 @@
 			    <Threshold>750</Threshold>
 			</MetaData>
 		</Node>
-		<Node ValueName="FloatArrayTest" NodeId="ns=2;i=217" NodeType="Float" Array="1"/>
-		<Node ValueName="DoubleTest" NodeId="ns=2;i=218" NodeType="Double">
+		<Node ValueName="FloatArrayTest" NodeId="ns=1;i=217" NodeType="Float" Array="1"/>
+		<Node ValueName="DoubleTest" NodeId="ns=1;i=218" NodeType="Double">
 			<MetaData>
 				<DisplayName>Double</DisplayName>
 				<Limits>
@@ -359,14 +359,14 @@
 			    <Threshold>750</Threshold>
 			</MetaData>
 		</Node>
-		<Node ValueName="DoubleArrayTest" NodeId="ns=2;i=219" NodeType="Double" Array="1"/>
-		<Node ValueName="SByteTest" NodeId="ns=2;i=200" NodeType="SByte">
+		<Node ValueName="DoubleArrayTest" NodeId="ns=1;i=219" NodeType="Double" Array="1"/>
+		<Node ValueName="SByteTest" NodeId="ns=1;i=200" NodeType="SByte">
 			<MetaData>
 				<DisplayName>SByte</DisplayName>
 			</MetaData>
 		</Node>
-		<Node ValueName="SByteArrayTest" NodeId="ns=2;i=201" NodeType="SByte" Array="1"/>
-		<Node ValueName="ByteTest" NodeId="ns=2;i=202" NodeType="Byte">
+		<Node ValueName="SByteArrayTest" NodeId="ns=1;i=201" NodeType="SByte" Array="1"/>
+		<Node ValueName="ByteTest" NodeId="ns=1;i=202" NodeType="Byte">
 			<MetaData>
 				<DisplayName>Byte</DisplayName>
 				<Limits>
@@ -404,49 +404,49 @@
 			    <Threshold>40</Threshold>
 			</MetaData>
 		</Node>
-		<Node ValueName="ByteArrayTest" NodeId="ns=2;i=203" NodeType="Byte" Array="1"/>
-		<Node ValueName="StringTest" NodeId="ns=2;i=222" NodeType="String">
+		<Node ValueName="ByteArrayTest" NodeId="ns=1;i=203" NodeType="Byte" Array="1"/>
+		<Node ValueName="StringTest" NodeId="ns=1;i=222" NodeType="String">
 			<MetaData>
 				<DisplayName>String</DisplayName>
 			</MetaData>
 		</Node>
-		<Node ValueName="StringArrayTest" NodeId="ns=2;i=223" NodeType="String" Array="1"/>	
-		<Node ValueName="ByteStringTest" NodeId="ns=2;i=224" NodeType="ByteString">
+		<Node ValueName="StringArrayTest" NodeId="ns=1;i=223" NodeType="String" Array="1"/>	
+		<Node ValueName="ByteStringTest" NodeId="ns=1;i=224" NodeType="ByteString">
 			<MetaData>
 				<DisplayName>ByteString</DisplayName>
 			</MetaData>
 		</Node>
-		<Node ValueName="ByteStringArrayTest" NodeId="ns=2;i=225" NodeType="ByteString" Array="1"/>
-		<Node ValueName="LocalizedTextTest" NodeId="ns=2;i=226" NodeType="LocalizedText">
+		<Node ValueName="ByteStringArrayTest" NodeId="ns=1;i=225" NodeType="ByteString" Array="1"/>
+		<Node ValueName="LocalizedTextTest" NodeId="ns=1;i=226" NodeType="LocalizedText">
 			<MetaData>
 				<DisplayName>LocalizedText</DisplayName>
 			</MetaData>
 		</Node>
-		<Node ValueName="LocalizedTextArrayTest" NodeId="ns=2;i=227" NodeType="LocalizedText" Array="1"/>
-		<Node ValueName="DateTimeTest" NodeId="ns=2;i=228" NodeType="DateTime">
+		<Node ValueName="LocalizedTextArrayTest" NodeId="ns=1;i=227" NodeType="LocalizedText" Array="1"/>
+		<Node ValueName="DateTimeTest" NodeId="ns=1;i=228" NodeType="DateTime">
 			<MetaData>
 				<DisplayName>DateTime</DisplayName>
 			</MetaData>
 		</Node>
-		<Node ValueName="DateTimeArrayTest" NodeId="ns=2;i=229" NodeType="DateTime" Array="1"/>
-		<Node ValueName="GuidTest" NodeId="ns=2;i=230" NodeType="Guid">
+		<Node ValueName="DateTimeArrayTest" NodeId="ns=1;i=229" NodeType="DateTime" Array="1"/>
+		<Node ValueName="GuidTest" NodeId="ns=1;i=230" NodeType="Guid">
 			<MetaData>
 				<DisplayName>Guid</DisplayName>
 			</MetaData>
 		</Node>
-		<Node ValueName="GuidArrayTest" NodeId="ns=2;i=231" NodeType="Guid" Array="1"/>
-		<Node ValueName="NodeIdTest" NodeId="ns=2;i=232" NodeType="NodeId">
+		<Node ValueName="GuidArrayTest" NodeId="ns=1;i=231" NodeType="Guid" Array="1"/>
+		<Node ValueName="NodeIdTest" NodeId="ns=1;i=232" NodeType="NodeId">
 			<MetaData>
 				<DisplayName>NodeId</DisplayName>
 			</MetaData>
 		</Node>
-		<Node ValueName="NodeIdArrayTest" NodeId="ns=2;i=233" NodeType="NodeId" Array="1"/>
-		<Node ValueName="QualifiedNameTest" NodeId="ns=2;i=234" NodeType="QualifiedName">
+		<Node ValueName="NodeIdArrayTest" NodeId="ns=1;i=233" NodeType="NodeId" Array="1"/>
+		<Node ValueName="QualifiedNameTest" NodeId="ns=1;i=234" NodeType="QualifiedName">
 			<MetaData>
 				<DisplayName>QualifiedName</DisplayName>
 			</MetaData>
 		</Node>
-		<Node ValueName="QualifiedNameArrayTest" NodeId="ns=2;i=235" NodeType="QualifiedName" Array="1"/> 
+		<Node ValueName="QualifiedNameArrayTest" NodeId="ns=1;i=235" NodeType="QualifiedName" Array="1"/> 
 	</NodeList>
 
 </OpcUaClient>
