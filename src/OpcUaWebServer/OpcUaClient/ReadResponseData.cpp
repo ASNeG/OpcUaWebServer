@@ -15,7 +15,8 @@
    Autor: Kai Huebl (kai@huebl-sgh.de)
 
  */
-
+#include <boost/make_shared.hpp>
+#include <boost/make_shared.hpp>
 #include "OpcUaStackCore/Base/Log.h"
 #include "OpcUaWebServer/OpcUaClient/ReadResponseData.h"
 

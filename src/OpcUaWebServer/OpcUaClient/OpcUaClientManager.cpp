@@ -526,7 +526,7 @@ namespace OpcUaWebServer
 	void
 	OpcUaClientManager::sendErrorMessage(Message::SPtr &requestMessage, Message messageType, OpcUaStatusCode statusCode) const
 	{
-		Message::SPtr responseMessage = constructSPtr<Message>(messageType);
+		Message::SPtr responseMessage = boost::make_shared<Message>(messageType);
 		responseMessage->channelId(requestMessage->channelId());
 		responseMessage->clientHandle(requestMessage->clientHandle());
 		responseMessage->statusCode(OpcUaStatusCodeMap::shortString(statusCode));
