@@ -16,6 +16,7 @@
 
  */
 
+#include <boost/make_shared.hpp>
 #include "OpcUaStackCore/Base/Log.h"
 #include "OpcUaWebServer/OpcUaClient/HistoricalReadResponseData.h"
 
