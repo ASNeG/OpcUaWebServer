@@ -21,7 +21,7 @@ class TestReadAttribute(WebGatewayTestCase):
         # send read request to the opc ua server
         #
         node = self.opcua_client.get_node("ns=2;i=208")
-        node.set_value(ua.DataValue(555))
+        node.set_value(ua.DataValue(ua.Variant(555, ua.VariantType.Int32)))
 
         node = self.opcua_client.get_node("ns=2;i=220")
         node.set_value(ua.DataValue(True))
@@ -70,14 +70,16 @@ class TestReadAttribute(WebGatewayTestCase):
         self.assertEqual(len(res['Body']['Results']), 2)
         self.assertIsNotNone(res['Body']['Results'][0]['Value'])
         self.assertIsNotNone(res['Body']['Results'][1]['Value'])
+        self.assertEqual('555', res['Body']['Results'][0]['Value']['Body'])
+        self.assertEqual('true', res['Body']['Results'][1]['Value']['Body'])
 
     def test_big_size(self):
         NODE_COUNT = 1000
         nodesToRead = [
                 {
                     "NodeId": {
-                        "Namespace": "3",
-                        "Id": "218"
+                        "Namespace": "2",
+                        "Id": "208"
                     }
                 }
                 for _ in range(0, NODE_COUNT)
@@ -109,4 +111,3 @@ class TestReadAttribute(WebGatewayTestCase):
         self.assertEqual(res['Header']['StatusCode'], "0")
         self.assertEqual(len(res['Body']['Results']), NODE_COUNT)
         self.assertEqual('555', res['Body']['Results'][0]['Value']['Body'])
-        self.assertEqual('true', res['Body']['Results'][1]['Value']['Body'])
