@@ -825,11 +825,12 @@ namespace OpcUaWebServer
 		os.write(webSocketMessage->message_.c_str(), length);
 
 		// send message
+		 SendCompleteCallback tmpSendCompleteCallback = sendCompleteCallback;
 		webSocketChannel->async_write(
 			webSocketConfig_->strand(),
 			webSocketChannel->sendBuffer_,
-			[this, sendCompleteCallback, webSocketChannel](const boost::system::error_code& error, std::size_t bytes_transferred) {
-			    handleWriteMessageComplete(error, bytes_transferred, webSocketChannel, sendCompleteCallback);
+			[this, tmpSendCompleteCallback, webSocketChannel](const boost::system::error_code& error, std::size_t bytes_transferred) {
+			    handleWriteMessageComplete(error, bytes_transferred, webSocketChannel, tmpSendCompleteCallback);
 			}
 		);
 

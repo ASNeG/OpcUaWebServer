@@ -59,8 +59,9 @@ namespace OpcUaWebServer
 	void
 	WebSocketServer::shutdown(const ShutdownCompleteCallback& shutdownCompleteCallback)
 	{
+		ShutdownCompleteCallback tmpShutdownCompleteCallback = shutdownCompleteCallback;
 		webSocketConfig_->strand()->dispatch(
-			[this, shutdownCompleteCallback](){ shutdownStrand(shutdownCompleteCallback); }
+			[this, tmpShutdownCompleteCallback](){ shutdownStrand(tmpShutdownCompleteCallback); }
 		);
 	}
 

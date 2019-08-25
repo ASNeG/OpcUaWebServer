@@ -190,9 +190,11 @@ namespace OpcUaWebServer
 		const SendCompleteCallback& sendCompleteCallback
 	)
 	{
+		SendCompleteCallback tmpSendCompleteCallback = sendCompleteCallback;
+		WebSocketMessage::SPtr tmpWebSocketMessage = webSocketMessage;
 		strand_->post(
-			[this, &webSocketMessage, sendCompleteCallback]() {
-				sendMessageStrand(webSocketMessage, sendCompleteCallback);
+			[this, tmpWebSocketMessage, tmpSendCompleteCallback]() mutable {
+				sendMessageStrand(tmpWebSocketMessage, tmpSendCompleteCallback);
 			}
 		);
 
