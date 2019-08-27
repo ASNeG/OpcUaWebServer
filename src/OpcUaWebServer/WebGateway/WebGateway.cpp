@@ -46,10 +46,11 @@ namespace OpcUaWebServer
 		const StartupCompleteCallback& startupCompleteCallback
 	)
 	{
+		StartupCompleteCallback tmpStartupCompleteCallback = startupCompleteCallback;
 		strand_ = ioThread->createStrand();
 		strand_->post(
-			[this, config, ioThread, cryptoManager, startupCompleteCallback]() {
-				startupStrand(config, ioThread, cryptoManager, startupCompleteCallback);
+			[this, config, ioThread, cryptoManager, tmpStartupCompleteCallback]() {
+				startupStrand(config, ioThread, cryptoManager, tmpStartupCompleteCallback);
 			}
 		);
 	}
