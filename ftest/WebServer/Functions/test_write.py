@@ -17,93 +17,88 @@ class TestWrite(WebServerTestCase):
         WebServerTestCase.tearDown(self)
         self.opcua_client.disconnect()
 
-    # def test_wrong_format(self):
-    #     msg = {
-    #         'Header': {
-    #             'MessageType': 'READ_REQUEST',
-    #             'ClientHandle': '1'
-    #         },
-    #         'Body': {
-    #             'WRONG_FIELD': 'WRONG_VALUE'
-    #         }
-    #     }
-    #
-    #     self.ws.send(json.dumps(msg))
-    #     resp = json.loads(self.ws.recv())
-    #
-    #     self.assertEqual('READ_RESPONSE', resp['Header']['MessageType'])
-    #     self.assertEqual('BadAttributeIdInvalid', resp['Header']['StatusCode'])
-    #
-    # def test_variable_not_found(self):
-    #     msg = {
-    #         'Header': {
-    #             'MessageType': 'READ_REQUEST',
-    #             'ClientHandle': '1'
-    #         },
-    #         'Body': {
-    #             'Variable': 'NOT_EXIST'
-    #         }
-    #     }
-    #
-    #     self.ws.send(json.dumps(msg))
-    #     resp = json.loads(self.ws.recv())
-    #
-    #     print(resp)
-    #     self.assertEqual('READ_RESPONSE', resp['Header']['MessageType'])
-    #     self.assertEqual('BadNodeIdUnknown', resp['Body']['StatusCode'])
-    #
-    # def test_read_bool(self):
-    #     node = self.opcua_client.get_node("ns=2;i=220")
-    #     node.set_value(ua.DataValue(True))
-    #
-    #     resp = self.read_('BooleanTest')
-    #     print(resp)
-    #
-    #     self.assertEqual('1', resp['Body']['Value']['Type'])
-    #     self.assertEqual('true', resp['Body']['Value']['Body'])
-    #
-    #     node.set_value(ua.DataValue(False))
-    #     resp = self.read_('BooleanTest')
-    #     self.assertEqual('false', resp['Body']['Value']['Body'])
+    def test_wrong_format(self):
+        msg = {
+            'Header': {
+                'MessageType': 'WRITE_REQUEST',
+                'ClientHandle': '1'
+            },
+            'Body': {
+                'WRONG_FIELD': 'WRONG_VALUE'
+            }
+        }
 
-    # def test_read_int(self):
-    #     node = self.opcua_client.get_node("ns=2;i=208")
-    #     node.set_value(ua.DataValue(555))
-    #
-    #     resp = self.read_('Int32Test')
-    #     print(resp)
-    #
-    #     self.assertEqual('8', resp['Body']['Value']['Type'])
-    #     self.assertEqual('555', resp['Body']['Value']['Body'])
-    #
-    #     node.set_value(ua.DataValue(-450))
-    #     resp = self.read_('Int32Test')
-    #     self.assertEqual('-450', resp['Body']['Value']['Body'])
-    #
-    # def test_read_float(self):
-    #     node = self.opcua_client.get_node("ns=2;i=216")
-    #     node.set_value(ua.DataValue(2.8))
-    #
-    #     resp = self.read_('FloatTest')
-    #     print(resp)
-    #
-    #     self.assertEqual('11', resp['Body']['Value']['Type'])
-    #     self.assertEqual('2.8', resp['Body']['Value']['Body'])
-    #
-    #     node.set_value(ua.DataValue(-30.0))
-    #     resp = self.read_('FloatTest')
-    #     self.assertEqual('-30', resp['Body']['Value']['Body'])
-    #
-    # def write_(self, variable, value):
-    #     msg = {
-    #         'Header': {
-    #             'MessageType': 'READ_REQUEST',
-    #             'ClientHandle': '1'
-    #         },
-    #         'Body': {'Variable': variable}
-    #     }
-    #
-    #     print(msg)
-    #
-    #     self.ws.send(json.dumps(msg))
-    #     return json.loads(self.ws.recv())
+        self.ws.send(json.dumps(msg))
+        resp = json.loads(self.ws.recv())
+
+        self.assertEqual('WRITE_RESPONSE', resp['Header']['MessageType'])
+        self.assertEqual('BadAttributeIdInvalid', resp['Header']['StatusCode'])
+
+    def test_variable_not_found(self):
+        msg = {
+            'Header': {
+                'MessageType': 'WRITE_REQUEST',
+                'ClientHandle': '1'
+            },
+            'Body': {
+                'Variable': 'NOT_EXIST'
+            }
+        }
+
+        self.ws.send(json.dumps(msg))
+        resp = json.loads(self.ws.recv())
+
+        print(resp)
+        self.assertEqual('WRITE_RESPONSE', resp['Header']['MessageType'])
+        self.assertEqual('BadNodeIdUnknown', resp['Body']['StatusCode'])
+
+    def test_write_bool(self):
+        node = self.opcua_client.get_node("ns=2;i=220")
+
+        resp = self.write_('BooleanTest', 'true', typeId='1')
+        self.assertEqual('', resp['Body'])
+        self.assertTrue(node.get_value())
+
+        resp = self.write_('BooleanTest', 'false', typeId='1')
+        self.assertEqual('', resp['Body'])
+        self.assertFalse(node.get_value())
+
+    def test_write_int(self):
+        node = self.opcua_client.get_node("ns=2;i=208")
+
+        resp = self.write_('Int32Test', '555', '8')
+        self.assertEqual('', resp['Body'])
+        self.assertEqual(555, node.get_value())
+
+        resp = self.write_('Int32Test', '-20', '8')
+        self.assertEqual('', resp['Body'])
+        self.assertEqual(-20, node.get_value())
+
+    def test_read_float(self):
+        node = self.opcua_client.get_node("ns=2;i=216")
+
+        resp = self.write_('FloatTest', '88', '11')
+        self.assertEqual('', resp['Body'])
+        self.assertEqual(88, node.get_value())
+
+        resp = self.write_('FloatTest', '10.56', '11')
+        self.assertEqual('', resp['Body'])
+        self.assertEqual(10.56, node.get_value())
+
+    def write_(self, variable, value, typeId):
+        msg = {
+            'Header': {
+                'MessageType': 'WRITE_REQUEST',
+                'ClientHandle': '1'
+            },
+            'Body': {
+                'Variable': variable, 'Value': {
+                    'Value': {'Body': value, 'Type': typeId}
+                }
+            }
+        }
+
+        print(msg)
+
+        self.ws.send(json.dumps(msg))
+        return json.loads(self.ws.recv())
