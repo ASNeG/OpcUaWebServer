@@ -24,9 +24,12 @@
 	
 	<NamespaceUri>
 		<Uri>http://ASNeG-Demo.de/Test-Server/</Uri>
+		<Uri>http://ASNeG-Demo.de/HistoricalAccess/</Uri>
 	</NamespaceUri>
 	
 	<NodeList>
+		<Node ValueName="DoubleValue" NodeId="ns=2;i=2255" NodeType="Double">
+		</Node>
 	    <Node ValueName="TimerIntervalTest" NodeId="ns=1;i=3" NodeType="UInt32">
 	    	<MetaData>
 				<DisplayName>TimerInterval</DisplayName>

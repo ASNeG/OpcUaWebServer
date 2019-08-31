@@ -55,11 +55,11 @@ class TestWrite(WebServerTestCase):
     def test_write_bool(self):
         node = self.opcua_client.get_node("ns=2;i=220")
 
-        resp = self.write_('BooleanTest', 'true', typeId='1')
+        resp = self.write_('BooleanTest', 'true', type_id='1')
         self.assertEqual('', resp['Body'])
         self.assertTrue(node.get_value())
 
-        resp = self.write_('BooleanTest', 'false', typeId='1')
+        resp = self.write_('BooleanTest', 'false', type_id='1')
         self.assertEqual('', resp['Body'])
         self.assertFalse(node.get_value())
 
@@ -85,7 +85,7 @@ class TestWrite(WebServerTestCase):
         self.assertEqual('', resp['Body'])
         self.assertEqual(10.56, node.get_value())
 
-    def write_(self, variable, value, typeId):
+    def write_(self, variable, value, type_id):
         msg = {
             'Header': {
                 'MessageType': 'WRITE_REQUEST',
@@ -93,7 +93,7 @@ class TestWrite(WebServerTestCase):
             },
             'Body': {
                 'Variable': variable, 'Value': {
-                    'Value': {'Body': value, 'Type': typeId}
+                    'Value': {'Body': value, 'Type': type_id}
                 }
             }
         }
