@@ -56,8 +56,7 @@ class TestHistoricalRead(WebServerTestCase):
         """TODO: Not implemented yet"""
 
     def test_read(self):
-        resp = self.read_('DoubleValue')
-        print(resp)
+        """TODO: Not implemented yet"""
 
     def read_(self, variable):
         msg = {
