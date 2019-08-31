@@ -51,23 +51,23 @@ WebSocket Server JSON API Reference
 
 *WebSocket Server* has a simple :term:`JSON API` with the limited functionality contains the following requests:
 
-+---------------------+---------------------------------------------------------------------+
-| Name                | Description                                                         |
-+=====================+=====================================================================+
-| ValueList           | Returns all names of  OPC UA variables processed by the server.     |
-+---------------------+---------------------------------------------------------------------+
-| ValueInfo           | Returns information about OPC UA variables (such as type, name etc.)|
-+---------------------+---------------------------------------------------------------------+
-| Read                | Reads the value, status and timestamp of the given variable         |
-+---------------------+---------------------------------------------------------------------+
-| HistoricalRead      | Reads historical values of the given variables                      |
-+---------------------+---------------------------------------------------------------------+
-| Write               | Writes the value, status and timestamp of the given variable        |
-+---------------------+---------------------------------------------------------------------+
-| MonitorSartResponse | Starts monitoring the given variable to receive its new values      |
-+---------------------+---------------------------------------------------------------------+
-| MonitorStopResponse | Stops monitoring the given variable                                 |
-+---------------------+---------------------------------------------------------------------+
++---------------------+----------------------------------------------------------------------+
+| Name                | Description                                                          |
++=====================+======================================================================+
+| ValueList           | Returns all names of  OPC UA variables processed by the server.      |
++---------------------+----------------------------------------------------------------------+
+| ValueInfo           | Returns information about OPC UA variables (such as type, name etc.) |
++---------------------+----------------------------------------------------------------------+
+| Read                | Reads the value, status and timestamp of the given variable          |
++---------------------+----------------------------------------------------------------------+
+| HistoricalRead      | Reads historical values of the given variables. **Not implemented.** |
++---------------------+----------------------------------------------------------------------+
+| Write               | Writes the value, status and timestamp of the given variable         |
++---------------------+----------------------------------------------------------------------+
+| MonitorSartResponse | Starts monitoring the given variable to receive its new values       |
++---------------------+----------------------------------------------------------------------+
+| MonitorStopResponse | Stops monitoring the given variable                                  |
++---------------------+----------------------------------------------------------------------+
 
 For more information see :ref:`websocket_server`
 
