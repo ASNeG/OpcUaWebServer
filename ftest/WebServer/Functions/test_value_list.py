@@ -24,7 +24,7 @@ class TestValueList(WebServerTestCase):
         resp = json.loads(self.ws.recv())
 
         self.assertEqual('VALUELIST_RESPONSE', resp['Header']['MessageType'])
-        self.assertEqual(111, len(resp['Body']['Variables']))
+        self.assertEqual(112, len(resp['Body']['Variables']))
         self.assertIn('Boolean', resp['Body']['Variables'])
         self.assertIn('Int64', resp['Body']['Variables'])
         self.assertIn('LocalizedText', resp['Body']['Variables'])
