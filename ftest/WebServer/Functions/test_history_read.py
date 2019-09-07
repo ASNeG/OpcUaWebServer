@@ -31,7 +31,7 @@ class TestHistoricalRead(WebServerTestCase):
         self.ws.send(json.dumps(msg))
         resp = json.loads(self.ws.recv())
 
-        self.assertEqual('READ_RESPONSE', resp['Header']['MessageType'])
+        self.assertEqual('HISTORICALREAD_RESPONSE', resp['Header']['MessageType'])
         self.assertEqual('BadAttributeIdInvalid', resp['Header']['StatusCode'])
 
     def test_variable_not_found(self):
@@ -41,7 +41,9 @@ class TestHistoricalRead(WebServerTestCase):
                 'ClientHandle': '1'
             },
             'Body': {
-                'Variable': 'NOT_EXIST'
+                'Variable': 'NOT_EXIST',
+                'StartTime': '20020131T225959',
+                'EndTime': '20020131T235959'
             }
         }
 
@@ -49,7 +51,7 @@ class TestHistoricalRead(WebServerTestCase):
         resp = json.loads(self.ws.recv())
 
         print(resp)
-        self.assertEqual('READ_RESPONSE', resp['Header']['MessageType'])
+        self.assertEqual('HISTORICALREAD_RESPONSE', resp['Header']['MessageType'])
         self.assertEqual('BadNodeIdUnknown', resp['Body']['StatusCode'])
 
     def test_read_variable_wo_history(self):

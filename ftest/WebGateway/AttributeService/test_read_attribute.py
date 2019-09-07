@@ -110,4 +110,3 @@ class TestReadAttribute(WebGatewayTestCase):
         self.assertEqual(res['Header']['SessionId'], self.sessionId)
         self.assertEqual(res['Header']['StatusCode'], "0")
         self.assertEqual(len(res['Body']['Results']), NODE_COUNT)
-        self.assertEqual('555', res['Body']['Results'][0]['Value']['Body'])
