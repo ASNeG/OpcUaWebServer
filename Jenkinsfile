@@ -34,7 +34,7 @@ pipeline {
     stage('test_linux') {
       steps {
         timeout(time: 5, unit: "MINUTES") {
-          sh 'docker-compose run test_client bash -c "cd /code/ftest/ && nosetests --with-xunit"'
+          sh 'docker-compose run test_client bash -c "cd /code/ftest/ && nosetests -vvvv --with-xunit"'
         }
 
         junit(testResults: 'ftest/nosetests.xml')
