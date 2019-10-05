@@ -10,12 +10,8 @@ class TestHistoricalRead(WebServerTestCase):
     def setUp(self):
         WebServerTestCase.setUp(self)
 
-        self.opcua_client = Client(self.OPC_SERVER_URL)
-        self.opcua_client.connect()
-
     def tearDown(self):
         WebServerTestCase.tearDown(self)
-        self.opcua_client.disconnect()
 
     def test_wrong_format(self):
         msg = {
