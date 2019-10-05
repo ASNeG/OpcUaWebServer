@@ -14,6 +14,9 @@ class TestReadAttribute(WebGatewayTestCase):
         self.opcua_client.connect()
 
     def tearDown(self):
+
+        self.opcua_client.disconnect()
+
         WebGatewayTestCase.tearDown(self)
 
     def test_read(self):
@@ -60,7 +63,7 @@ class TestReadAttribute(WebGatewayTestCase):
         #
         # receive read response from the opc ua server
         #
-        str = self.ws. recv()
+        str = self.ws.recv()
         print("RECV: ", str)
         res = json.loads(str)
         self.assertEqual(res['Header']['MessageType'], "GW_ReadResponse")
