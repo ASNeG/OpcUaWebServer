@@ -24,6 +24,7 @@ services:
     command: >-
       bash -c "sed -i 's/127.0.0.1:8889/asneg-demo:8889/' /etc/OpcUaStack/OpcUaWebServer/OpcUaClient0.xml
       && sed -i 's/127.0.0.1:8889/asneg-demo:8889/' /etc/OpcUaStack/OpcUaWebServer/OpcUaClient1.xml 
+      && sed -i 's/127.0.0.1:8889/asneg-demo:8889/' /etc/OpcUaStack/OpcUaWebServer/OpcUaClientTest.xml
       && OpcUaServer4 /etc/OpcUaStack/OpcUaWebServer/OpcUaServer.xml"
 
   test_client:
