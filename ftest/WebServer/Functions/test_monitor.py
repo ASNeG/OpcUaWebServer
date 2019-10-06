@@ -45,9 +45,11 @@ class TestMonitor(WebServerTestCase):
         self.assertEqual('BadNoEntryExists', resp['Body']['StatusCode'])
 
     def test_update_message(self):
+        node = self.opcua_client.get_node("ns=2;i=220")
+        node.set_value(ua.DataValue(False))
+
         self.start_monitor_('BooleanTest')
 
-        node = self.opcua_client.get_node("ns=2;i=220")
         node.set_value(ua.DataValue(True))
 
         resp = json.loads(self.ws.recv())
