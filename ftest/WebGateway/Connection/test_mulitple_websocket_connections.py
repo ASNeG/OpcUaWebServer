@@ -15,7 +15,7 @@ class TestMultipleWebSocketConnections(unittest.TestCase):
         #
         # open 5 web socket connection
         #
-        print("open 5 connectins")
+        print("open 5 connections")
         for idx in range(0, 5, 1):
             try:
                 local_ws = create_connection(self.WS_GATEWAY_URL, timeout=1)

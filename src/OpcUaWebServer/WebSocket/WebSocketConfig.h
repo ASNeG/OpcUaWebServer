@@ -60,7 +60,7 @@ namespace OpcUaWebServer
 		uint32_t idleTimeout_;
 		IOThread::SPtr ioThread_;
 		boost::shared_ptr<boost::asio::strand> strand_;
-		uint32_t maxConnections_ = 100;
+		uint32_t maxConnections_ = 0;
 		uint32_t maxPacketLength_ = 0;
 	};
 

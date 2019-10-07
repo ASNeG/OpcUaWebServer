@@ -13,7 +13,7 @@ class TestMultipleWebSocketConnections(unittest.TestCase):
         #
         # open web socket connection
         #
-        print("open connectins")
+        print("open connections")
         self.ws = create_connection(self.WS_SERVER_URL, timeout=1)
 
         #
