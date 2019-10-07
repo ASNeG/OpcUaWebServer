@@ -1,6 +1,7 @@
 import json
 import os
 import unittest
+import time
 from websocket import create_connection
 
 class TestMaxConnections(unittest.TestCase):
@@ -13,7 +14,7 @@ class TestMaxConnections(unittest.TestCase):
         #
         # open 100 web socket connection
         #
-        print("open 100 connectins")
+        print("open 100 connections")
         for idx in range(0, 100, 1):
             try:
                 local_ws = create_connection(self.WS_SERVER_URL, timeout=3)
@@ -58,3 +59,6 @@ class TestMaxConnections(unittest.TestCase):
         print("close all connections")
         for idx in range(0, 100, 1):
             self.ws[idx].close()
+            print("DISCONNECT: ", idx)
+
+        time.sleep(3)
