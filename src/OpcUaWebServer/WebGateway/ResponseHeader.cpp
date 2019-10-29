@@ -44,7 +44,7 @@ namespace OpcUaWebServer
 		const OpcUaString& clientHandle,
 		const OpcUaString& sessionId
 	)
-	: RequestHeader(messageType, clientHandle, sessionId)
+	: RequestHeader(messageType, clientHandle, sessionId, 0)
 	, statusCode_(Success)
 	{
 	}

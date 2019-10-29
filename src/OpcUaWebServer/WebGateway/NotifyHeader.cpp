@@ -30,7 +30,7 @@ namespace OpcUaWebServer
 		const std::string& clientHandle,
 		const std::string& sessionId
 	)
-	: RequestHeader(messageType, clientHandle, sessionId)
+	: RequestHeader(messageType, clientHandle, sessionId, 0)
 	{
 
 	}

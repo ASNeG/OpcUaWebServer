@@ -35,7 +35,8 @@ namespace OpcUaWebServer
 		RequestHeader(
 		    const OpcUaString& messageType,
 			const OpcUaString& clientHandle,
-			const OpcUaString& sessionId
+			const OpcUaString& sessionId,
+			uint32_t requestTimeout
 		);
 		virtual ~RequestHeader(void);
 
@@ -51,6 +52,7 @@ namespace OpcUaWebServer
         OpcUaString messageType_;
         OpcUaString clientHandle_;
         OpcUaString sessionId_;
+        uint32_t requestTimeout_;
 	};
 
 }
