@@ -25,6 +25,7 @@
 #include "OpcUaStackCore/Certificate/CryptoManager.h"
 #include "OpcUaStackCore/StandardDataTypes/EventFieldList.h"
 #include "OpcUaStackClient/ServiceSet/ServiceSetManager.h"
+#include "OpcUaWebServer/OpcUaClient/RequestInfo.h"
 
 using namespace OpcUaStackCore;
 using namespace OpcUaStackClient;
@@ -69,14 +70,17 @@ namespace OpcUaWebServer
 		// attribute service functions
 		//
 		void read(
+			const RequestInfo& requestInfo,
 			boost::property_tree::ptree& requestBody,
 			const MessageResponseCallback& messageResponseCallback
 		);
 		void write(
+			const RequestInfo& requestInfo,
 			boost::property_tree::ptree& requestBody,
 			const MessageResponseCallback& messageResponseCallback
 		);
 		void historyRead(
+			const RequestInfo& requestInfo,
 			boost::property_tree::ptree& requestBody,
 			const MessageResponseCallback& messageResponseCallback
 		);
@@ -85,6 +89,7 @@ namespace OpcUaWebServer
 		// method service
 		//
 		void call(
+			const RequestInfo& requestInfo,
 			boost::property_tree::ptree& requestBody,
 			const MessageResponseCallback& messageResponseCallback
 		);
@@ -102,10 +107,12 @@ namespace OpcUaWebServer
 			const EventCallback eventCallback
 		);
 		void createSubscription(
+			const RequestInfo& requestInfo,
 			boost::property_tree::ptree& requestBody,
 			const MessageResponseCallback& messageResponseCallback
 		);
 		void deleteSubscriptions(
+			const RequestInfo& requestInfo,
 			boost::property_tree::ptree& requestBody,
 			const MessageResponseCallback& messageResponseCallback
 		);
@@ -114,10 +121,12 @@ namespace OpcUaWebServer
 		// monitored item service
 		//
 		void createMonitoredItems(
+			const RequestInfo& requestInfo,
 			boost::property_tree::ptree& requestBody,
 			const MessageResponseCallback& messageResponseCallback
 		);
 		void deleteMonitoredItems(
+			const RequestInfo& requestInfo,
 			boost::property_tree::ptree& requestBody,
 			const MessageResponseCallback& messageResponseCallback
 		);

@@ -39,7 +39,7 @@ namespace OpcUaWebServer
 	}
 
 	uint32_t
-	RequestInfo::requestTimeout(void)
+	RequestInfo::requestTimeout(void) const
 	{
 		return requestTimeout_;
 	}

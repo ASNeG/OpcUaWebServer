@@ -75,6 +75,12 @@ namespace OpcUaWebServer
 		return sessionId_;
 	}
 
+	uint32_t
+	RequestHeader::requestTimeout(void) const
+	{
+		return requestTimeout_;
+	}
+
     bool
 	RequestHeader::jsonEncodeImpl(boost::property_tree::ptree& pt) const
     {

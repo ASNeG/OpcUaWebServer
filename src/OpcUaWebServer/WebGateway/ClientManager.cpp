@@ -407,6 +407,9 @@ namespace OpcUaWebServer
 			.parameter("SessionId", requestHeader.sessionId())
 			.parameter("Message", requestHeader.messageType());
 
+		RequestInfo requestInfo;
+		requestInfo.requestTimeout(requestHeader.requestTimeout());
+
 		// find client
 		mutex_.lock();
 		auto it = clientMap_.find(requestHeader.sessionId());
@@ -433,40 +436,40 @@ namespace OpcUaWebServer
 		//
 		auto messageType = requestHeader.messageType().toStdString();
 		if (messageType == "GW_ReadRequest") {
-			client->read(requestBody, messageResponseCallback);
+			client->read(requestInfo, requestBody, messageResponseCallback);
 		}
 		else if (messageType == "GW_WriteRequest") {
-			client->write(requestBody, messageResponseCallback);
+			client->write(requestInfo, requestBody, messageResponseCallback);
 		}
 		else if (messageType == "GW_HistoryReadRequest") {
-			client->historyRead(requestBody, messageResponseCallback);
+			client->historyRead(requestInfo, requestBody, messageResponseCallback);
 		}
 
 		//
 		// method service
 		//
 		else if (messageType == "GW_CallRequest") {
-			client->call(requestBody, messageResponseCallback);
+			client->call(requestInfo, requestBody, messageResponseCallback);
 		}
 
 		//
 		// subscription service
 		//
 		else if (messageType == "GW_CreateSubscriptionRequest") {
-			client->createSubscription(requestBody, messageResponseCallback);
+			client->createSubscription(requestInfo, requestBody, messageResponseCallback);
 		}
 		else if (messageType == "GW_DeleteSubscriptionsRequest") {
-			client->deleteSubscriptions(requestBody, messageResponseCallback);
+			client->deleteSubscriptions(requestInfo, requestBody, messageResponseCallback);
 		}
 
 		//
 		// monitored item service
 		//
 		else if (messageType == "GW_CreateMonitoredItemsRequest") {
-			client->createMonitoredItems(requestBody, messageResponseCallback);
+			client->createMonitoredItems(requestInfo, requestBody, messageResponseCallback);
 		}
 		else if (messageType == "GW_DeleteMonitoredItemsRequest") {
-			client->deleteMonitoredItems(requestBody, messageResponseCallback);
+			client->deleteMonitoredItems(requestInfo, requestBody, messageResponseCallback);
 		}
 
 		//

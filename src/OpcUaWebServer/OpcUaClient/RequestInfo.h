@@ -31,7 +31,7 @@ namespace OpcUaWebServer
 		~RequestInfo(void);
 
 		void requestTimeout(uint32_t requestTimeout);
-		uint32_t requestTimeout(void);
+		uint32_t requestTimeout(void) const;
 
 	  private:
 		uint32_t requestTimeout_;
