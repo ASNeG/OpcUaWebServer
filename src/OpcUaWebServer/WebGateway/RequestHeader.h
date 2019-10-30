@@ -18,6 +18,7 @@
 #ifndef __OpcUaWebServer_RequestHeader_h__
 #define __OpcUaWebServer_RequestHeader_h__
 
+#include <stdint.h>
 #include <boost/property_tree/ptree.hpp>
 #include "OpcUaStackCore/BuildInTypes/OpcUaString.h"
 
@@ -35,13 +36,15 @@ namespace OpcUaWebServer
 		RequestHeader(
 		    const OpcUaString& messageType,
 			const OpcUaString& clientHandle,
-			const OpcUaString& sessionId
+			const OpcUaString& sessionId,
+			uint32_t requestTimeout
 		);
 		virtual ~RequestHeader(void);
 
 		OpcUaString& messageType(void);
 		OpcUaString& clientHandle(void);
 		OpcUaString& sessionId(void);
+		uint32_t requestTimeout(void) const;
 
       protected:
         bool jsonEncodeImpl(boost::property_tree::ptree& pt) const override;
@@ -51,6 +54,7 @@ namespace OpcUaWebServer
         OpcUaString messageType_;
         OpcUaString clientHandle_;
         OpcUaString sessionId_;
+        uint32_t requestTimeout_;
 	};
 
 }

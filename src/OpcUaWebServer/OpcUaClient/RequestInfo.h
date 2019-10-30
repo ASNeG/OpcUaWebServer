@@ -13,30 +13,30 @@
    im Rahmen der Lizenz finden Sie in der Lizenz.
 
    Autor: Kai Huebl (kai@huebl-sgh.de)
+
  */
 
-#include <OpcUaWebServer/WebGateway/NotifyHeader.h>
+#ifndef __OpcUaWebServer_RequestInfo_h__
+#define __OpcUaWebServer_RequestInfo_h__
+
+#include <stdint.h>
 
 namespace OpcUaWebServer
 {
 
-	NotifyHeader::NotifyHeader(void)
-	: RequestHeader()
+	class RequestInfo
 	{
-	}
+	  public:
+		RequestInfo(void);
+		~RequestInfo(void);
 
-	NotifyHeader::NotifyHeader(
-	    const std::string& messageType,
-		const std::string& clientHandle,
-		const std::string& sessionId
-	)
-	: RequestHeader(messageType, clientHandle, sessionId, 0)
-	{
+		void requestTimeout(uint32_t requestTimeout);
+		uint32_t requestTimeout(void) const;
 
-	}
+	  private:
+		uint32_t requestTimeout_;
+	};
 
-	NotifyHeader::~NotifyHeader(void)
-	{
-	}
 }
 
+#endif

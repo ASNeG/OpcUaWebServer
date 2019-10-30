@@ -266,6 +266,7 @@ namespace OpcUaWebServer
 
 	void
 	Client::read(
+		const RequestInfo& requestInfo,
 		boost::property_tree::ptree& requestBody,
 		const MessageResponseCallback& messageResponseCallback
 	)
@@ -278,6 +279,7 @@ namespace OpcUaWebServer
 
 		// decode read request from web socket
 		auto trx = boost::make_shared<ServiceTransactionRead>();
+		trx->requestTimeout(requestInfo.requestTimeout());
 		auto req = trx->request();
 		if (!req->jsonDecode(requestBody)) {
 			Log(Error, "decode read request error")
@@ -320,6 +322,7 @@ namespace OpcUaWebServer
 
 	void
 	Client::write(
+		const RequestInfo& requestInfo,
 		boost::property_tree::ptree& requestBody,
 		const MessageResponseCallback& messageResponseCallback
 	)
@@ -332,6 +335,7 @@ namespace OpcUaWebServer
 
 		// decode write request from web socket
 		auto trx = boost::make_shared<ServiceTransactionWrite>();
+		trx->requestTimeout(requestInfo.requestTimeout());
 		auto req = trx->request();
 		if (!req->jsonDecode(requestBody)) {
 			Log(Error, "decode write request error")
@@ -374,6 +378,7 @@ namespace OpcUaWebServer
 
 	void
 	Client::historyRead(
+		const RequestInfo& requestInfo,
 		boost::property_tree::ptree& requestBody,
 		const MessageResponseCallback& messageResponseCallback
 	)
@@ -386,6 +391,7 @@ namespace OpcUaWebServer
 
 		// decode history read request from web socket
 		auto trx = boost::make_shared<ServiceTransactionHistoryRead>();
+		trx->requestTimeout(requestInfo.requestTimeout());
 		auto req = trx->request();
 		if (!req->jsonDecode(requestBody)) {
 			Log(Error, "decode history read request error")
@@ -446,6 +452,7 @@ namespace OpcUaWebServer
 
 	void
 	Client::call(
+		const RequestInfo& requestInfo,
 		boost::property_tree::ptree& requestBody,
 		const MessageResponseCallback& messageResponseCallback
 	)
@@ -458,6 +465,7 @@ namespace OpcUaWebServer
 
 		// decode method request from web socket
 		auto trx = boost::make_shared<ServiceTransactionCall>();
+		trx->requestTimeout(requestInfo.requestTimeout());
 		auto req = trx->request();
 		if (!req->jsonDecode(requestBody)) {
 			Log(Error, "decode call request error")
@@ -578,6 +586,7 @@ namespace OpcUaWebServer
 
 	void
 	Client::createSubscription(
+		const RequestInfo& requestInfo,
 		boost::property_tree::ptree& requestBody,
 		const MessageResponseCallback& messageResponseCallback
 	)
@@ -590,6 +599,7 @@ namespace OpcUaWebServer
 
 		// decode create subscription request from web socket
 		auto trx = boost::make_shared<ServiceTransactionCreateSubscription>();
+		trx->requestTimeout(requestInfo.requestTimeout());
 		auto req = trx->request();
 		if (!req->jsonDecode(requestBody)) {
 			Log(Error, "decode create subscription request error")
@@ -625,6 +635,7 @@ namespace OpcUaWebServer
 
 	void
 	Client::deleteSubscriptions(
+		const RequestInfo& requestInfo,
 		boost::property_tree::ptree& requestBody,
 		const MessageResponseCallback& messageResponseCallback
 	)
@@ -637,6 +648,7 @@ namespace OpcUaWebServer
 
 		// decode delete subscriptions request from web socket
 		auto trx = boost::make_shared<ServiceTransactionDeleteSubscriptions>();
+		trx->requestTimeout(requestInfo.requestTimeout());
 		auto req = trx->request();
 		if (!req->jsonDecode(requestBody)) {
 			Log(Error, "decode delete subscriptions request error")
@@ -698,6 +710,7 @@ namespace OpcUaWebServer
 
 	void
 	Client::createMonitoredItems(
+		const RequestInfo& requestInfo,
 		boost::property_tree::ptree& requestBody,
 		const MessageResponseCallback& messageResponseCallback
 	)
@@ -710,6 +723,7 @@ namespace OpcUaWebServer
 
 		// decode create monitored items request from web socket
 		auto trx = boost::make_shared<ServiceTransactionCreateMonitoredItems>();
+		trx->requestTimeout(requestInfo.requestTimeout());
 		auto req = trx->request();
 		if (!req->jsonDecode(requestBody)) {
 			Log(Error, "decode create monitored items request error")
@@ -745,6 +759,7 @@ namespace OpcUaWebServer
 
 	void
 	Client::deleteMonitoredItems(
+		const RequestInfo& requestInfo,
 		boost::property_tree::ptree& requestBody,
 		const MessageResponseCallback& messageResponseCallback
 	)
@@ -757,6 +772,7 @@ namespace OpcUaWebServer
 
 		// decode delete monitored itmes request from web socket
 		auto trx = boost::make_shared<ServiceTransactionDeleteMonitoredItems>();
+		trx->requestTimeout(requestInfo.requestTimeout());
 		auto req = trx->request();
 		if (!req->jsonDecode(requestBody)) {
 			Log(Error, "decode delete monitored items request error")

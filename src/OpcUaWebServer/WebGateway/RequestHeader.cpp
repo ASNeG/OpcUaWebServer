@@ -28,24 +28,28 @@ namespace OpcUaWebServer
 	: messageType_("")
 	, clientHandle_("")
 	, sessionId_("")
+	, requestTimeout_(0)
 	{
 	}
 
-	RequestHeader::RequestHeader(const RequestHeader& RequestHeader)
-	: messageType_(RequestHeader.messageType_)
-	, clientHandle_(RequestHeader.clientHandle_)
-	, sessionId_(RequestHeader.sessionId_)
+	RequestHeader::RequestHeader(const RequestHeader& requestHeader)
+	: messageType_(requestHeader.messageType_)
+	, clientHandle_(requestHeader.clientHandle_)
+	, sessionId_(requestHeader.sessionId_)
+	, requestTimeout_(requestHeader.requestTimeout_)
 	{
 	}
 
 	RequestHeader::RequestHeader(
 	    const OpcUaString& messageType,
 		const OpcUaString& clientHandle,
-		const OpcUaString& sessionId
+		const OpcUaString& sessionId,
+		uint32_t requestTimeout
 	)
 	: messageType_(messageType)
 	, clientHandle_(clientHandle)
 	, sessionId_(sessionId)
+	, requestTimeout_(requestTimeout)
 	{
 	}
 
@@ -71,6 +75,12 @@ namespace OpcUaWebServer
 		return sessionId_;
 	}
 
+	uint32_t
+	RequestHeader::requestTimeout(void) const
+	{
+		return requestTimeout_;
+	}
+
     bool
 	RequestHeader::jsonEncodeImpl(boost::property_tree::ptree& pt) const
     {
@@ -78,6 +88,7 @@ namespace OpcUaWebServer
     	rc = rc & jsonObjectEncode(pt, messageType_, "MessageType");
     	rc = rc & jsonObjectEncode(pt, clientHandle_, "ClientHandle");
     	rc = rc & jsonObjectEncode(pt, sessionId_, "SessionId", true);
+    	rc = rc & jsonNumberEncode(pt, requestTimeout_, "RequestTimeout", true, (uint32_t)0);
     	return rc;
     }
 
@@ -88,6 +99,7 @@ namespace OpcUaWebServer
        	rc = rc & jsonObjectDecode(pt, messageType_, "MessageType");
         rc = rc & jsonObjectDecode(pt, clientHandle_, "ClientHandle");
         rc = rc & jsonObjectDecode(pt, sessionId_, "SessionId", true);
+        rc = rc & jsonNumberDecode(pt, requestTimeout_, "RequestTimeout", true, (uint32_t)0);
         return rc;
     }
 
