@@ -347,7 +347,8 @@ namespace OpcUaWebServer
 	{
 		Log(Debug, "WSG receive logout request")
 			.parameter("ChannelId", channelId)
-			.parameter("SessionId", requestHeader.sessionId());
+			.parameter("SessionId", requestHeader.sessionId())
+			.parameter("ClientHandle", requestHeader.clientHandle());
 
 		// find client
 		mutex_.lock();
