@@ -110,12 +110,15 @@ namespace OpcUaWebServer
 			.parameter("asyncWrite", webSocketChannel->asyncWrite_)
 			.parameter("asyncRead", webSocketChannel->asyncRead_);
 
+		// stop timer
+		webSocketConfig_->ioThread()->slotTimer()->stop(webSocketChannel->slotTimerElement_);
+
+		// close channel
+		webSocketChannel->close();
+
 		if (webSocketChannel->asyncWrite_ || webSocketChannel->asyncRead_) {
 			return;
 		}
-
-		// stop timer
-		webSocketConfig_->ioThread()->slotTimer()->stop(webSocketChannel->slotTimerElement_);
 
 		// remove web socket from channel map
 		webSocketChannel->sendQueue_.clear();
@@ -129,8 +132,7 @@ namespace OpcUaWebServer
 			receiveMessageCallback_(webSocketMessage);
 		}
 
-		// close and delete channel
-		webSocketChannel->close();
+		// delete channel
 		delete webSocketChannel;
 	}
 
@@ -146,7 +148,8 @@ namespace OpcUaWebServer
 	{
 		webSocketChannelMap_.insert(std::make_pair(webSocketChannel->id_, webSocketChannel));
 		Log(Debug, "create web socket")
-		    .parameter("ChannelId", webSocketChannel->id_);
+		    .parameter("ChannelId", webSocketChannel->id_)
+			.parameter("NumberConnections", webSocketChannelMap_.size());
 
 		addWebSocketChannel(webSocketChannelMap_.size());
 	}
@@ -155,7 +158,8 @@ namespace OpcUaWebServer
 	WebSocketServerBase::cleanupWebSocketChannel(WebSocketChannel* webSocketChannel)
 	{
 		Log(Debug, "delete web socket")
-		    .parameter("ChannelId", webSocketChannel->id_);
+		    .parameter("ChannelId", webSocketChannel->id_)
+			.parameter("NumberConnections", webSocketChannelMap_.size());
 
 		auto it = webSocketChannelMap_.find(webSocketChannel->id_);
 		if (it != webSocketChannelMap_.end()) {
