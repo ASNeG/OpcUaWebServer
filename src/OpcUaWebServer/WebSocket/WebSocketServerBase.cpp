@@ -47,6 +47,9 @@ namespace OpcUaWebServer
 	void
 	WebSocketServerBase::disconnect(uint32_t channelId)
 	{
+		Log(Error, "web socket server disconnect")
+		    .parameter("ChannelId", channelId);
+
 		WebSocketChannel* webSocketChannel;
 
 		{
@@ -97,9 +100,17 @@ namespace OpcUaWebServer
 	WebSocketServerBase::closeWebSocketChannel(WebSocketChannel* webSocketChannel)
 	{
 		Log(Info, "close web socket channel")
-			.parameter("ChannelId", webSocketChannel->id_);
+			.parameter("ChannelId", webSocketChannel->id_)
+			.parameter("QueueSize", webSocketChannel->sendQueue_.size())
+			.parameter("asyncWrite", webSocketChannel->asyncWrite_)
+			.parameter("asyncRead", webSocketChannel->asyncRead_);
+
+		if (webSocketChannel->asyncWrite_ || webSocketChannel->asyncRead_) {
+			return;
+		}
 
 		// remove web socket from channel map
+		webSocketChannel->sendQueue_.clear();
 		cleanupWebSocketChannel(webSocketChannel);
 
 		// send channel close message to opc ua client
@@ -428,6 +439,7 @@ namespace OpcUaWebServer
 		);
 		webSocketConfig_->ioThread()->slotTimer()->start(webSocketChannel->slotTimerElement_);
 
+		webSocketChannel->asyncRead_ = true;
 		webSocketChannel->async_read_exactly(
 			webSocketConfig_->strand(),
 			webSocketChannel->recvBuffer_,
@@ -443,7 +455,9 @@ namespace OpcUaWebServer
 		WebSocketChannel* webSocketChannel
 	)
 	{
-		if (webSocketChannel->timeout_) {
+		webSocketChannel->asyncRead_ = false;
+
+		if (webSocketChannel->timeout_ || error) {
 			closeWebSocketChannel(webSocketChannel);
 			return;
 		}
@@ -519,6 +533,7 @@ namespace OpcUaWebServer
 			);
 			webSocketConfig_->ioThread()->slotTimer()->start(webSocketChannel->slotTimerElement_);
 
+			webSocketChannel->asyncRead_ = true;
 			webSocketChannel->async_read_exactly(
 				webSocketConfig_->strand(),
 				webSocketChannel->recvBuffer_,
@@ -537,6 +552,7 @@ namespace OpcUaWebServer
 			);
 			webSocketConfig_->ioThread()->slotTimer()->start(webSocketChannel->slotTimerElement_);
 
+			webSocketChannel->asyncRead_ = true;
 			webSocketChannel->async_read_exactly(
 				webSocketConfig_->strand(),
 				webSocketChannel->recvBuffer_,
@@ -555,6 +571,7 @@ namespace OpcUaWebServer
 			);
 			webSocketConfig_->ioThread()->slotTimer()->start(webSocketChannel->slotTimerElement_);
 
+			webSocketChannel->asyncRead_ = true;
 			webSocketChannel->async_read_exactly(
 				webSocketConfig_->strand(),
 				webSocketChannel->recvBuffer_,
@@ -569,7 +586,9 @@ namespace OpcUaWebServer
 	void
 	WebSocketServerBase::handleReceiveMessageLength2(const boost::system::error_code& error, std::size_t bytes_transfered, WebSocketChannel* webSocketChannel)
 	{
-		if (webSocketChannel->timeout_) {
+		webSocketChannel->asyncRead_ = false;
+
+		if (webSocketChannel->timeout_ || error) {
 			closeWebSocketChannel(webSocketChannel);
 			return;
 		}
@@ -603,6 +622,7 @@ namespace OpcUaWebServer
 		);
 		webSocketConfig_->ioThread()->slotTimer()->start(webSocketChannel->slotTimerElement_);
 
+		webSocketChannel->asyncRead_ = true;
 		webSocketChannel->async_read_exactly(
 			webSocketConfig_->strand(),
 			webSocketChannel->recvBuffer_,
@@ -614,7 +634,9 @@ namespace OpcUaWebServer
 	void
 	WebSocketServerBase::handleReceiveMessageLength8(const boost::system::error_code& error, std::size_t bytes_transfered, WebSocketChannel* webSocketChannel)
 	{
-		if (webSocketChannel->timeout_) {
+		webSocketChannel->asyncRead_ = false;
+
+		if (webSocketChannel->timeout_ || error) {
 			closeWebSocketChannel(webSocketChannel);
 			return;
 		}
@@ -654,6 +676,7 @@ namespace OpcUaWebServer
 		);
 		webSocketConfig_->ioThread()->slotTimer()->start(webSocketChannel->slotTimerElement_);
 
+		webSocketChannel->asyncRead_ = true;
 		webSocketChannel->async_read_exactly(
 			webSocketConfig_->strand(),
 			webSocketChannel->recvBuffer_,
@@ -665,7 +688,9 @@ namespace OpcUaWebServer
 	void
 	WebSocketServerBase::handleReceiveMessageContent(const boost::system::error_code& error, std::size_t bytes_transfered, WebSocketChannel* webSocketChannel)
 	{
-		if (webSocketChannel->timeout_) {
+		webSocketChannel->asyncRead_ = false;
+
+		if (webSocketChannel->timeout_ || error) {
 			closeWebSocketChannel(webSocketChannel);
 			return;
 		}
@@ -760,6 +785,19 @@ namespace OpcUaWebServer
 		char headerByte
 	)
 	{
+		// check send queue
+		if (webSocketChannel->asyncWrite_) {
+			Log(Debug, "webSocketServer enqueue")
+				.parameter("ChannelId", webSocketChannel->id_)
+				.parameter("QueueSize", webSocketChannel->sendQueue_.size());
+			webSocketChannel->sendQueue_.enqueue(
+				webSocketMessage,
+				sendCompleteCallback,
+				headerByte
+			);
+			return true;
+		}
+
 		std::ostream os(&webSocketChannel->sendBuffer_);
 
 		char headerBytes[10];
@@ -825,7 +863,8 @@ namespace OpcUaWebServer
 		os.write(webSocketMessage->message_.c_str(), length);
 
 		// send message
-		 SendCompleteCallback tmpSendCompleteCallback = sendCompleteCallback;
+		SendCompleteCallback tmpSendCompleteCallback = sendCompleteCallback;
+		webSocketChannel->asyncWrite_ = true;
 		webSocketChannel->async_write(
 			webSocketConfig_->strand(),
 			webSocketChannel->sendBuffer_,
@@ -845,6 +884,8 @@ namespace OpcUaWebServer
 		const SendCompleteCallback& sendCompleteCallback
 	)
 	{
+		webSocketChannel->asyncWrite_ = false;
+
 		if (error) {
 			Log(Debug, "WebSocketServer send response error; close channel")
 				.parameter("Address", webSocketChannel->partner_.address().to_string())
@@ -855,6 +896,33 @@ namespace OpcUaWebServer
 			sendCompleteCallback(false);
 			return;
 		}
+
+		// check send queue
+		if (webSocketChannel->sendQueue_.empty()) {
+			return;
+		}
+
+		// send the next message from send queue
+		WebSocketMessage::SPtr webSocketMessage;
+		SendCompleteCallback completeCallback;
+		char headerByte;
+
+		Log(Debug, "webSocketServer dequeue")
+			.parameter("ChannelId", webSocketChannel->id_)
+			.parameter("QueueSize", webSocketChannel->sendQueue_.size());
+		webSocketChannel->sendQueue_.dequeue(
+			webSocketMessage,
+			&completeCallback,
+		    &headerByte
+		);
+
+		sendMessage(
+			webSocketMessage,
+			webSocketChannel,
+			completeCallback,
+			headerByte
+		);
+
 		sendCompleteCallback(true);
 	}
 

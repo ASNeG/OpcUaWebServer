@@ -404,6 +404,7 @@ namespace OpcUaWebServer
 	{
 		Log(Debug, "WSG receive data request")
 			.parameter("ChannelId", channelId)
+			.parameter("ClientHandle", requestHeader.clientHandle())
 			.parameter("SessionId", requestHeader.sessionId())
 			.parameter("Message", requestHeader.messageType());
 
@@ -498,6 +499,7 @@ namespace OpcUaWebServer
 
 		Log(Debug, "WSG send response")
 			.parameter("ChannelId", channelId)
+			.parameter("ClientHandle", responseHeader.clientHandle())
 			.parameter("SessionId", responseHeader.sessionId())
 			.parameter("Message", responseHeader.messageType());
 

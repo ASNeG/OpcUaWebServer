@@ -24,6 +24,7 @@
 #include "OpcUaStackCore/Utility/SlotTimer.h"
 #include "OpcUaWebServer/WebSocket/WebSocketRequest.h"
 #include "OpcUaWebServer/WebSocket/WebSocketResponse.h"
+#include "OpcUaWebServer/WebSocket/SendQueue.h"
 
 using namespace OpcUaStackCore;
 
@@ -45,6 +46,9 @@ namespace OpcUaWebServer
 
 		OpcUaStackCore::SlotTimerElement::SPtr slotTimerElement_;
 
+		bool asyncWrite_ = false;
+		bool asyncRead_ = false;
+
 		bool timeout_;
 		uint32_t id_;
 		uint8_t opcode_;
@@ -53,6 +57,7 @@ namespace OpcUaWebServer
 		WebSocketRequest webSocketRequest_;
 		WebSocketResponse webSocketResponse_;
 		boost::asio::ip::tcp::endpoint partner_;
+		SendQueue sendQueue_;
 	};
 
 }
