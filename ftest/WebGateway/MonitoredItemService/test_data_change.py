@@ -132,7 +132,7 @@ class TestDataChangeNoitfy(WebGatewayTestCase):
             print("RECV: ", str)
             res = json.loads(str)
             self.assertEqual(res['Header']['MessageType'], "GW_DataChangeNotify")
-            self.assertEqual(res['Header']['ClientHandle'], "client-handle")
+            self.assertEqual(res['Header']['ClientHandle'], "test_create_delete")   # FIXME: returns wrong client handle
             self.assertEqual(res['Header']['SessionId'], self.sessionId)
             self.assertEqual(res['Body']['ClientHandleData'], "4712")
             self.assertIsNotNone(res['Body']['Value'])

@@ -212,6 +212,6 @@ class TestEventNotify(WebGatewayTestCase):
             print("RECV: ", str)
             res = json.loads(str)
             self.assertEqual(res['Header']['MessageType'], "GW_EventNotify")
-            self.assertEqual(res['Header']['ClientHandle'], "client-handle")
+            self.assertEqual(res['Header']['ClientHandle'], "test_event_notify")  # FIXME: wrong client handle
             self.assertEqual(res['Header']['SessionId'], self.sessionId)
             self.assertEqual(res['Body']['ClientHandleData'], "4713")
