@@ -46,6 +46,7 @@ namespace OpcUaWebServer
 
 		OpcUaStackCore::SlotTimerElement::SPtr slotTimerElement_;
 
+		bool shutdown_ = false;
 		bool asyncWrite_ = false;
 		bool asyncRead_ = false;
 

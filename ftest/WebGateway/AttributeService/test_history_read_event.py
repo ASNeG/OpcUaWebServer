@@ -19,7 +19,8 @@ class TestHistoryReadEvent(WebGatewayTestCase):
             "Header": {
                 "MessageType": "GW_HistoryReadRequest",
                 "ClientHandle": "client-handle",
-                "SessionId": self.sessionId
+                "SessionId": self.sessionId,
+                "RequestTimeout": 10000,
             },
             "Body": {
                 "HistoryReadDetails": {
@@ -123,20 +124,20 @@ class TestHistoryReadEvent(WebGatewayTestCase):
 
         }
         
-        print("SEND: ", json.dumps(req, indent=4))
-        self.ws.send(json.dumps(req)) 
+        for i in range(50):
+            print("SEND: ", json.dumps(req, indent=4))
+            req['Header']['ClientHandle'] = str(int(i))
+            self.ws.send(json.dumps(req)) 
         
-        
-        #
-        # receive history read response from the opc ua server
-        #
-        str = self.ws.recv()
-        print("RECV: ", str)
-        res = json.loads(str)
-        self.assertEqual(res['Header']['MessageType'], "GW_HistoryReadResponse")
-        self.assertEqual(res['Header']['ClientHandle'], "client-handle")
-        self.assertEqual(res['Header']['SessionId'], self.sessionId)
-        self.assertEqual(res['Header']['StatusCode'], "0")
-        self.assertEqual(len(res['Body']['Results']), 1)
-        self.assertEqual(len(res['Body']['Results'][0]['HistoryData']['Body']['Events']), 5)
-        self.assertEqual(res['Body']['Results'][0]['StatusCode'], "0")
+
+        for i in range(50):
+            #
+            # receive history read response from the opc ua server
+            #
+            str1 = self.ws.recv()
+            print("RECV: ", str1, i)
+            res = json.loads(str1)
+            self.assertEqual(res['Header']['MessageType'], "GW_HistoryReadResponse")
+            self.assertEqual(res['Header']['SessionId'], self.sessionId)
+            self.assertEqual(res['Header']['StatusCode'], "0")
+            self.assertEqual(len(res['Body']['Results']), 1)

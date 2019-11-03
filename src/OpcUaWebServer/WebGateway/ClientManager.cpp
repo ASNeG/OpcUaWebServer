@@ -258,7 +258,8 @@ namespace OpcUaWebServer
 
 		Log(Debug, "WSG receive login request")
 			.parameter("ChannelId", channelId)
-			.parameter("SessionId", sessionId);
+			.parameter("SessionId", sessionId)
+			.parameter("ClientHandle", clientHandle);
 
 		auto sessionStatusCallback = [this, channelId, clientHandle, sessionId](const std::string& sessionStatus) {
 			NotifyHeader notifyHeader("GW_SessionStatusNotify", clientHandle, sessionId);
