@@ -61,6 +61,11 @@ namespace OpcUaWebServer
 				return;
 			}
 			webSocketChannel = it->second;
+
+			// stop timer
+			webSocketConfig_->ioThread()->slotTimer()->stop(webSocketChannel->slotTimerElement_);
+
+			// close channel
 			webSocketChannel->socket().close();
 		}
 	}
@@ -108,6 +113,9 @@ namespace OpcUaWebServer
 		if (webSocketChannel->asyncWrite_ || webSocketChannel->asyncRead_) {
 			return;
 		}
+
+		// stop timer
+		webSocketConfig_->ioThread()->slotTimer()->stop(webSocketChannel->slotTimerElement_);
 
 		// remove web socket from channel map
 		webSocketChannel->sendQueue_.clear();
