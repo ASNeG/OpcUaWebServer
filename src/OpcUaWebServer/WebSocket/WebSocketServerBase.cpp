@@ -47,6 +47,9 @@ namespace OpcUaWebServer
 	void
 	WebSocketServerBase::disconnect(uint32_t channelId)
 	{
+		Log(Error, "web socket server disconnect")
+		    .parameter("ChannelId", channelId);
+
 		WebSocketChannel* webSocketChannel;
 
 		{
@@ -58,6 +61,11 @@ namespace OpcUaWebServer
 				return;
 			}
 			webSocketChannel = it->second;
+
+			// stop timer
+			webSocketConfig_->ioThread()->slotTimer()->stop(webSocketChannel->slotTimerElement_);
+
+			// close channel
 			webSocketChannel->socket().close();
 		}
 	}
@@ -97,9 +105,24 @@ namespace OpcUaWebServer
 	WebSocketServerBase::closeWebSocketChannel(WebSocketChannel* webSocketChannel)
 	{
 		Log(Info, "close web socket channel")
-			.parameter("ChannelId", webSocketChannel->id_);
+			.parameter("ChannelId", webSocketChannel->id_)
+			.parameter("QueueSize", webSocketChannel->sendQueue_.size())
+			.parameter("asyncWrite", webSocketChannel->asyncWrite_)
+			.parameter("asyncRead", webSocketChannel->asyncRead_);
+
+		if (webSocketChannel->asyncWrite_ || webSocketChannel->asyncRead_) {
+			webSocketChannel->shutdown_ = true;
+			return;
+		}
+
+		// stop timer
+		webSocketConfig_->ioThread()->slotTimer()->stop(webSocketChannel->slotTimerElement_);
+
+		// close channel
+		webSocketChannel->close();
 
 		// remove web socket from channel map
+		webSocketChannel->sendQueue_.clear();
 		cleanupWebSocketChannel(webSocketChannel);
 
 		// send channel close message to opc ua client
@@ -110,8 +133,7 @@ namespace OpcUaWebServer
 			receiveMessageCallback_(webSocketMessage);
 		}
 
-		// close and delete channel
-		webSocketChannel->close();
+		// delete channel
 		delete webSocketChannel;
 	}
 
@@ -127,7 +149,8 @@ namespace OpcUaWebServer
 	{
 		webSocketChannelMap_.insert(std::make_pair(webSocketChannel->id_, webSocketChannel));
 		Log(Debug, "create web socket")
-		    .parameter("ChannelId", webSocketChannel->id_);
+		    .parameter("ChannelId", webSocketChannel->id_)
+			.parameter("NumberConnections", webSocketChannelMap_.size());
 
 		addWebSocketChannel(webSocketChannelMap_.size());
 	}
@@ -136,7 +159,8 @@ namespace OpcUaWebServer
 	WebSocketServerBase::cleanupWebSocketChannel(WebSocketChannel* webSocketChannel)
 	{
 		Log(Debug, "delete web socket")
-		    .parameter("ChannelId", webSocketChannel->id_);
+		    .parameter("ChannelId", webSocketChannel->id_)
+			.parameter("NumberConnections", webSocketChannelMap_.size());
 
 		auto it = webSocketChannelMap_.find(webSocketChannel->id_);
 		if (it != webSocketChannelMap_.end()) {
@@ -178,7 +202,7 @@ namespace OpcUaWebServer
 		WebSocketChannel* webSocketChannel
 	)
 	{
-		if (webSocketChannel->timeout_) {
+		if (webSocketChannel->timeout_ || error || webSocketChannel->shutdown_) {
 			closeWebSocketChannel(webSocketChannel);
 			return;
 		}
@@ -279,7 +303,7 @@ namespace OpcUaWebServer
 	void
 	WebSocketServerBase::handleReceiveHandshakeContent(const boost::system::error_code& error, std::size_t bytes_transfered, WebSocketChannel* webSocketChannel)
 	{
-		if (webSocketChannel->timeout_) {
+		if (webSocketChannel->timeout_ || error || webSocketChannel->shutdown_) {
 			closeWebSocketChannel(webSocketChannel);
 			return;
 		}
@@ -428,6 +452,7 @@ namespace OpcUaWebServer
 		);
 		webSocketConfig_->ioThread()->slotTimer()->start(webSocketChannel->slotTimerElement_);
 
+		webSocketChannel->asyncRead_ = true;
 		webSocketChannel->async_read_exactly(
 			webSocketConfig_->strand(),
 			webSocketChannel->recvBuffer_,
@@ -443,7 +468,9 @@ namespace OpcUaWebServer
 		WebSocketChannel* webSocketChannel
 	)
 	{
-		if (webSocketChannel->timeout_) {
+		webSocketChannel->asyncRead_ = false;
+
+		if (webSocketChannel->timeout_ || error || webSocketChannel->shutdown_) {
 			closeWebSocketChannel(webSocketChannel);
 			return;
 		}
@@ -519,6 +546,7 @@ namespace OpcUaWebServer
 			);
 			webSocketConfig_->ioThread()->slotTimer()->start(webSocketChannel->slotTimerElement_);
 
+			webSocketChannel->asyncRead_ = true;
 			webSocketChannel->async_read_exactly(
 				webSocketConfig_->strand(),
 				webSocketChannel->recvBuffer_,
@@ -537,6 +565,7 @@ namespace OpcUaWebServer
 			);
 			webSocketConfig_->ioThread()->slotTimer()->start(webSocketChannel->slotTimerElement_);
 
+			webSocketChannel->asyncRead_ = true;
 			webSocketChannel->async_read_exactly(
 				webSocketConfig_->strand(),
 				webSocketChannel->recvBuffer_,
@@ -555,6 +584,7 @@ namespace OpcUaWebServer
 			);
 			webSocketConfig_->ioThread()->slotTimer()->start(webSocketChannel->slotTimerElement_);
 
+			webSocketChannel->asyncRead_ = true;
 			webSocketChannel->async_read_exactly(
 				webSocketConfig_->strand(),
 				webSocketChannel->recvBuffer_,
@@ -569,7 +599,9 @@ namespace OpcUaWebServer
 	void
 	WebSocketServerBase::handleReceiveMessageLength2(const boost::system::error_code& error, std::size_t bytes_transfered, WebSocketChannel* webSocketChannel)
 	{
-		if (webSocketChannel->timeout_) {
+		webSocketChannel->asyncRead_ = false;
+
+		if (webSocketChannel->timeout_ || error || webSocketChannel->shutdown_) {
 			closeWebSocketChannel(webSocketChannel);
 			return;
 		}
@@ -603,6 +635,7 @@ namespace OpcUaWebServer
 		);
 		webSocketConfig_->ioThread()->slotTimer()->start(webSocketChannel->slotTimerElement_);
 
+		webSocketChannel->asyncRead_ = true;
 		webSocketChannel->async_read_exactly(
 			webSocketConfig_->strand(),
 			webSocketChannel->recvBuffer_,
@@ -614,7 +647,9 @@ namespace OpcUaWebServer
 	void
 	WebSocketServerBase::handleReceiveMessageLength8(const boost::system::error_code& error, std::size_t bytes_transfered, WebSocketChannel* webSocketChannel)
 	{
-		if (webSocketChannel->timeout_) {
+		webSocketChannel->asyncRead_ = false;
+
+		if (webSocketChannel->timeout_ || error || webSocketChannel->shutdown_) {
 			closeWebSocketChannel(webSocketChannel);
 			return;
 		}
@@ -654,6 +689,7 @@ namespace OpcUaWebServer
 		);
 		webSocketConfig_->ioThread()->slotTimer()->start(webSocketChannel->slotTimerElement_);
 
+		webSocketChannel->asyncRead_ = true;
 		webSocketChannel->async_read_exactly(
 			webSocketConfig_->strand(),
 			webSocketChannel->recvBuffer_,
@@ -665,7 +701,9 @@ namespace OpcUaWebServer
 	void
 	WebSocketServerBase::handleReceiveMessageContent(const boost::system::error_code& error, std::size_t bytes_transfered, WebSocketChannel* webSocketChannel)
 	{
-		if (webSocketChannel->timeout_) {
+		webSocketChannel->asyncRead_ = false;
+
+		if (webSocketChannel->timeout_ || error || webSocketChannel->shutdown_) {
 			closeWebSocketChannel(webSocketChannel);
 			return;
 		}
@@ -760,6 +798,19 @@ namespace OpcUaWebServer
 		char headerByte
 	)
 	{
+		// check send queue
+		if (webSocketChannel->asyncWrite_ || !webSocketChannel->sendQueue_.empty()) {
+			Log(Debug, "webSocketServer enqueue")
+				.parameter("ChannelId", webSocketChannel->id_)
+				.parameter("QueueSize", webSocketChannel->sendQueue_.size());
+			webSocketChannel->sendQueue_.enqueue(
+				webSocketMessage,
+				sendCompleteCallback,
+				headerByte
+			);
+			return true;
+		}
+
 		std::ostream os(&webSocketChannel->sendBuffer_);
 
 		char headerBytes[10];
@@ -825,7 +876,8 @@ namespace OpcUaWebServer
 		os.write(webSocketMessage->message_.c_str(), length);
 
 		// send message
-		 SendCompleteCallback tmpSendCompleteCallback = sendCompleteCallback;
+		SendCompleteCallback tmpSendCompleteCallback = sendCompleteCallback;
+		webSocketChannel->asyncWrite_ = true;
 		webSocketChannel->async_write(
 			webSocketConfig_->strand(),
 			webSocketChannel->sendBuffer_,
@@ -845,7 +897,13 @@ namespace OpcUaWebServer
 		const SendCompleteCallback& sendCompleteCallback
 	)
 	{
-		if (error) {
+		Log(Debug, "WebSocketServer handle write complete")
+			.parameter("ChannelId", webSocketChannel->id_)
+			.parameter("QueueSize", webSocketChannel->sendQueue_.size());
+
+		webSocketChannel->asyncWrite_ = false;
+
+		if (error || bytes_transferred == 0 || webSocketChannel->shutdown_) {
 			Log(Debug, "WebSocketServer send response error; close channel")
 				.parameter("Address", webSocketChannel->partner_.address().to_string())
 				.parameter("Port", webSocketChannel->partner_.port())
@@ -855,6 +913,33 @@ namespace OpcUaWebServer
 			sendCompleteCallback(false);
 			return;
 		}
+
+		// check send queue
+		if (webSocketChannel->sendQueue_.empty()) {
+			return;
+		}
+
+		// send the next message from send queue
+		WebSocketMessage::SPtr webSocketMessage;
+		SendCompleteCallback completeCallback;
+		char headerByte;
+
+		Log(Debug, "webSocketServer dequeue")
+			.parameter("ChannelId", webSocketChannel->id_)
+			.parameter("QueueSize", webSocketChannel->sendQueue_.size());
+		webSocketChannel->sendQueue_.dequeue(
+			webSocketMessage,
+			&completeCallback,
+		    &headerByte
+		);
+
+		sendMessage(
+			webSocketMessage,
+			webSocketChannel,
+			completeCallback,
+			headerByte
+		);
+
 		sendCompleteCallback(true);
 	}
 

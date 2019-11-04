@@ -100,7 +100,7 @@ class TestMonitoredItem(WebGatewayTestCase):
         print("RECV: ", str)
         res = json.loads(str)
         self.assertEqual(res['Header']['MessageType'], "GW_DataChangeNotify")
-        self.assertEqual(res['Header']['ClientHandle'], "client-handle")
+        self.assertEqual(res['Header']['ClientHandle'], "test_create_delete")
         self.assertEqual(res['Header']['SessionId'], self.sessionId)
         self.assertEqual(res['Body']['ClientHandleData'], "4711")
         self.assertIsNotNone(res['Body']['Value'])

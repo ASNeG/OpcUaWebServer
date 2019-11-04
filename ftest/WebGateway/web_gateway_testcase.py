@@ -27,7 +27,7 @@ class WebGatewayTestCase(unittest.TestCase):
         req = {
             "Header": {
                 "MessageType": "GW_LoginRequest",
-                "ClientHandle": "client-handle"
+                "ClientHandle": self._testMethodName
             },
             "Body": {
                 "DiscoveryUrl":  self.OPC_SERVER_URL
@@ -40,7 +40,7 @@ class WebGatewayTestCase(unittest.TestCase):
         print("RECV: ", str)
         res = json.loads(str)
         self.assertEqual(res['Header']['MessageType'], "GW_LoginResponse")
-        self.assertEqual(res['Header']['ClientHandle'], "client-handle")
+        self.assertEqual(res['Header']['ClientHandle'], self._testMethodName)
         self.assertEqual(res['Header']['StatusCode'], "0")
         self.assertIsNotNone(res['Body']['SessionId'])
         self.sessionId = res['Body']['SessionId']
@@ -52,7 +52,7 @@ class WebGatewayTestCase(unittest.TestCase):
         print("RECV: ", str)
         res = json.loads(str)
         self.assertEqual(res['Header']['MessageType'], "GW_SessionStatusNotify")
-        self.assertEqual(res['Header']['ClientHandle'], "client-handle")
+        self.assertEqual(res['Header']['ClientHandle'], self._testMethodName)
         self.assertEqual(res['Header']['SessionId'], self.sessionId)
         self.assertEqual(res['Body']['SessionStatus'], "Connect")
 

@@ -102,8 +102,6 @@ namespace OpcUaWebServer
 			const SendCompleteCallback& sendCompleteCallback
 		);
 
-
-
 		WebSocketConfig* webSocketConfig_;
 		TCPAcceptor tcpAcceptor_;
 

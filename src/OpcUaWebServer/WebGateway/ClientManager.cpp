@@ -258,7 +258,8 @@ namespace OpcUaWebServer
 
 		Log(Debug, "WSG receive login request")
 			.parameter("ChannelId", channelId)
-			.parameter("SessionId", sessionId);
+			.parameter("SessionId", sessionId)
+			.parameter("ClientHandle", clientHandle);
 
 		auto sessionStatusCallback = [this, channelId, clientHandle, sessionId](const std::string& sessionStatus) {
 			NotifyHeader notifyHeader("GW_SessionStatusNotify", clientHandle, sessionId);
@@ -347,7 +348,8 @@ namespace OpcUaWebServer
 	{
 		Log(Debug, "WSG receive logout request")
 			.parameter("ChannelId", channelId)
-			.parameter("SessionId", requestHeader.sessionId());
+			.parameter("SessionId", requestHeader.sessionId())
+			.parameter("ClientHandle", requestHeader.clientHandle());
 
 		// find client
 		mutex_.lock();
@@ -404,6 +406,7 @@ namespace OpcUaWebServer
 	{
 		Log(Debug, "WSG receive data request")
 			.parameter("ChannelId", channelId)
+			.parameter("ClientHandle", requestHeader.clientHandle())
 			.parameter("SessionId", requestHeader.sessionId())
 			.parameter("Message", requestHeader.messageType());
 
@@ -498,6 +501,7 @@ namespace OpcUaWebServer
 
 		Log(Debug, "WSG send response")
 			.parameter("ChannelId", channelId)
+			.parameter("ClientHandle", responseHeader.clientHandle())
 			.parameter("SessionId", responseHeader.sessionId())
 			.parameter("Message", responseHeader.messageType());
 
