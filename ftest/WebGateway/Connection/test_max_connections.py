@@ -17,7 +17,7 @@ class TestMaxConnections(unittest.TestCase):
         print("open 100 connections")
         for idx in range(0, 100, 1):
             try:
-                local_ws = create_connection(self.WS_SERVER_URL, timeout=3)
+                local_ws = create_connection(self.WS_GATEWAY_URL, timeout=3)
             except:
                 print("timeout error")
                 self.assertTrue(False)
@@ -31,7 +31,7 @@ class TestMaxConnections(unittest.TestCase):
         print("test max connection limit")
         timeout = False
         try:
-            ws = create_connection(self.WS_SERVER_URL, timeout=3)
+            ws = create_connection(self.WS_GATEWAY_URL, timeout=3)
         except:
             timeout = True
         self.assertTrue(timeout)
