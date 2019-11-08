@@ -21,13 +21,16 @@ class TestMultipleWebSocketConnections(unittest.TestCase):
         #
         print("login")
         for idx in range(0, 5, 1):
+
+            client_handle = self._testMethodName + str(idx)
+ 
             #
             # send login request to open opc ua session
             #
             req = {
                 "Header": {
                     "MessageType": "GW_LoginRequest",
-                    "ClientHandle": "client-handle"
+                    "ClientHandle": client_handle
                 },
                 "Body": {
                     "DiscoveryUrl":  self.OPC_SERVER_URL
@@ -36,11 +39,11 @@ class TestMultipleWebSocketConnections(unittest.TestCase):
             print("SEND: ", json.dumps(req, indent=4))
             self.ws.send(json.dumps(req))
 
-            str = self.ws.recv()
-            print("RECV: ", str)
-            res = json.loads(str)
+            json_str = self.ws.recv()
+            print("RECV: ", json_str)
+            res = json.loads(json_str)
             self.assertEqual(res['Header']['MessageType'], "GW_LoginResponse")
-            self.assertEqual(res['Header']['ClientHandle'], "client-handle")
+            self.assertEqual(res['Header']['ClientHandle'], client_handle)
             self.assertEqual(res['Header']['StatusCode'], "0")
             self.assertIsNotNone(res['Body']['SessionId'])
             self.sessionId.append(res['Body']['SessionId'])
@@ -48,11 +51,11 @@ class TestMultipleWebSocketConnections(unittest.TestCase):
             #
             # receive session status notify
             #
-            str = self.ws.recv()
-            print("RECV: ", str)
-            res = json.loads(str)
+            json_str = self.ws.recv()
+            print("RECV: ", json_str)
+            res = json.loads(json_str)
             self.assertEqual(res['Header']['MessageType'], "GW_SessionStatusNotify")
-            self.assertEqual(res['Header']['ClientHandle'], "client-handle")
+            self.assertEqual(res['Header']['ClientHandle'], client_handle)
             self.assertEqual(res['Header']['SessionId'], self.sessionId[idx])
             self.assertEqual(res['Body']['SessionStatus'], "Connect")
 
@@ -62,13 +65,16 @@ class TestMultipleWebSocketConnections(unittest.TestCase):
         #
         print("read")
         for idx in range(0, 5, 1):
+            client_handle = self._testMethodName + str(idx)
+
+
             #
             # send read request to the opc ua server
             #
             req = {
                 "Header": {
                      "MessageType": "GW_ReadRequest",
-                     "ClientHandle": "client-handle",
+                     "ClientHandle": client_handle,
                      "SessionId": self.sessionId[idx]
                  },
                  "Body": {
@@ -99,11 +105,11 @@ class TestMultipleWebSocketConnections(unittest.TestCase):
             #
             # receive read response from the opc ua server
             #
-            str = self.ws.recv()
-            print("RECV: ", str)
-            res = json.loads(str)
+            json_str = self.ws.recv()
+            print("RECV: ", json_str)
+            res = json.loads(json_str)
             self.assertEqual(res['Header']['MessageType'], "GW_ReadResponse")
-            self.assertEqual(res['Header']['ClientHandle'], "client-handle")
+            self.assertEqual(res['Header']['ClientHandle'], client_handle)
             self.assertEqual(res['Header']['SessionId'], self.sessionId[idx])
             self.assertEqual(res['Header']['StatusCode'], "0")
             self.assertEqual(len(res['Body']['Results']), 2)
@@ -116,13 +122,16 @@ class TestMultipleWebSocketConnections(unittest.TestCase):
         #
         print("logout")
         for idx in range(0, 5, 1):
+
+            client_handle = self._testMethodName + str(idx)
+
             #
             # send logout request to close opc ua session
             #
             req = {
                 "Header": {
                     "MessageType": "GW_LogoutRequest",
-                    "ClientHandle": "client-handle",
+                    "ClientHandle": client_handle,
                     "SessionId": self.sessionId[idx]
                 },
                 "Body": {
@@ -132,11 +141,11 @@ class TestMultipleWebSocketConnections(unittest.TestCase):
             print("SEND: ", json.dumps(req, indent=4))
             self.ws.send(json.dumps(req))
 
-            str = self.ws.recv()
-            print("RECV: ", str)
-            res = json.loads(str)
+            json_str = self.ws.recv()
+            print("RECV: ", json_str)
+            res = json.loads(json_str)
             self.assertEqual(res['Header']['MessageType'], "GW_LogoutResponse")
-            self.assertEqual(res['Header']['ClientHandle'], "client-handle")
+            self.assertEqual(res['Header']['ClientHandle'], client_handle)
             self.assertEqual(res['Header']['SessionId'], self.sessionId[idx])
             self.assertEqual(res['Header']['StatusCode'], "0")
 
