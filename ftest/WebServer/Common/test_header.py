@@ -12,7 +12,7 @@ class TestCommonCommunication(WebServerTestCase):
         WebServerTestCase.tearDown(self)
 
     def test_client_handle(self):
-        msg = {
+        req = {
             'Header': {
                 'MessageType': 'VALUELIST_REQUEST',
                 'ClientHandle': 'yyyxxxqqq'
@@ -20,12 +20,16 @@ class TestCommonCommunication(WebServerTestCase):
             'Body': {}
         }
 
-        self.ws.send(json.dumps(msg))
-        resp = json.loads(self.ws.recv())
-        self.assertEqual(msg['Header']['ClientHandle'], resp['Header']['ClientHandle'])
+        print("SEND: ", json.dumps(req, indent = 4))
+        self.ws.send(json.dumps(req)) 
+
+        str = self.ws. recv()
+        print("RECV: ", str)
+        res = json.loads(str)
+        self.assertEqual(req['Header']['ClientHandle'], res['Header']['ClientHandle'])
 
     def test_wrong_message_type(self):
-        msg = {
+        req = {
             'Header': {
                 'MessageType': 'WRONG_REQUEST',
                 'ClientHandle': '1'
@@ -33,8 +37,12 @@ class TestCommonCommunication(WebServerTestCase):
             'Body': {}
         }
 
-        self.ws.send(json.dumps(msg))
-        resp = json.loads(self.ws.recv())
+        print("SEND: ", json.dumps(req, indent = 4))
+        self.ws.send(json.dumps(req)) 
 
-        self.assertEqual('ERROR', resp['Header']['MessageType'])
-        self.assertEqual('BadRequestHeaderInvalid', resp['Header']['StatusCode'])
+        str = self.ws. recv()
+        print("RECV: ", str)
+        res = json.loads(str)
+
+        self.assertEqual('ERROR', res['Header']['MessageType'])
+        self.assertEqual('BadRequestHeaderInvalid', res['Header']['StatusCode'])
