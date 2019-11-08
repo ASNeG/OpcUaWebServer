@@ -60,18 +60,6 @@ namespace OpcUaWebServer
 		next_ = next;
 	}
 
-	SendQueueElement*
-	SendQueueElement::last(void)
-	{
-		return last_;
-	}
-
-	void
-	SendQueueElement::last(SendQueueElement* last)
-	{
-		last_ = last;
-	}
-
 	char
 	SendQueueElement::headerByte(void)
 	{
@@ -89,22 +77,18 @@ namespace OpcUaWebServer
 	bool
 	SendQueue::empty(void)
 	{
-		return queue_ == nullptr;
+		return rear == nullptr;
 	}
 
 	void
 	SendQueue::clear(void)
 	{
-		while (queue_ != nullptr) {
-			auto queueEntry = queue_;
+		while (rear != nullptr) {
+            auto queueEntry = front;
+            front = front->next();
 
-			if (queue_->last() == queue_->next()) {
-				queue_ = nullptr;
-			}
-			else {
-				queue_->last()->next(queue_->next());
-				queue_->next()->last(queue_->last());
-			}
+            if (front == nullptr)
+                rear = nullptr;
 
 			delete queueEntry;
 		}
@@ -126,25 +110,24 @@ namespace OpcUaWebServer
 	{
 		size_++;
 
+        // Create a new LL entry 
 		auto queueEntry = new SendQueueElement(
 			webSocketMessage,
 			sendCompleteCallback,
 			headerByte
 		);
 
-		if (queue_ == nullptr) {
-			queue_ = queueEntry;
-			queueEntry->next(queueEntry);
-			queueEntry->last(queueEntry);
-		}
-		else {
-			queueEntry->next(queue_);
-			queueEntry->last(queue_->last());
-			queue_->last()->next(queueEntry);
-			queue_->last(queueEntry);
-		}
+        // If queue is empty, then 
+        // new node is front and rear both 
+        if (rear == nullptr) {
+            front = rear = queueEntry;
+            return;
+        }
 
-		return;
+        // Add the new node at 
+        // the end of queue and change rear 
+        rear->next(queueEntry);
+        rear = queueEntry;
 	}
 
 	bool
@@ -154,25 +137,24 @@ namespace OpcUaWebServer
 		char* headerByte
 	)
 	{
-		if (queue_ == nullptr) {
-			return false;
-		}
+        // If queue is empty, return NULL. 
+        if (front == nullptr)
+            return false;
 
-		auto queueEntry = queue_;
+        // Store previous front and 
+        // move front one node ahead 
+        auto queueEntry = front;
+        front = front->next();
+        webSocketMessage = queueEntry->webSocketMessage();
+        *sendCompleteCallback = queueEntry->sendCompleteCallback();
+        *headerByte = queueEntry->headerByte();
 
-		if (queue_->last() == queue_->next()) {
-			queue_ = nullptr;
-		}
-		else {
-			queue_->last()->next(queue_->next());
-			queue_->next()->last(queue_->last());
-		}
+        delete queueEntry;
 
-		webSocketMessage = queueEntry->webSocketMessage();
-		*sendCompleteCallback = queueEntry->sendCompleteCallback();
-		*headerByte = queueEntry->headerByte();
-
-		delete queueEntry;
+        // If front becomes NULL, then 
+        // change rear also as NULL 
+        if (front == nullptr)
+            rear = nullptr;	
 
 		size_--;
 		return true;
