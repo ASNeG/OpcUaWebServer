@@ -43,11 +43,8 @@ namespace OpcUaWebServer
 
 		SendQueueElement* next(void);
 		void next(SendQueueElement* next);
-		SendQueueElement* last(void);
-		void last(SendQueueElement* last);
 
 	  private:
-		SendQueueElement* last_ = nullptr;
 		SendQueueElement* next_ = nullptr;
 
 		WebSocketMessage::SPtr webSocketMessage_;
@@ -80,7 +77,8 @@ namespace OpcUaWebServer
 
 	  private:
 		uint32_t size_ = 0;
-		SendQueueElement* queue_ = nullptr;
+		SendQueueElement* front = nullptr;
+        SendQueueElement* rear = nullptr;
 	};
 
 }

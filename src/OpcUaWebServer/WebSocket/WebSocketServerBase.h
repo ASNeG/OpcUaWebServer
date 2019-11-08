@@ -95,6 +95,15 @@ namespace OpcUaWebServer
 			const SendCompleteCallback& sendCompleteCallback,
 			char headerByte = 0x00
 		);
+        //
+        // handle send message
+        //
+        bool sendMessageQueue(
+            WebSocketMessage::SPtr& webSocketMessage,
+            WebSocketChannel* webSocketChannel,
+            const SendCompleteCallback& sendCompleteCallback,
+            char headerByte = 0x00
+        );
 		void handleWriteMessageComplete(
 			const boost::system::error_code& error,
 			std::size_t bytes_transferred,

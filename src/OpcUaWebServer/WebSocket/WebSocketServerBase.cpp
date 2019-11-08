@@ -876,8 +876,12 @@ namespace OpcUaWebServer
 		os.write(webSocketMessage->message_.c_str(), length);
 
 		// send message
+        if (sendCompleteCallback == nullptr) {
+            Log(Debug, "################ NULLPTR CALLBACK ###################");
+        }
 		SendCompleteCallback tmpSendCompleteCallback = sendCompleteCallback;
 		webSocketChannel->asyncWrite_ = true;
+        Log(Debug, "################ ASYNC WRITE BECAME TRUE ###################");
 		webSocketChannel->async_write(
 			webSocketConfig_->strand(),
 			webSocketChannel->sendBuffer_,
@@ -888,6 +892,96 @@ namespace OpcUaWebServer
 
 		return true;
 	}
+
+    bool
+        WebSocketServerBase::sendMessageQueue(
+            WebSocketMessage::SPtr& webSocketMessage,
+            WebSocketChannel* webSocketChannel,
+            const SendCompleteCallback& sendCompleteCallback,
+            char headerByte
+        )
+    {
+        std::ostream os(&webSocketChannel->sendBuffer_);
+
+        char headerBytes[10];
+
+        if (headerByte == 0x00) {
+            // set FIN and text frame
+            headerBytes[0] = (char)0x81;
+        }
+        else {
+            headerBytes[0] = headerByte;
+        }
+
+        // set length
+        uint32_t headerLength;
+        uint64_t length = webSocketMessage->message_.length();
+        if (length <= 125) {
+            headerLength = 2;
+            headerBytes[1] = (uint8_t)length;
+        }
+        else {
+            if (length <= 0xFFFF) {
+
+                headerLength = 4;
+                headerBytes[1] = 126;
+
+                char x;
+                x = ((length >> (8 * 1)) % 256) & 0xFF;
+                headerBytes[2] = x;
+                x = (length % 256 >> (8 * 0)) & 0xFF;
+                headerBytes[3] = x;
+            }
+            else {
+                headerLength = 10;
+                headerBytes[1] = 127;
+
+                char x;
+                x = (length % 256 >> (8 * 0)) & 0xFF;
+                headerBytes[9] = x;
+                x = ((length >> (8 * 1)) % 256) & 0xFF;
+                headerBytes[8] = x;
+                x = ((length >> (8 * 2)) % 256) & 0xFF;
+                headerBytes[7] = x;
+                x = ((length >> (8 * 3)) % 256) & 0xFF;
+                headerBytes[6] = x;
+                x = ((length >> (8 * 4)) % 256) & 0xFF;
+                headerBytes[5] = x;
+                x = ((length >> (8 * 5)) % 256) & 0xFF;
+                headerBytes[4] = x;
+                x = ((length >> (8 * 6)) % 256) & 0xFF;
+                headerBytes[3] = x;
+                x = ((length >> (8 * 7)) % 256) & 0xFF;
+                headerBytes[2] = x;
+
+            }
+
+            for (uint32_t idx = 0; idx < headerLength - 2; idx++) {
+                //headerBytes[idx+2] = 0;
+            }
+        }
+        os.write(headerBytes, headerLength);
+
+        // set message
+        os.write(webSocketMessage->message_.c_str(), length);
+
+        // send message
+        if (sendCompleteCallback == nullptr) {
+            Log(Debug, "################ NULLPTR CALLBACK ###################");
+        }
+        SendCompleteCallback tmpSendCompleteCallback = sendCompleteCallback;
+        webSocketChannel->asyncWrite_ = true;
+        Log(Debug, "################ ASYNC WRITE BECAME TRUE ###################");
+        webSocketChannel->async_write(
+            webSocketConfig_->strand(),
+            webSocketChannel->sendBuffer_,
+            [this, tmpSendCompleteCallback, webSocketChannel](const boost::system::error_code& error, std::size_t bytes_transferred) {
+            handleWriteMessageComplete(error, bytes_transferred, webSocketChannel, tmpSendCompleteCallback);
+        }
+        );
+
+        return true;
+    }
 
 	void
 	WebSocketServerBase::handleWriteMessageComplete(
@@ -902,6 +996,7 @@ namespace OpcUaWebServer
 			.parameter("QueueSize", webSocketChannel->sendQueue_.size());
 
 		webSocketChannel->asyncWrite_ = false;
+        Log(Debug, "################ ASYNC WRITE BECAME  ###################");
 
 		if (error || bytes_transferred == 0 || webSocketChannel->shutdown_) {
 			Log(Debug, "WebSocketServer send response error; close channel")
@@ -913,6 +1008,8 @@ namespace OpcUaWebServer
 			sendCompleteCallback(false);
 			return;
 		}
+
+        sendCompleteCallback(true);
 
 		// check send queue
 		if (webSocketChannel->sendQueue_.empty()) {
@@ -933,14 +1030,12 @@ namespace OpcUaWebServer
 		    &headerByte
 		);
 
-		sendMessage(
+        sendMessageQueue(
 			webSocketMessage,
 			webSocketChannel,
 			completeCallback,
 			headerByte
-		);
-
-		sendCompleteCallback(true);
+		);		
 	}
 
 }
