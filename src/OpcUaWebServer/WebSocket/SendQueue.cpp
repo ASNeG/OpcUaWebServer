@@ -84,11 +84,11 @@ namespace OpcUaWebServer
 	SendQueue::clear(void)
 	{
 		while (rear != nullptr) {
-            auto queueEntry = front;
-            front = front->next();
+			auto queueEntry = front;
+			front = front->next();
 
-            if (front == nullptr)
-                rear = nullptr;
+			if (front == nullptr)
+				rear = nullptr;
 
 			delete queueEntry;
 		}
@@ -110,24 +110,24 @@ namespace OpcUaWebServer
 	{
 		size_++;
 
-        // Create a new LL entry 
+		// Create a new LL entry 
 		auto queueEntry = new SendQueueElement(
 			webSocketMessage,
 			sendCompleteCallback,
 			headerByte
 		);
 
-        // If queue is empty, then 
-        // new node is front and rear both 
-        if (rear == nullptr) {
-            front = rear = queueEntry;
-            return;
-        }
+		// If queue is empty, then 
+		// new node is front and rear both 
+		if (rear == nullptr) {
+			front = rear = queueEntry;
+			return;
+		}
 
-        // Add the new node at 
-        // the end of queue and change rear 
-        rear->next(queueEntry);
-        rear = queueEntry;
+		// Add the new node at 
+		// the end of queue and change rear 
+		rear->next(queueEntry);
+		rear = queueEntry;
 	}
 
 	bool
@@ -137,24 +137,24 @@ namespace OpcUaWebServer
 		char* headerByte
 	)
 	{
-        // If queue is empty, return NULL. 
-        if (front == nullptr)
-            return false;
+		// If queue is empty, return NULL. 
+		if (front == nullptr)
+			return false;
 
-        // Store previous front and 
-        // move front one node ahead 
-        auto queueEntry = front;
-        front = front->next();
-        webSocketMessage = queueEntry->webSocketMessage();
-        *sendCompleteCallback = queueEntry->sendCompleteCallback();
-        *headerByte = queueEntry->headerByte();
+		// Store previous front and 
+		// move front one node ahead 
+		auto queueEntry = front;
+		front = front->next();
+		webSocketMessage = queueEntry->webSocketMessage();
+		*sendCompleteCallback = queueEntry->sendCompleteCallback();
+		*headerByte = queueEntry->headerByte();
 
-        delete queueEntry;
+		delete queueEntry;
 
-        // If front becomes NULL, then 
-        // change rear also as NULL 
-        if (front == nullptr)
-            rear = nullptr;	
+		// If front becomes NULL, then 
+		// change rear also as NULL 
+		if (front == nullptr)
+			rear = nullptr;	
 
 		size_--;
 		return true;

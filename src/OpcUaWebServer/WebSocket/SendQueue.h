@@ -78,7 +78,7 @@ namespace OpcUaWebServer
 	  private:
 		uint32_t size_ = 0;
 		SendQueueElement* front = nullptr;
-        SendQueueElement* rear = nullptr;
+		SendQueueElement* rear = nullptr;
 	};
 
 }
