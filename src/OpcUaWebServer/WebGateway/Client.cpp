@@ -609,7 +609,7 @@ namespace OpcUaWebServer
 			return;
 		}
 
-		// send write request to opc ua server
+		// send create subscription request to opc ua server
 		trx->resultHandler(
 			[this, messageResponseCallback](ServiceTransactionCreateSubscription::SPtr& trx) {
 				boost::property_tree::ptree responseBody;
