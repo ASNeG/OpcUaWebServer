@@ -16,53 +16,53 @@
 
  */
 
-#ifndef __OpcUaWebServer_SocketIf_h__
-#define __OpcUaWebServer_SocketIf_h__
+#ifndef __OpcUaWebServer_SocketWS_h__
+#define __OpcUaWebServer_SocketWS_h__
 
-#include <boost/shared_ptr.hpp>
-#include <boost/asio.hpp>
+#include "OpcUaStackCore/Network/TCPConnection.h"
+#include "OpcUaWebServer/WebSocket/SocketIf.h"
 
 namespace OpcUaWebServer
 {
 
-	class SocketIf
+	class SocketWS
+	: public SocketIf
 	{
 	  public:
-		typedef boost::shared_ptr<SocketIf> SPtr;
+		typedef boost::shared_ptr<SocketWS> SPtr;
 
-		using AcceptCallback = std::function<void(const boost::system::error_code& error)>;
-		using ReceiveCallback = std::function<void(const boost::system::error_code& error, std::size_t bytes_transfered)>;
-		using WriteCompleteCallback = std::function<void(const boost::system::error_code& error,std::size_t bytes_transfered)>;
+		SocketWS(boost::asio::io_service& io_service);
+		virtual ~SocketWS(void);
 
-		SocketIf(void);
-		virtual ~SocketIf(void);
-
-		virtual boost::asio::ip::tcp::endpoint remote_endpoint(
+		boost::asio::ip::tcp::endpoint remote_endpoint(
 			void
-		) = 0;
-		virtual void close(
+		) override;
+		void close(
 			void
-		) = 0;
-		virtual void cancel(
+		) override;
+		void cancel(
 			void
-		) = 0;
-		virtual void async_read_until(
+		) override;
+		void async_read_until(
 			boost::shared_ptr<boost::asio::strand>& strand,
 			boost::asio::streambuf& recvBuffer,
 			const std::string& content,
 			ReceiveCallback& receiveCallback
-		) = 0;
-		virtual void async_read_exactly(
+		) override;
+		void async_read_exactly(
 			boost::shared_ptr<boost::asio::strand>& strand,
 			boost::asio::streambuf& recvBuffer,
 			size_t contentSize,
 			ReceiveCallback& receiveCallback
-		) = 0;
-		virtual void async_write(
+		) override;
+		void async_write(
 			boost::shared_ptr<boost::asio::strand>& strand,
 			boost::asio::streambuf& sendBuffer,
 			const WriteCompleteCallback& writeCompleteCallback
-		) = 0;
+		) override;
+
+	  private:
+		OpcUaStackCore::TCPConnection tcpConnection_;
 	};
 
 }
