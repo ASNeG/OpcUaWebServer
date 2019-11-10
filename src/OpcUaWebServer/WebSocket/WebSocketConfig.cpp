@@ -143,4 +143,40 @@ namespace OpcUaWebServer
 		return maxPacketLength_;
 	}
 
+	void
+	WebSocketConfig::useSecurityConnection(bool useSecurityConnection)
+	{
+		useSecurityConnection_ = useSecurityConnection;
+	}
+
+	bool
+	WebSocketConfig::useSecurityConnection(void)
+	{
+		return useSecurityConnection_;
+	}
+
+	void
+	WebSocketConfig::privateKeyFile(const std::string& privateKeyFile)
+	{
+		privateKeyFile_ = privateKeyFile;
+	}
+
+	std::string
+	WebSocketConfig::privateKeyFile(void)
+	{
+		return privateKeyFile_;
+	}
+
+	void
+	WebSocketConfig::sslCertificateFile(const std::string& sslCertificateFile)
+	{
+		sslCertificateFile_ = sslCertificateFile;
+	}
+
+	std::string
+	WebSocketConfig::sslCertificateFile(void)
+	{
+		return sslCertificateFile_;
+	}
+
 }
