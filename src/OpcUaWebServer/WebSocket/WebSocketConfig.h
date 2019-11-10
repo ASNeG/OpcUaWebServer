@@ -52,6 +52,13 @@ namespace OpcUaWebServer
 		void maxPacketLength(uint32_t maxPacketLength);
 		uint32_t maxPacketLength(void);
 
+		void useSecurityConnection(bool useSecurityConnection);
+		bool useSecurityConnection(void);
+		void privateKeyFile(const std::string& privateKeyFile);
+		std::string privateKeyFile(void);
+		void sslCertificateFile(const std::string& sslCertificateFile);
+		std::string sslCertificateFile(void);
+
 	  private:
 		bool enable_;
 		std::string address_;
@@ -62,6 +69,11 @@ namespace OpcUaWebServer
 		boost::shared_ptr<boost::asio::strand> strand_;
 		uint32_t maxConnections_ = 0;
 		uint32_t maxPacketLength_ = 0;
+
+		// security settings
+		bool useSecurityConnection_ = false;
+		std::string privateKeyFile_ = "";
+		std::string sslCertificateFile_ = "";
 	};
 
 }
