@@ -34,8 +34,8 @@ namespace OpcUaWebServer
 		using ReceiveCallback = std::function<void(const boost::system::error_code& error, std::size_t bytes_transfered)>;
 		using WriteCompleteCallback = std::function<void(const boost::system::error_code& error,std::size_t bytes_transfered)>;
 
-		SocketIf(void);
-		virtual ~SocketIf(void);
+		SocketIf(void) {}
+		virtual ~SocketIf(void) {}
 
 		virtual boost::asio::ip::tcp::endpoint remote_endpoint(
 			void
