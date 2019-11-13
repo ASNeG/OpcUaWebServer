@@ -25,6 +25,7 @@
 #include "OpcUaWebServer/WebSocket/WebSocketRequest.h"
 #include "OpcUaWebServer/WebSocket/WebSocketResponse.h"
 #include "OpcUaWebServer/WebSocket/SendQueue.h"
+#include "OpcUaWebServer/WebSocket/SocketIf.h"
 
 using namespace OpcUaStackCore;
 
@@ -32,17 +33,17 @@ namespace OpcUaWebServer
 {
 
 	class WebSocketChannel
-	: public TCPConnection
 	{
 	  public:
 		typedef std::map<uint32_t, WebSocketChannel*> Map;
 
 		static uint32_t gChannelId_;
 
-		WebSocketChannel(boost::asio::io_service& io_service);
+		WebSocketChannel(SocketIf::SPtr& socketIf);
 		virtual ~WebSocketChannel(void);
 
 		std::string getId(void);
+		SocketIf& socket(void);
 
 		OpcUaStackCore::SlotTimerElement::SPtr slotTimerElement_;
 
@@ -59,6 +60,9 @@ namespace OpcUaWebServer
 		WebSocketResponse webSocketResponse_;
 		boost::asio::ip::tcp::endpoint partner_;
 		SendQueue sendQueue_;
+
+	  private:
+		SocketIf::SPtr socketIf_ = nullptr;
 	};
 
 }

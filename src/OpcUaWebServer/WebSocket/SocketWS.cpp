@@ -60,7 +60,7 @@ namespace OpcUaWebServer
 		boost::shared_ptr<boost::asio::strand>& strand,
 		boost::asio::streambuf& recvBuffer,
 		const std::string& content,
-		ReceiveCallback& receiveCallback
+		const ReceiveCallback& receiveCallback
 	)
 	{
 		  tcpConnection_.async_read_until(
@@ -76,7 +76,7 @@ namespace OpcUaWebServer
 		boost::shared_ptr<boost::asio::strand>& strand,
 		boost::asio::streambuf& recvBuffer,
 		size_t contentSize,
-		ReceiveCallback& receiveCallback
+		const ReceiveCallback& receiveCallback
 	)
 	{
 		  tcpConnection_.async_read_exactly(
@@ -98,6 +98,20 @@ namespace OpcUaWebServer
 			strand,
 			sendBuffer,
 			writeCompleteCallback
+		);
+	}
+
+	void
+	SocketWS::async_accept(
+		boost::shared_ptr<boost::asio::strand>& strand,
+		OpcUaStackCore::TCPAcceptor* acceptor,
+		const AcceptCallback& acceptCallback
+	)
+	{
+		acceptor->async_accept(
+			tcpConnection_.socket(),
+			strand,
+			acceptCallback
 		);
 	}
 

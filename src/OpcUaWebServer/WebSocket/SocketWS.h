@@ -47,18 +47,23 @@ namespace OpcUaWebServer
 			boost::shared_ptr<boost::asio::strand>& strand,
 			boost::asio::streambuf& recvBuffer,
 			const std::string& content,
-			ReceiveCallback& receiveCallback
+			const ReceiveCallback& receiveCallback
 		) override;
 		void async_read_exactly(
 			boost::shared_ptr<boost::asio::strand>& strand,
 			boost::asio::streambuf& recvBuffer,
 			size_t contentSize,
-			ReceiveCallback& receiveCallback
+			const ReceiveCallback& receiveCallback
 		) override;
 		void async_write(
 			boost::shared_ptr<boost::asio::strand>& strand,
 			boost::asio::streambuf& sendBuffer,
 			const WriteCompleteCallback& writeCompleteCallback
+		) override;
+		void async_accept(
+			boost::shared_ptr<boost::asio::strand>& strand,
+			OpcUaStackCore::TCPAcceptor* acceptor,
+			const AcceptCallback& acceptCallback
 		) override;
 
 	  private:

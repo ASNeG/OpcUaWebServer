@@ -119,7 +119,7 @@ namespace OpcUaWebServer
 		webSocketConfig_->ioThread()->slotTimer()->stop(webSocketChannel->slotTimerElement_);
 
 		// close channel
-		webSocketChannel->close();
+		webSocketChannel->socket().close();
 
 		// remove web socket from channel map
 		webSocketChannel->sendQueue_.clear();
@@ -187,11 +187,13 @@ namespace OpcUaWebServer
 		);
 		webSocketConfig_->ioThread()->slotTimer()->start(webSocketChannel->slotTimerElement_);
 
-		webSocketChannel->async_read_until(
+		webSocketChannel->socket().async_read_until(
 			webSocketConfig_->strand(),
 			webSocketChannel->recvBuffer_,
-			boost::bind(&WebSocketServerBase::handleReceiveHandshakeHeader, this, boost::asio::placeholders::error, boost::asio::placeholders::bytes_transferred, webSocketChannel),
-			"\r\n\r\n"
+			"\r\n\r\n",
+			[this, webSocketChannel](const boost::system::error_code& error, std::size_t bytes_transfered) {
+				handleReceiveHandshakeHeader(error, bytes_transfered, webSocketChannel);
+			}
 		);
 	}
 
@@ -292,16 +294,22 @@ namespace OpcUaWebServer
 		);
 		webSocketConfig_->ioThread()->slotTimer()->start(webSocketChannel->slotTimerElement_);
 
-		webSocketChannel->async_read_exactly(
+		webSocketChannel->socket().async_read_exactly(
 			webSocketConfig_->strand(),
 			webSocketChannel->recvBuffer_,
-			boost::bind(&WebSocketServerBase::handleReceiveHandshakeContent, this, boost::asio::placeholders::error, boost::asio::placeholders::bytes_transferred, webSocketChannel),
-			contentLength-numAdditionalBytes
+			contentLength-numAdditionalBytes,
+			[this, webSocketChannel](const boost::system::error_code& error, std::size_t bytes_transfered) {
+				handleReceiveHandshakeContent(error, bytes_transfered, webSocketChannel);
+			}
 		);
 	}
 
 	void
-	WebSocketServerBase::handleReceiveHandshakeContent(const boost::system::error_code& error, std::size_t bytes_transfered, WebSocketChannel* webSocketChannel)
+	WebSocketServerBase::handleReceiveHandshakeContent(
+		const boost::system::error_code& error,
+		std::size_t bytes_transfered,
+		WebSocketChannel* webSocketChannel
+	)
 	{
 		if (webSocketChannel->timeout_ || error || webSocketChannel->shutdown_) {
 			closeWebSocketChannel(webSocketChannel);
@@ -374,17 +382,23 @@ namespace OpcUaWebServer
 		// send response
 		std::ostream os(&webSocketChannel->sendBuffer_);
 		webSocketChannel->webSocketResponse_.encodeRequestHeader(os);
-		webSocketChannel->async_write(
+		webSocketChannel->socket().async_write(
 			webSocketConfig_->strand(),
 			webSocketChannel->sendBuffer_,
-			boost::bind(&WebSocketServerBase::handleWriteComplete, this, boost::asio::placeholders::error, webSocketChannel)
+			[this, webSocketChannel](const boost::system::error_code& error, std::size_t bytes_transfered){
+				handleWriteComplete(error, bytes_transfered, webSocketChannel);
+		    }
 		);
 
 		return;
 	}
 
 	void
-	WebSocketServerBase::handleWriteComplete(const boost::system::error_code& error, WebSocketChannel* webSocketChannel)
+	WebSocketServerBase::handleWriteComplete(
+		const boost::system::error_code& error,
+		std::size_t bytes_transfered,
+		WebSocketChannel* webSocketChannel
+	)
 	{
 		if (error) {
 			Log(Debug, "WebSocketServer send response error; close channel")
@@ -431,7 +445,7 @@ namespace OpcUaWebServer
 			.parameter("ChannelId", webSocketChannel->id_);
 
 		webSocketChannel->timeout_ = true;
-		webSocketChannel->cancel();
+		webSocketChannel->socket().cancel();
 	}
 
 	// ------------------------------------------------------------------------
@@ -453,11 +467,13 @@ namespace OpcUaWebServer
 		webSocketConfig_->ioThread()->slotTimer()->start(webSocketChannel->slotTimerElement_);
 
 		webSocketChannel->asyncRead_ = true;
-		webSocketChannel->async_read_exactly(
+		webSocketChannel->socket().async_read_exactly(
 			webSocketConfig_->strand(),
 			webSocketChannel->recvBuffer_,
-			boost::bind(&WebSocketServerBase::handleReceiveMessageHeader, this, boost::asio::placeholders::error, boost::asio::placeholders::bytes_transferred, webSocketChannel),
-			2
+			2,
+			[this, webSocketChannel](const boost::system::error_code& error, std::size_t bytes_transfered) {
+				handleReceiveMessageHeader(error, bytes_transfered, webSocketChannel);
+		    }
 		);
 	}
 
@@ -547,11 +563,13 @@ namespace OpcUaWebServer
 			webSocketConfig_->ioThread()->slotTimer()->start(webSocketChannel->slotTimerElement_);
 
 			webSocketChannel->asyncRead_ = true;
-			webSocketChannel->async_read_exactly(
+			webSocketChannel->socket().async_read_exactly(
 				webSocketConfig_->strand(),
 				webSocketChannel->recvBuffer_,
-				boost::bind(&WebSocketServerBase::handleReceiveMessageContent, this, boost::asio::placeholders::error, boost::asio::placeholders::bytes_transferred, webSocketChannel),
-				length+4
+				length+4,
+				[this, webSocketChannel](const boost::system::error_code& error, std::size_t bytes_transfered) {
+					handleReceiveMessageContent(error, bytes_transfered, webSocketChannel);
+			    }
 			);
 			return;
 		}
@@ -566,11 +584,13 @@ namespace OpcUaWebServer
 			webSocketConfig_->ioThread()->slotTimer()->start(webSocketChannel->slotTimerElement_);
 
 			webSocketChannel->asyncRead_ = true;
-			webSocketChannel->async_read_exactly(
+			webSocketChannel->socket().async_read_exactly(
 				webSocketConfig_->strand(),
 				webSocketChannel->recvBuffer_,
-				boost::bind(&WebSocketServerBase::handleReceiveMessageLength2, this, boost::asio::placeholders::error, boost::asio::placeholders::bytes_transferred, webSocketChannel),
-				2
+				2,
+				[this, webSocketChannel](const boost::system::error_code& error, std::size_t bytes_transfered) {
+					handleReceiveMessageLength2(error, bytes_transfered, webSocketChannel);
+				}
 			);
 			return;
 		}
@@ -585,11 +605,13 @@ namespace OpcUaWebServer
 			webSocketConfig_->ioThread()->slotTimer()->start(webSocketChannel->slotTimerElement_);
 
 			webSocketChannel->asyncRead_ = true;
-			webSocketChannel->async_read_exactly(
+			webSocketChannel->socket().async_read_exactly(
 				webSocketConfig_->strand(),
 				webSocketChannel->recvBuffer_,
-				boost::bind(&WebSocketServerBase::handleReceiveMessageLength8, this, boost::asio::placeholders::error, boost::asio::placeholders::bytes_transferred, webSocketChannel),
-				8
+				8,
+				[this, webSocketChannel](const boost::system::error_code& error, std::size_t bytes_transfered) {
+					handleReceiveMessageLength8(error, bytes_transfered, webSocketChannel);
+				}
 			);
 			return;
 		}
@@ -597,7 +619,11 @@ namespace OpcUaWebServer
 	}
 
 	void
-	WebSocketServerBase::handleReceiveMessageLength2(const boost::system::error_code& error, std::size_t bytes_transfered, WebSocketChannel* webSocketChannel)
+	WebSocketServerBase::handleReceiveMessageLength2(
+		const boost::system::error_code& error,
+		std::size_t bytes_transfered,
+		WebSocketChannel* webSocketChannel
+	)
 	{
 		webSocketChannel->asyncRead_ = false;
 
@@ -636,11 +662,13 @@ namespace OpcUaWebServer
 		webSocketConfig_->ioThread()->slotTimer()->start(webSocketChannel->slotTimerElement_);
 
 		webSocketChannel->asyncRead_ = true;
-		webSocketChannel->async_read_exactly(
+		webSocketChannel->socket().async_read_exactly(
 			webSocketConfig_->strand(),
 			webSocketChannel->recvBuffer_,
-			boost::bind(&WebSocketServerBase::handleReceiveMessageContent, this, boost::asio::placeholders::error, boost::asio::placeholders::bytes_transferred, webSocketChannel),
-			length+4
+			length+4,
+			[this, webSocketChannel](const boost::system::error_code& error, std::size_t bytes_transfered) {
+				handleReceiveMessageContent(error, bytes_transfered, webSocketChannel);
+			}
 		);
 	}
 
@@ -690,11 +718,13 @@ namespace OpcUaWebServer
 		webSocketConfig_->ioThread()->slotTimer()->start(webSocketChannel->slotTimerElement_);
 
 		webSocketChannel->asyncRead_ = true;
-		webSocketChannel->async_read_exactly(
+		webSocketChannel->socket().async_read_exactly(
 			webSocketConfig_->strand(),
 			webSocketChannel->recvBuffer_,
-			boost::bind(&WebSocketServerBase::handleReceiveMessageContent, this, boost::asio::placeholders::error, boost::asio::placeholders::bytes_transferred, webSocketChannel),
-			length+4
+			length+4,
+			[this, webSocketChannel](const boost::system::error_code& error, std::size_t bytes_transfered) {
+				handleReceiveMessageContent(error, bytes_transfered, webSocketChannel);
+			}
 		);
 	}
 
@@ -780,7 +810,7 @@ namespace OpcUaWebServer
 			.parameter("ChannelId", webSocketChannel->id_);
 
 		webSocketChannel->timeout_ = true;
-		webSocketChannel->cancel();
+		webSocketChannel->socket().cancel();
 	}
 
 	// ------------------------------------------------------------------------
@@ -892,12 +922,12 @@ namespace OpcUaWebServer
 		// send message
 		SendCompleteCallback tmpSendCompleteCallback = sendCompleteCallback;
 		webSocketChannel->asyncWrite_ = true;
-		webSocketChannel->async_write(
+		webSocketChannel->socket().async_write(
 			webSocketConfig_->strand(),
 			webSocketChannel->sendBuffer_,
 			[this, tmpSendCompleteCallback, webSocketChannel](const boost::system::error_code& error, std::size_t bytes_transferred) {
-			handleWriteMessageComplete(error, bytes_transferred, webSocketChannel, tmpSendCompleteCallback);
-		}
+			    handleWriteMessageComplete(error, bytes_transferred, webSocketChannel, tmpSendCompleteCallback);
+			}
 		);
 
 		return true;

@@ -65,6 +65,7 @@ namespace OpcUaWebServer
 			const SendCompleteCallback& sendCompleteCallback
 		);
 
+		WebSocketChannel* createWebSocketChannel(void);
 		void accept(void);
 		void handleAccept(const boost::system::error_code& error, WebSocketChannel* webSocketChannel);
 
