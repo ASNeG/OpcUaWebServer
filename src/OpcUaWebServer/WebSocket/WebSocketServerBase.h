@@ -65,11 +65,30 @@ namespace OpcUaWebServer
 		//
 		// handle handshake
 		//
-		void handleReceiveHandshakeHeader(const boost::system::error_code& error, std::size_t bytes_transfered, WebSocketChannel* webSocketChannel);
-		void handleReceiveHandshakeContent(const boost::system::error_code& error, std::size_t bytes_transfered, WebSocketChannel* webSocketChannel);
-		void processHandshake(WebSocketChannel* httpChannel, WebSocketRequest& webSocketRequest);
-		void handleWriteComplete(const boost::system::error_code& error, WebSocketChannel* httpChannel);
-		int base64Encode(const unsigned char* buffer, size_t length, char** b64text);
+		void handleReceiveHandshakeHeader(
+			const boost::system::error_code& error,
+			std::size_t bytes_transfered,
+			WebSocketChannel* webSocketChannel
+		);
+		void handleReceiveHandshakeContent(
+			const boost::system::error_code& error,
+			std::size_t bytes_transfered,
+			WebSocketChannel* webSocketChannel
+		);
+		void processHandshake(
+			WebSocketChannel* httpChannel,
+			WebSocketRequest& webSocketRequest
+		);
+		void handleWriteComplete(
+			const boost::system::error_code& error,
+			std::size_t bytes_transfered,
+			WebSocketChannel* httpChannel
+		);
+		int base64Encode(
+			const unsigned char* buffer,
+			size_t length,
+			char** b64text
+		);
 
 		void requestTimeoutWebSocketChannel(WebSocketChannel* webSocketChannel, const std::string& location);
 

@@ -24,8 +24,8 @@ namespace OpcUaWebServer
 
 	uint32_t WebSocketChannel::gChannelId_ = 0;
 
-	WebSocketChannel::WebSocketChannel(boost::asio::io_service& io_service)
-	: TCPConnection(io_service)
+	WebSocketChannel::WebSocketChannel(SocketIf::SPtr& socketIf)
+	: socketIf_(socketIf)
 	, recvBuffer_()
 	, sendBuffer_()
 	, webSocketRequest_()
@@ -49,6 +49,12 @@ namespace OpcUaWebServer
 		std::stringstream ss;
 		ss << id_;
 		return ss.str();
+	}
+
+	SocketIf&
+	WebSocketChannel::socket(void)
+	{
+		return *socketIf_.get();
 	}
 
 }

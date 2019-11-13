@@ -16,8 +16,10 @@
 
  */
 
+#include <boost/make_shared.hpp>
 #include "OpcUaStackCore/Base/Log.h"
 #include "OpcUaWebServer/WebSocket/WebSocketServer.h"
+#include "OpcUaWebServer/WebSocket/SocketWS.h"
 
 namespace OpcUaWebServer
 {
@@ -96,13 +98,23 @@ namespace OpcUaWebServer
 		);
 	}
 
+	WebSocketChannel*
+	WebSocketServer::createWebSocketChannel(void)
+	{
+		SocketIf::SPtr socketIf = boost::make_shared<SocketWS>(webSocketConfig_->ioThread()->ioService()->io_service());
+		auto webSocketChannel = new WebSocketChannel(socketIf);
+
+		return webSocketChannel;
+	}
+
 	void
 	WebSocketServer::accept(void)
 	{
-		auto webSocketChannel = new WebSocketChannel(webSocketConfig_->ioThread()->ioService()->io_service());
-		tcpAcceptor_.async_accept(
-			webSocketChannel->socket(),
+		auto webSocketChannel = createWebSocketChannel();
+
+		webSocketChannel->socket().async_accept(
 			webSocketConfig_->strand(),
+			&tcpAcceptor_,
 			[this, webSocketChannel](const boost::system::error_code& error) {
 				handleAccept(error, webSocketChannel);
 			}

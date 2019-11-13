@@ -21,6 +21,7 @@
 
 #include <boost/shared_ptr.hpp>
 #include <boost/asio.hpp>
+#include "OpcUaStackCore/Network/TCPAcceptor.h"
 
 namespace OpcUaWebServer
 {
@@ -30,9 +31,9 @@ namespace OpcUaWebServer
 	  public:
 		typedef boost::shared_ptr<SocketIf> SPtr;
 
-		using AcceptCallback = std::function<void(const boost::system::error_code& error)>;
 		using ReceiveCallback = std::function<void(const boost::system::error_code& error, std::size_t bytes_transfered)>;
 		using WriteCompleteCallback = std::function<void(const boost::system::error_code& error,std::size_t bytes_transfered)>;
+		using AcceptCallback = std::function<void(const boost::system::error_code& error)>;
 
 		SocketIf(void) {}
 		virtual ~SocketIf(void) {}
@@ -50,18 +51,23 @@ namespace OpcUaWebServer
 			boost::shared_ptr<boost::asio::strand>& strand,
 			boost::asio::streambuf& recvBuffer,
 			const std::string& content,
-			ReceiveCallback& receiveCallback
+			const ReceiveCallback& receiveCallback
 		) = 0;
 		virtual void async_read_exactly(
 			boost::shared_ptr<boost::asio::strand>& strand,
 			boost::asio::streambuf& recvBuffer,
 			size_t contentSize,
-			ReceiveCallback& receiveCallback
+			const ReceiveCallback& receiveCallback
 		) = 0;
 		virtual void async_write(
 			boost::shared_ptr<boost::asio::strand>& strand,
 			boost::asio::streambuf& sendBuffer,
 			const WriteCompleteCallback& writeCompleteCallback
+		) = 0;
+		virtual void async_accept(
+			boost::shared_ptr<boost::asio::strand>& strand,
+			OpcUaStackCore::TCPAcceptor* acceptor,
+			const AcceptCallback& acceptCallback
 		) = 0;
 	};
 
