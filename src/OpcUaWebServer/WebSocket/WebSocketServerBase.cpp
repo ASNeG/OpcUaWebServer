@@ -177,6 +177,12 @@ namespace OpcUaWebServer
 	// ------------------------------------------------------------------------
 	// ------------------------------------------------------------------------
 	void
+	WebSocketServerBase::performHandshake(WebSocketChannel* webSocketChannel)
+	{
+		receiveHandshake(webSocketChannel);
+	}
+
+	void
 	WebSocketServerBase::receiveHandshake(WebSocketChannel* webSocketChannel)
 	{
 		// start timer

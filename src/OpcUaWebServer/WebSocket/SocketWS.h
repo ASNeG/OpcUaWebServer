@@ -37,11 +37,18 @@ namespace OpcUaWebServer
 		boost::asio::ip::tcp::endpoint remote_endpoint(
 			void
 		) override;
+		boost::asio::ip::tcp::endpoint local_endpoint(
+			void
+		) override;
 		void close(
 			void
 		) override;
 		void cancel(
 			void
+		) override;
+		void performHandshake(
+			boost::shared_ptr<boost::asio::strand>& strand,
+			const PerformHandshakeCompleteCallback& performHandshakeCompleteCallback
 		) override;
 		void async_read_until(
 			boost::shared_ptr<boost::asio::strand>& strand,
