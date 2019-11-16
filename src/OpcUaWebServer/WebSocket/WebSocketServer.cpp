@@ -140,7 +140,7 @@ namespace OpcUaWebServer
 			.parameter("Connections", webSocketChannelMap_.size());
 
 		initWebSocketChannel(webSocketChannel);
-		receiveHandshake(webSocketChannel);
+		performHandshake(webSocketChannel);
 
 		if (!active_) {
 			return;

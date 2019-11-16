@@ -75,6 +75,9 @@ namespace OpcUaWebServer
 			std::size_t bytes_transfered,
 			WebSocketChannel* webSocketChannel
 		);
+		void performHandshake(
+			WebSocketChannel* webSocketChannel
+		);
 		void processHandshake(
 			WebSocketChannel* httpChannel,
 			WebSocketRequest& webSocketRequest

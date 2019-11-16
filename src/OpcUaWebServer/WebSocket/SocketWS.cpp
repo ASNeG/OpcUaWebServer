@@ -16,6 +16,7 @@
 
  */
 
+#include <boost/system/error_code.hpp>
 #include "OpcUaWebServer/WebSocket/SocketWS.h"
 
 namespace OpcUaWebServer
@@ -39,12 +40,20 @@ namespace OpcUaWebServer
 		return tcpConnection_.socket().remote_endpoint();
 	}
 
+	boost::asio::ip::tcp::endpoint
+	SocketWS::local_endpoint(
+		void
+	)
+	{
+		return tcpConnection_.socket().local_endpoint();
+	}
+
 	void
 	SocketWS::close(
 		void
 	)
 	{
-		return tcpConnection_.close();
+		tcpConnection_.close();
 	}
 
 	void
@@ -52,7 +61,16 @@ namespace OpcUaWebServer
 		void
 	)
 	{
-		return tcpConnection_.cancel();
+		tcpConnection_.cancel();
+	}
+
+	void
+	SocketWS::performHandshake(
+		boost::shared_ptr<boost::asio::strand>& strand,
+		const PerformHandshakeCompleteCallback& performHandshakeCompleteCallback
+	)
+	{
+		performHandshakeCompleteCallback(boost::system::errc::make_error_code(boost::system::errc::success));
 	}
 
 	void

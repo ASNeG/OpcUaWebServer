@@ -16,67 +16,70 @@
 
  */
 
-#ifndef __OpcUaWebServer_SocketIf_h__
-#define __OpcUaWebServer_SocketIf_h__
+#ifndef __OpcUaWebServer_SocketWSS_h__
+#define __OpcUaWebServer_SocketWSS_h__
 
-#include <boost/shared_ptr.hpp>
-#include <boost/asio.hpp>
-#include "OpcUaStackCore/Network/TCPAcceptor.h"
+#include <boost/asio/ssl.hpp>
+#include "OpcUaWebServer/WebSocket/SocketIf.h"
 
 namespace OpcUaWebServer
 {
 
-	class SocketIf
+	class SocketWSS
+	: public SocketIf
 	{
 	  public:
-		typedef boost::shared_ptr<SocketIf> SPtr;
+		typedef boost::shared_ptr<SocketWSS> SPtr;
 
-		using PerformHandshakeCompleteCallback = std::function<void(const boost::system::error_code& error)>;
-		using ReceiveCallback = std::function<void(const boost::system::error_code& error, std::size_t bytes_transfered)>;
-		using WriteCompleteCallback = std::function<void(const boost::system::error_code& error,std::size_t bytes_transfered)>;
-		using AcceptCallback = std::function<void(const boost::system::error_code& error)>;
+		SocketWSS(boost::asio::io_service& io_service, boost::asio::ssl::context& context);
+		virtual ~SocketWSS(void);
 
-		SocketIf(void) {}
-		virtual ~SocketIf(void) {}
-
-		virtual boost::asio::ip::tcp::endpoint remote_endpoint(
+		boost::asio::ip::tcp::endpoint remote_endpoint(
 			void
-		) = 0;
-		virtual boost::asio::ip::tcp::endpoint local_endpoint(
+		) override;
+		boost::asio::ip::tcp::endpoint local_endpoint(
 			void
-		) = 0;
-		virtual void close(
+		) override;
+		void close(
 			void
-		) = 0;
-		virtual void cancel(
+		) override;
+		void cancel(
 			void
-		) = 0;
-		virtual void performHandshake(
+		) override;
+		void performHandshake(
 			boost::shared_ptr<boost::asio::strand>& strand,
 			const PerformHandshakeCompleteCallback& performHandshakeCompleteCallback
-		) = 0;
-		virtual void async_read_until(
+		) override;
+		void async_read_until(
 			boost::shared_ptr<boost::asio::strand>& strand,
 			boost::asio::streambuf& recvBuffer,
 			const std::string& content,
 			const ReceiveCallback& receiveCallback
-		) = 0;
-		virtual void async_read_exactly(
+		) override;
+		void async_read_exactly(
 			boost::shared_ptr<boost::asio::strand>& strand,
 			boost::asio::streambuf& recvBuffer,
 			size_t contentSize,
 			const ReceiveCallback& receiveCallback
-		) = 0;
-		virtual void async_write(
+		) override;
+		void async_write(
 			boost::shared_ptr<boost::asio::strand>& strand,
 			boost::asio::streambuf& sendBuffer,
 			const WriteCompleteCallback& writeCompleteCallback
-		) = 0;
-		virtual void async_accept(
+		) override;
+		void async_accept(
 			boost::shared_ptr<boost::asio::strand>& strand,
 			OpcUaStackCore::TCPAcceptor* acceptor,
 			const AcceptCallback& acceptCallback
-		) = 0;
+		) override;
+
+	  private:
+		boost::asio::ssl::stream<boost::asio::ip::tcp::socket> stream_;
+		boost::shared_ptr<boost::asio::io_service::strand> strand_ = nullptr;
+		PerformHandshakeCompleteCallback performHandshakeCompleteCallback_ = nullptr;
+		AcceptCallback acceptCallback_ = nullptr;
+		ReceiveCallback receiveCallback_ = nullptr;
+		WriteCompleteCallback writeCompleteCallback_ = nullptr;
 	};
 
 }
