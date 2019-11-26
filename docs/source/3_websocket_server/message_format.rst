@@ -10,7 +10,7 @@ All the JSON messages have the following structures:
 +============+=================+====================================================+
 | **Header** |                 |                                                    |
 +------------+-----------------+----------------------------------------------------+
-|            | MessageType     | Type of the JSON message. It can have              |
+|            | MessageType     | The type of the JSON message. It can have          |
 |            |                 | the following values:                              |
 |            |                 +----------------------------------------------------+
 |            |                 |     READ_REQUEST                                   |
@@ -44,7 +44,7 @@ All the JSON messages have the following structures:
 |            |                 |     HISTORICALREAD_RESPONSE                        |
 +------------+-----------------+----------------------------------------------------+
 |            | ClientHandler   | An identifier of the message which is set by       |
-|            |                 | the client in the request. The server copy its     |
+|            |                 | the client in the request. The server copies its   |
 |            |                 | value to the corresponding response.               |
 +------------+-----------------+----------------------------------------------------+
 |            | [StatusCode]    | Is sent if an error occurs by processing the       |
