@@ -13,3 +13,4 @@ TODO Introduce and notation
   value_info.rst
   read.rst
   historical_read.rst
+  write.rst
