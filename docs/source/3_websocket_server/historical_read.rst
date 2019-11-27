@@ -1,7 +1,7 @@
 Historical Read
 ===============
 
-To read the historical values of a variable, the client must use *HistoricalRead* request.
+To read the historical values of a variable, the client must use *HISTORICALREAD_REQUEST* request.
 
 Request
 -------
@@ -84,7 +84,7 @@ Example in Python
 
   msg = {
       'Header': {
-        'MessageType':'HISORICALREAD_REQUEST',
+        'MessageType':'HISTORICALREAD_REQUEST',
         'ClientHandle':'1'
       },
       'Body': { 'Variable' : 'Boolean'}

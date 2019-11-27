@@ -1,7 +1,7 @@
-Read
-====
+Read Value
+==========
 
-To read the value of a variable, the client must use *Read* request.
+To read the value of a variable, the client must use *READ_REQUEST* request.
 
 Request
 -------

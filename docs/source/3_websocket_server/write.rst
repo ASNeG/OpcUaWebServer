@@ -1,7 +1,7 @@
-Write
-=====
+Write Value
+===========
 
-To write the value of a variable, the client should use *Write* request.
+To write the value of a variable, the client should use *WRITE_REQUEST* request.
 
 Request
 -------
