@@ -1,3 +1,5 @@
+.. _monitoring:
+
 Monitoring
 ==========
 
@@ -5,6 +7,8 @@ Monitoring
 by using *MONITORSTART_REQUEST*. After that the server sends the data of the variable as *MONITORUPDATE_MESSAGE*
 only when it changes. Finally, the client must stop monitoring the value
 and send *MONITORSTOP_REQUEST* request.
+
+.. _monitorstart_request:
 
 Monitor Start Request
 ---------------------
@@ -22,6 +26,8 @@ Monitor Start Request
 +------------+-----------------+----------------------------------------------------+
 |            | Variable        | The variable to read.                              |
 +------------+-----------------+----------------------------------------------------+
+
+.. _monitorstart_response:
 
 Monitor Start Response
 ----------------------
@@ -54,6 +60,8 @@ Monitor Start Status Codes
 | BadNodeIdUnknown      | The variable name isn't found in the server configuration.| 
 +-----------------------+-----------------------------------------------------------+
 
+.. _monitorupdate_message:
+
 Monitor Update Message
 ----------------------
 
@@ -84,7 +92,9 @@ Monitor Update Message
 |            |                 | 8601 format. Example: "2015-09-06T09:03:21Z"       |
 +------------+-----------------+----------------------------------------------------+
 
-Monitor Start Request
+.. _monitorstop_request:
+
+Monitor Stop Request
 ---------------------
 
 +------------------------------+----------------------------------------------------+
@@ -92,7 +102,7 @@ Monitor Start Request
 +============+=================+====================================================+
 | **Header** |                 |                                                    |
 +------------+-----------------+----------------------------------------------------+
-|            | MessageType     | Must be *MONITORSTART_REQUEST*.                    |
+|            | MessageType     | Must be *MONITORSTOP_REQUEST*.                     |
 +------------+-----------------+----------------------------------------------------+
 |            | ClientHandler   | See :ref:`message_format`.                         |
 +------------+-----------------+----------------------------------------------------+
@@ -101,7 +111,9 @@ Monitor Start Request
 |            | Variable        | The variable to read.                              |
 +------------+-----------------+----------------------------------------------------+
 
-Monitor Start Response
+.. _monitorstop_response:
+
+Monitor Stop Response
 ----------------------
 
 +------------------------------+----------------------------------------------------+
@@ -109,7 +121,7 @@ Monitor Start Response
 +============+=================+====================================================+
 | **Header** |                 |                                                    |
 +------------+-----------------+----------------------------------------------------+
-|            | MessageType     | Must be *MONITORSTART_RESPONSE*.                   |
+|            | MessageType     | Must be *MONITORSTOP_RESPONSE*.                    |
 +------------+-----------------+----------------------------------------------------+
 |            | ClientHandler   | See :ref:`message_format`.                         |
 +------------+-----------------+----------------------------------------------------+

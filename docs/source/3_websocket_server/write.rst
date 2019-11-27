@@ -1,10 +1,14 @@
+.. _write:
+
 Write Value
 ===========
 
 To write the value of a variable, the client should use *WRITE_REQUEST* request.
 
-Request
--------
+.. _write_request:
+
+Write Request
+-------------
 
 +------------------------------------+----------------------------------------------------+
 | Field                              | Description                                        | 
@@ -36,8 +40,11 @@ Request
 |            |   |                   | 8601 format. Example: "2015-09-06T09:03:21Z"       |
 +------------+---+-------------------+----------------------------------------------------+
 
-Response
---------
+
+.. _write_response:
+
+Write Response
+--------------
 
 +--------------------------------+----------------------------------------------------+
 | Field                          | Description                                        | 

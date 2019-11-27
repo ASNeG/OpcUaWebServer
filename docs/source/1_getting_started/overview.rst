@@ -23,7 +23,7 @@ The OpcUaWebServer contains the following components:
 
 **HTTP Server** provides a simple interface for web pages. The provision of simple static web
 pages in HTML format does not require a separate web server for simple web applications with
-:term:`OPC UA access`. The use of the :term:`HTTP Server` component is optional.
+:term:`OPC UA` access. The use of the :term:`HTTP Server` component is optional.
 
 **WebSocket Server** provides a :term:`JSON API` via bidirectional :term:`WebSocket` protocol for access to :term:`OPC UA` variables.
 The WebSocket Server component is decoupled from the OPC UA server. Symbolic names are used to
@@ -54,19 +54,17 @@ WebSocket Server JSON API Reference
 +---------------------+----------------------------------------------------------------------+
 | Name                | Description                                                          |
 +=====================+======================================================================+
-| ValueList           | Returns all names of  OPC UA variables processed by the server.      |
+| :ref:`valuelist`    | Returns all names of  OPC UA variables processed by the server.      |
 +---------------------+----------------------------------------------------------------------+
-| ValueInfo           | Returns information about OPC UA variables (such as type, name etc.) |
+| :ref:`valueinfo`    | Returns information about OPC UA variables (such as type, name etc.) |
 +---------------------+----------------------------------------------------------------------+
-| Read                | Reads the value, status and timestamp of the given variable          |
+| :ref:`read`         | Reads the value, status and timestamp of the given variable          |
 +---------------------+----------------------------------------------------------------------+
-| HistoricalRead      | Reads historical values of the given variables. **Not implemented.** |
+| :ref:`hisread`      | Reads historical values of the given variables. **Not implemented.** |
 +---------------------+----------------------------------------------------------------------+
-| Write               | Writes the value, status and timestamp of the given variable         |
+| :ref:`write`        | Writes the value, status and timestamp of the given variable         |
 +---------------------+----------------------------------------------------------------------+
-| MonitorSartResponse | Starts monitoring the given variable to receive its new values       |
-+---------------------+----------------------------------------------------------------------+
-| MonitorStopResponse | Stops monitoring the given variable                                  |
+| :ref:`monitoring`   | Subscrubes to the given variable to receive its new values           |
 +---------------------+----------------------------------------------------------------------+
 
 For more information see :ref:`websocket_server`

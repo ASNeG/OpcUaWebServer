@@ -1,10 +1,14 @@
+.. _hisread:
+
 Historical Read
 ===============
 
 To read the historical values of a variable, the client must use *HISTORICALREAD_REQUEST* request.
 
-Request
--------
+.. _hisread_request:
+
+Historical Read Request
+-----------------------
 
 +------------------------------+----------------------------------------------------+
 | Field                        | Description                                        | 
@@ -26,8 +30,11 @@ Request
 |            |                 | 8601 format. Example: "2015-09-06T09:03:21Z"       |
 +------------+-----------------+----------------------------------------------------+
 
-Response
---------
+
+.. _hisread_response:
+
+Historical Read Response
+------------------------
 
 +---------------------------------+----------------------------------------------------+
 | Field                           | Description                                        | 

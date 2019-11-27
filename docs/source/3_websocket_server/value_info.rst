@@ -1,11 +1,15 @@
+.. _valueinfo:
+
 Value Info
 =========
 
 Knowing the variable names the client can get the information about the configuration of the variables
 by using *VALUEINFO_REQUEST* request.
 
-Request
--------
+.. _valueinfo_request:
+
+Value Info Request
+------------------
 
 +------------------------------+----------------------------------------------------+
 | Field                        | Description                                        | 
@@ -21,8 +25,10 @@ Request
 |            | @Variables      | The list of the variable names.                    |
 +------------+-----------------+----------------------------------------------------+
 
-Response
---------
+.. _valueinfo_response:
+
+Value Info Response
+-------------------
 
 +------------------------------+----------------------------------------------------+
 | Field                        | Description                                        | 
