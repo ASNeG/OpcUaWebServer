@@ -1,8 +1,8 @@
-ValueInfo
+Value Info
 =========
 
 Knowing the variable names the client can get the information about the configuration of the variables
-by using *ValueInfo* request.
+by using *VALUEINFO_REQUEST* request.
 
 Request
 -------

@@ -14,3 +14,4 @@ TODO Introduce and notation
   read.rst
   historical_read.rst
   write.rst
+  monitor.rst
