@@ -88,7 +88,6 @@ Example in Python
       'Body': { 'Variable' : 'Boolean'}
    }
 
- 
   ws = websocket.create_connection('ws://127.0.0.1:8081')
   ws.send(json.dumps(msg)) 
   resp = ws.recv()  
