@@ -3,8 +3,8 @@
 WebSocket Server JSON API
 =========================
 
-TODO Introduce and notation
-
+With **OpcUaWebServer** you can use a simple JSON API to access to OPC UA data via 
+Internet.
 
 .. toctree::
 
@@ -15,3 +15,4 @@ TODO Introduce and notation
   historical_read.rst
   write.rst
   monitor.rst
+  notation.rst
