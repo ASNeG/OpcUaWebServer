@@ -1,11 +1,15 @@
+.. _valuelist:
+
 Value List
 ==========
 
 With *VALUELIST_REQUEST* request the client can get the list of OPC UA :term:`Variable`\ s 
 described in :ref:`opcuaclient_config`.
 
-Request
--------
+.. _valuelist_request:
+
+Value List Request
+------------------
 
 +------------------------------+----------------------------------------------------+
 | Field                        | Description                                        | 
@@ -19,8 +23,10 @@ Request
 | **Body**   |                 | Empty.                                             |
 +------------+-----------------+----------------------------------------------------+
 
-Response
---------
+.. _valuelist_response:
+
+Value List Response
+-------------------
 
 +------------------------------+----------------------------------------------------+
 | Field                        | Description                                        | 

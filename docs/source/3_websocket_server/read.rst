@@ -1,10 +1,14 @@
+.. _read:
+
 Read Value
 ==========
 
 To read the value of a variable, the client must use *READ_REQUEST* request.
 
-Request
--------
+.. _read_request:
+
+Read Request
+------------
 
 +------------------------------+----------------------------------------------------+
 | Field                        | Description                                        | 
@@ -20,8 +24,10 @@ Request
 |            | Variable        | The variable to read.                              |
 +------------+-----------------+----------------------------------------------------+
 
-Response
---------
+.. _read_response:
+
+Read Response
+--------------
 
 +------------------------------+----------------------------------------------------+
 | Field                        | Description                                        | 
