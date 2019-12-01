@@ -78,14 +78,18 @@ namespace OpcUaWebServer
 		void performHandshake(
 			WebSocketChannel* webSocketChannel
 		);
+		void performHandshakeComplete(
+			const boost::system::error_code& error,
+			WebSocketChannel* webSocketChannel
+		);
 		void processHandshake(
-			WebSocketChannel* httpChannel,
+			WebSocketChannel* webSocketChannel,
 			WebSocketRequest& webSocketRequest
 		);
 		void handleWriteComplete(
 			const boost::system::error_code& error,
 			std::size_t bytes_transfered,
-			WebSocketChannel* httpChannel
+			WebSocketChannel* webSocketChannel
 		);
 		int base64Encode(
 			const unsigned char* buffer,

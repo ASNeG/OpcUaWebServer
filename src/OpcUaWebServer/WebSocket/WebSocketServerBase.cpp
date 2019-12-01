@@ -179,6 +179,44 @@ namespace OpcUaWebServer
 	void
 	WebSocketServerBase::performHandshake(WebSocketChannel* webSocketChannel)
 	{
+		// start timer
+		webSocketChannel->slotTimerElement_->expireFromNow(webSocketConfig_->requestTimeout());
+		webSocketChannel->slotTimerElement_->timeoutCallback(
+			webSocketConfig_->strand(),
+			[this, webSocketChannel](void) { requestTimeoutWebSocketChannel(webSocketChannel, "perform handshake"); }
+		);
+		webSocketConfig_->ioThread()->slotTimer()->start(webSocketChannel->slotTimerElement_);
+
+		webSocketChannel->socket().performHandshake(
+			webSocketConfig_->strand(),
+			[this, webSocketChannel](const boost::system::error_code& error) {
+			    performHandshakeComplete(error, webSocketChannel);
+		    }
+		);
+	}
+
+	void
+	WebSocketServerBase::performHandshakeComplete(
+		const boost::system::error_code& error,
+		WebSocketChannel* webSocketChannel
+	)
+	{
+		if (webSocketChannel->timeout_ || error || webSocketChannel->shutdown_) {
+
+			if (error) {
+				Log(Debug, "WebSocketServer receive request header error; close channel")
+					.parameter("Address", webSocketChannel->partner_.address().to_string())
+					.parameter("Port", webSocketChannel->partner_.port())
+					.parameter("ChannelId", webSocketChannel->id_);
+			}
+
+			closeWebSocketChannel(webSocketChannel);
+			return;
+		}
+
+		// stop request timer
+		webSocketConfig_->ioThread()->slotTimer()->stop(webSocketChannel->slotTimerElement_);
+
 		receiveHandshake(webSocketChannel);
 	}
 
@@ -211,6 +249,14 @@ namespace OpcUaWebServer
 	)
 	{
 		if (webSocketChannel->timeout_ || error || webSocketChannel->shutdown_) {
+
+			if (error) {
+				Log(Debug, "WebSocketServer receive request header error; close channel")
+					.parameter("Address", webSocketChannel->partner_.address().to_string())
+					.parameter("Port", webSocketChannel->partner_.port())
+					.parameter("ChannelId", webSocketChannel->id_);
+			}
+
 			closeWebSocketChannel(webSocketChannel);
 			return;
 		}
@@ -229,16 +275,6 @@ namespace OpcUaWebServer
 
 		// stop request timer
 		webSocketConfig_->ioThread()->slotTimer()->stop(webSocketChannel->slotTimerElement_);
-
-		if (error) {
-			Log(Debug, "WebSocketServer receive request header error; close channel")
-				.parameter("Address", webSocketChannel->partner_.address().to_string())
-				.parameter("Port", webSocketChannel->partner_.port())
-				.parameter("ChannelId", webSocketChannel->id_);
-
-			closeWebSocketChannel(webSocketChannel);
-			return;
-		}
 
 		size_t numAdditionalBytes = webSocketChannel->recvBuffer_.size() - bytes_transfered;
 		std::istream is(&webSocketChannel->recvBuffer_);
@@ -318,22 +354,20 @@ namespace OpcUaWebServer
 	)
 	{
 		if (webSocketChannel->timeout_ || error || webSocketChannel->shutdown_) {
+
+			if (error) {
+				Log(Debug, "WebSocketServer receive request content error; close channel")
+					.parameter("Address", webSocketChannel->partner_.address().to_string())
+					.parameter("Port", webSocketChannel->partner_.port())
+					.parameter("ChannelId", webSocketChannel->id_);
+			}
+
 			closeWebSocketChannel(webSocketChannel);
 			return;
 		}
 
 		// stop request timer
 		webSocketConfig_->ioThread()->slotTimer()->stop(webSocketChannel->slotTimerElement_);
-
-		if (error) {
-			Log(Debug, "WebSocketServer receive request content error; close channel")
-				.parameter("Address", webSocketChannel->partner_.address().to_string())
-				.parameter("Port", webSocketChannel->partner_.port())
-				.parameter("ChannelId", webSocketChannel->id_);
-
-			closeWebSocketChannel(webSocketChannel);
-			return;
-		}
 
 		//
 		// read content
