@@ -68,7 +68,7 @@ namespace OpcUaWebServer
 
 	void
 	SocketWSS::performHandshake(
-		boost::shared_ptr<boost::asio::strand>& strand,
+		boost::shared_ptr<boost::asio::io_service::strand>& strand,
 		const PerformHandshakeCompleteCallback& performHandshakeCompleteCallback
 	)
 	{
@@ -92,7 +92,7 @@ namespace OpcUaWebServer
 
 	void
 	SocketWSS::async_read_until(
-		boost::shared_ptr<boost::asio::strand>& strand,
+		boost::shared_ptr<boost::asio::io_service::strand>& strand,
 		boost::asio::streambuf& recvBuffer,
 		const std::string& content,
 		const ReceiveCallback& receiveCallback
@@ -117,7 +117,7 @@ namespace OpcUaWebServer
 
 	void
 	SocketWSS::async_read_exactly(
-		boost::shared_ptr<boost::asio::strand>& strand,
+		boost::shared_ptr<boost::asio::io_service::strand>& strand,
 		boost::asio::streambuf& recvBuffer,
 		size_t contentSize,
 		const ReceiveCallback& receiveCallback
@@ -142,7 +142,7 @@ namespace OpcUaWebServer
 
 	void
 	SocketWSS::async_write(
-		boost::shared_ptr<boost::asio::strand>& strand,
+		boost::shared_ptr<boost::asio::io_service::strand>& strand,
 		boost::asio::streambuf& sendBuffer,
 		const WriteCompleteCallback& writeCompleteCallback
 	)
@@ -165,7 +165,7 @@ namespace OpcUaWebServer
 
 	void
 	SocketWSS::async_accept(
-		boost::shared_ptr<boost::asio::strand>& strand,
+		boost::shared_ptr<boost::asio::io_service::strand>& strand,
 		OpcUaStackCore::TCPAcceptor* acceptor,
 		const AcceptCallback& acceptCallback
 	)

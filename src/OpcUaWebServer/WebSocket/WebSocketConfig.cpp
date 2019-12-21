@@ -108,12 +108,12 @@ namespace OpcUaWebServer
 	}
 
 	void
-	WebSocketConfig::strand(const boost::shared_ptr<boost::asio::strand>& strand)
+	WebSocketConfig::strand(const boost::shared_ptr<boost::asio::io_service::strand>& strand)
 	{
 		strand_ = strand;
 	}
 
-	boost::shared_ptr<boost::asio::strand>&
+	boost::shared_ptr<boost::asio::io_service::strand>&
 	WebSocketConfig::strand(void)
 	{
 		return strand_;
