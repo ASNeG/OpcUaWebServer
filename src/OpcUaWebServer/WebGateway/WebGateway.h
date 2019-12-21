@@ -68,7 +68,7 @@ namespace OpcUaWebServer
 		WebSocketConfig webSocketConfig_;
 		WebSocketServer::SPtr webSocketServer_;
 
-		boost::shared_ptr<boost::asio::strand> strand_ = nullptr;
+		boost::shared_ptr<boost::asio::io_service::strand> strand_ = nullptr;
 
 		ClientManager clientManager_;
 

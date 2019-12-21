@@ -19,7 +19,7 @@ namespace SimpleWeb {
         class Response {
             friend class ServerBase<socket_type>;
         private:
-            std::shared_ptr<boost::asio::strand> strand;
+            std::shared_ptr<boost::asio::io_service::strand> strand;
             
             boost::asio::yield_context& yield;
             
@@ -32,7 +32,7 @@ namespace SimpleWeb {
             std::shared_ptr<bool> async_writing;
             std::shared_ptr<bool> async_waiting;
 
-            Response(boost::asio::io_service& io_service, std::shared_ptr<socket_type> socket, std::shared_ptr<boost::asio::strand> strand, 
+            Response(boost::asio::io_service& io_service, std::shared_ptr<socket_type> socket, std::shared_ptr<boost::asio::io_service::strand> strand,
                     boost::asio::yield_context& yield): 
                     strand(strand), yield(yield), socket(socket), async_timer(new boost::asio::deadline_timer(io_service)), 
                     async_writing(new bool(false)), async_waiting(new bool(false)), stream(&streambuf) {}
@@ -230,7 +230,7 @@ namespace SimpleWeb {
             return timer;
         }       
         
-        std::shared_ptr<boost::asio::deadline_timer> set_timeout_on_socket(std::shared_ptr<socket_type> socket, std::shared_ptr<boost::asio::strand> strand, size_t seconds) {
+        std::shared_ptr<boost::asio::deadline_timer> set_timeout_on_socket(std::shared_ptr<socket_type> socket, std::shared_ptr<boost::asio::io_service::strand> strand, size_t seconds) {
             std::shared_ptr<boost::asio::deadline_timer> timer(new boost::asio::deadline_timer(io_service));
             timer->expires_from_now(boost::posix_time::seconds(seconds));
             timer->async_wait(strand->wrap([socket](const boost::system::error_code& ec){
@@ -340,7 +340,7 @@ namespace SimpleWeb {
         
         void write_response(std::shared_ptr<socket_type> socket, std::shared_ptr<Request> request, 
                 std::function<void(typename ServerBase<socket_type>::Response&, std::shared_ptr<typename ServerBase<socket_type>::Request>)>& resource_function) {
-            std::shared_ptr<boost::asio::strand> strand(new boost::asio::strand(io_service));
+            std::shared_ptr<boost::asio::io_service::strand> strand(new boost::asio::io_service::strand(io_service));
 
             //Set timeout on the following boost::asio::async-read or write function
             std::shared_ptr<boost::asio::deadline_timer> timer;

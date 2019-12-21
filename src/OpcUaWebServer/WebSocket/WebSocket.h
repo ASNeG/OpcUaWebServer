@@ -70,7 +70,7 @@ namespace OpcUaWebServer
 
 		bool getWebSocketConfig(Config* config);
 
-		boost::shared_ptr<boost::asio::strand> strand_ = nullptr;
+		boost::shared_ptr<boost::asio::io_service::strand> strand_ = nullptr;
 		StartupCompleteCallback startupCompleteCallback_;
 		ShutdownCompleteCallback shutdownCompleteCallback_;
 

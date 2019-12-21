@@ -47,28 +47,28 @@ namespace OpcUaWebServer
 			void
 		) override;
 		void performHandshake(
-			boost::shared_ptr<boost::asio::strand>& strand,
+			boost::shared_ptr<boost::asio::io_service::strand>& strand,
 			const PerformHandshakeCompleteCallback& performHandshakeCompleteCallback
 		) override;
 		void async_read_until(
-			boost::shared_ptr<boost::asio::strand>& strand,
+			boost::shared_ptr<boost::asio::io_service::strand>& strand,
 			boost::asio::streambuf& recvBuffer,
 			const std::string& content,
 			const ReceiveCallback& receiveCallback
 		) override;
 		void async_read_exactly(
-			boost::shared_ptr<boost::asio::strand>& strand,
+			boost::shared_ptr<boost::asio::io_service::strand>& strand,
 			boost::asio::streambuf& recvBuffer,
 			size_t contentSize,
 			const ReceiveCallback& receiveCallback
 		) override;
 		void async_write(
-			boost::shared_ptr<boost::asio::strand>& strand,
+			boost::shared_ptr<boost::asio::io_service::strand>& strand,
 			boost::asio::streambuf& sendBuffer,
 			const WriteCompleteCallback& writeCompleteCallback
 		) override;
 		void async_accept(
-			boost::shared_ptr<boost::asio::strand>& strand,
+			boost::shared_ptr<boost::asio::io_service::strand>& strand,
 			OpcUaStackCore::TCPAcceptor* acceptor,
 			const AcceptCallback& acceptCallback
 		) override;
