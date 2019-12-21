@@ -37,7 +37,7 @@ The WebSocket Gateway component is not decoupled from the :term:`OPC UA server`.
 packets are transferred from the WebGateway to binary :term:`OPC UA` packets and sent directly to the assigned :term:`OPC UA` server. 
 A separate configuration for the WebGateway is not necessary. As an advantage,
 all :term:`OPC UA` service functions of an :term:`OPC UA` server can be used directly from the web application. However,
-the :term:`JSON` interface functions are a little bit complex than with the WebSocket Server model. The use of the Web Gateway component is optional.   
+the :term:`JSON` interface functions are more complex than with the WebSocket Server model. The use of the Web Gateway component is optional.   
 
 
 **OPC UA Client** is used for communication with one or more :term:`OPC UA` servers.
