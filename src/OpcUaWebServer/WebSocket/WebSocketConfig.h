@@ -52,12 +52,12 @@ namespace OpcUaWebServer
 		void maxPacketLength(uint32_t maxPacketLength);
 		uint32_t maxPacketLength(void);
 
-		void useSecurityConnection(bool useSecurityConnection);
-		bool useSecurityConnection(void);
-		void privateKeyFile(const std::string& privateKeyFile);
-		std::string privateKeyFile(void);
-		void sslCertificateFile(const std::string& sslCertificateFile);
-		std::string sslCertificateFile(void);
+		void ssl(bool ssl);
+		bool ssl(void);
+		void csrFile(const std::string& csrFile);
+		std::string csrFile(void);
+		void keyFile(const std::string& keyFile);
+		std::string keyFile(void);
 
 	  private:
 		bool enable_;
@@ -71,9 +71,9 @@ namespace OpcUaWebServer
 		uint32_t maxPacketLength_ = 0;
 
 		// security settings
-		bool useSecurityConnection_ = false;
-		std::string privateKeyFile_ = "";
-		std::string sslCertificateFile_ = "";
+		bool ssl_ = false;
+		std::string csrFile_ = "";
+		std::string keyFile_ = "";
 	};
 
 }

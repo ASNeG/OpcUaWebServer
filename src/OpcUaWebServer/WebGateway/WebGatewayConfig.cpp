@@ -92,4 +92,40 @@ namespace OpcUaWebServer
 		return maxPacketLength_;
 	}
 
+	void
+	WebGatewayConfig::ssl(bool ssl)
+	{
+		ssl_ = ssl;
+	}
+
+	bool
+	WebGatewayConfig::ssl(void)
+	{
+		return ssl_;
+	}
+
+	void
+	WebGatewayConfig::csrFile(const std::string& csrFile)
+	{
+		csrFile_ = csrFile;
+	}
+
+	std::string
+	WebGatewayConfig::csrFile(void)
+	{
+		return csrFile_;
+	}
+
+	void
+	WebGatewayConfig::keyFile(const std::string& keyFile)
+	{
+		keyFile_ = keyFile;
+	}
+
+	std::string
+	WebGatewayConfig::keyFile(void)
+	{
+		return keyFile_;
+	}
+
 }
