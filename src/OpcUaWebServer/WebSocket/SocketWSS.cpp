@@ -80,10 +80,10 @@ namespace OpcUaWebServer
 
 		stream_.async_handshake(
 			boost::asio::ssl::stream_base::server,
-			[this, performHandshakeCompleteCallback](const boost::system::error_code& error) {
+			[this](const boost::system::error_code& error) {
 				strand_->dispatch(
 				    [this, error](void) {
-						performHandshakeCompleteCallback_(error);
+					    performHandshakeCompleteCallback_(error);
 					}
 				);
 			}
@@ -102,7 +102,7 @@ namespace OpcUaWebServer
 		receiveCallback_ = receiveCallback;
 
 		boost::asio::async_read_until(
-			stream_.next_layer(),
+			stream_,
 			recvBuffer,
 			content,
 			[this](const boost::system::error_code& error, std::size_t bytes_transfered) {
@@ -127,7 +127,7 @@ namespace OpcUaWebServer
 		receiveCallback_ = receiveCallback;
 
 		boost::asio::async_read(
-			stream_.next_layer(),
+			stream_,
 			recvBuffer,
 			boost::asio::transfer_exactly(contentSize),
 			[this](const boost::system::error_code& error, std::size_t bytes_transfered) {
@@ -151,7 +151,7 @@ namespace OpcUaWebServer
 		  writeCompleteCallback_  = writeCompleteCallback;
 
 		  boost::asio::async_write(
-			  stream_.next_layer(),
+			  stream_,
 			  sendBuffer,
 			  [this](const boost::system::error_code& error, std::size_t bytes_transfered) {
 			      strand_->dispatch(

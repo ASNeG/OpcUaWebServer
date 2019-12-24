@@ -254,7 +254,8 @@ namespace OpcUaWebServer
 				Log(Debug, "WebSocketServer receive request header error; close channel")
 					.parameter("Address", webSocketChannel->partner_.address().to_string())
 					.parameter("Port", webSocketChannel->partner_.port())
-					.parameter("ChannelId", webSocketChannel->id_);
+					.parameter("ChannelId", webSocketChannel->id_)
+					.parameter("Size", bytes_transfered);
 			}
 
 			closeWebSocketChannel(webSocketChannel);

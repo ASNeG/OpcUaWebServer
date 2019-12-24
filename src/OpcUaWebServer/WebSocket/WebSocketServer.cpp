@@ -18,8 +18,12 @@
 
 #include <boost/make_shared.hpp>
 #include "OpcUaStackCore/Base/Log.h"
+#include "OpcUaStackCore/Utility/Environment.h"
 #include "OpcUaWebServer/WebSocket/WebSocketServer.h"
 #include "OpcUaWebServer/WebSocket/SocketWS.h"
+#include "OpcUaWebServer/WebSocket/SocketWSS.h"
+
+using namespace OpcUaStackCore;
 
 namespace OpcUaWebServer
 {
@@ -35,6 +39,9 @@ namespace OpcUaWebServer
 
 	WebSocketServer::~WebSocketServer(void)
 	{
+		if (context_) {
+			delete context_;
+		}
 	}
 
 	void
@@ -45,6 +52,12 @@ namespace OpcUaWebServer
 		);
 	}
 
+	std::string
+	WebSocketServer::getPassword() const
+	{
+		return std::string("");
+	}
+
 	void
 	WebSocketServer::startupStrand(const StartupCompleteCallback& startupCompleteCallback)
 	{
@@ -53,6 +66,31 @@ namespace OpcUaWebServer
 			.parameter("Port", webSocketConfig_->port());
 
 		tcpAcceptor_.listen();
+
+		// TODO: read from configuration file (#61)
+		wss_ = false;
+		auto csrFile = Environment::confDir() + std::string("/ssl/crt/websocket.crt");
+		auto keyFile = Environment::confDir() + std::string("/ssl/key/websocket.pem");
+
+		Log(Info, "open ssl files")
+		    .parameter("CsrFile", csrFile)
+			.parameter("KeyFile", keyFile);
+
+		if (wss_) {
+			// create context and add certificate and private key to context
+			context_ = new boost::asio::ssl::context(
+				boost::asio::ssl::context::sslv23
+			);
+			context_->set_options(
+				boost::asio::ssl::context::default_workarounds |
+				boost::asio::ssl::context::no_sslv2 |
+				boost::asio::ssl::context::single_dh_use
+			);
+			context_->set_password_callback(boost::bind(&WebSocketServer::getPassword, this));
+			context_->use_certificate_chain_file(csrFile);
+			context_->use_private_key_file(keyFile, boost::asio::ssl::context::pem);
+		}
+
 		accept();
 
 		startupCompleteCallback(true);
@@ -101,10 +139,19 @@ namespace OpcUaWebServer
 	WebSocketChannel*
 	WebSocketServer::createWebSocketChannel(void)
 	{
-		SocketIf::SPtr socketIf = boost::make_shared<SocketWS>(webSocketConfig_->ioThread()->ioService()->io_service());
-		auto webSocketChannel = new WebSocketChannel(socketIf);
-
-		return webSocketChannel;
+		SocketIf::SPtr socketIf;
+		if (wss_) {
+			socketIf = boost::make_shared<SocketWSS>(
+				webSocketConfig_->ioThread()->ioService()->io_service(),
+				*context_
+			);
+		}
+		else {
+			socketIf = boost::make_shared<SocketWS>(
+				webSocketConfig_->ioThread()->ioService()->io_service()
+			);
+		}
+		return new WebSocketChannel(socketIf);
 	}
 
 	void

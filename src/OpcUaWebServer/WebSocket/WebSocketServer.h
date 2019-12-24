@@ -19,6 +19,7 @@
 #ifndef __OpcUaWebSocket_WebSocketServer_h__
 #define __OpcUaWebSocket_WebSocketServer_h__
 
+#include <boost/asio/ssl.hpp>
 #include "OpcUaWebServer/WebSocket/WebSocketServerBase.h"
 
 using namespace OpcUaStackCore;
@@ -54,6 +55,7 @@ namespace OpcUaWebServer
 		void delWebSocketChannel(uint32_t count) override;
 
 	  private:
+		std::string getPassword() const;
 		void startupStrand(
 			const StartupCompleteCallback& startupCompleteCallback
 		);
@@ -69,8 +71,10 @@ namespace OpcUaWebServer
 		void accept(void);
 		void handleAccept(const boost::system::error_code& error, WebSocketChannel* webSocketChannel);
 
+		bool wss_ = false;
 		bool active_ = true;
-		WebSocketConfig* webSocketConfig_;
+		WebSocketConfig* webSocketConfig_ = nullptr;
+		boost::asio::ssl::context* context_ = nullptr;
 	};
 
 }
