@@ -92,11 +92,18 @@ if (WIN32)
     install(FILES ${CONFIG_FILES} DESTINATION ${INSTALL_PREFIX}/../etc/OpcUaStack/OpcUaWebServer) 
     install(FILES ${PROJECT_SOURCE_DIR}/OpcUaWebServer/linux/log/README DESTINATION ${INSTALL_PREFIX}/../var/log/OpcUaStack/OpcUaWebServer)
     install(DIRECTORY DESTINATION ${INSTALL_PREFIX}/../var/log/OpcUaStack/OpcUaWebServer)
+
+    install(FILES ${PROJECT_SOURCE_DIR}/OpcUaWebServer/certificate/websocket.crt DESTINATION ${INSTALL_PREFIX}/../etc/OpcUaStack/OpcUaWebServer/ssl/crt)
+    install(FILES ${PROJECT_SOURCE_DIR}/OpcUaWebServer/certificate/websocket.pem DESTINATION ${INSTALL_PREFIX}/../etc/OpcUaStack/OpcUaWebServer/ssl/key)
+
 else()    
 
     install(FILES ${CONFIG_FILES} DESTINATION ${INSTALL_PREFIX}/../etc/OpcUaStack/OpcUaWebServer) 
     install(FILES ${PROJECT_SOURCE_DIR}/OpcUaWebServer/linux/log/README DESTINATION /var/log/OpcUaStack/OpcUaWebServer)
     install(DIRECTORY DESTINATION /var/log/OpcUaStack/OpcUaWebServer)
+
+    install(FILES ${PROJECT_SOURCE_DIR}/OpcUaWebServer/certificate/websocket.crt DESTINATION ${INSTALL_PREFIX}/../etc/OpcUaStack/OpcUaWebServer/ssl/crt)
+    install(FILES ${PROJECT_SOURCE_DIR}/OpcUaWebServer/certificate/websocket.pem DESTINATION ${INSTALL_PREFIX}/../etc/OpcUaStack/OpcUaWebServer/ssl/key)
 
     install(PROGRAMS ${PROJECT_BINARY_DIR}/OpcUaWebServer DESTINATION /etc/init.d)
     install(FILES ${PROJECT_BINARY_DIR}/OpcUaWebServer.conf DESTINATION /etc/init)
