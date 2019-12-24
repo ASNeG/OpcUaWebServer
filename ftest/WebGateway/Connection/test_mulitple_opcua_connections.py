@@ -1,12 +1,14 @@
 import json
 import os
 import unittest
+import ssl
 from websocket import create_connection
 
 class TestMultipleWebSocketConnections(unittest.TestCase):
 
     def test_multiple_websocket_connections(self):
         self.sessionId = []
+        self.WSS_GATEWAY_URL = os.getenv('WSS_GATEWAY_URL', "wss://127.0.0.1:8082")
         self.WS_GATEWAY_URL = os.getenv('WS_GATEWAY_URL', "ws://127.0.0.1:8082")
         self.OPC_SERVER_URL = os.getenv('OPC_SERVER_URL', "opc.tcp://127.0.0.1:8889")
 
@@ -14,7 +16,17 @@ class TestMultipleWebSocketConnections(unittest.TestCase):
         # open web socket connection
         #
         print("open connections")
-        self.ws = create_connection(self.WS_GATEWAY_URL, timeout=1)
+        if self.WSS_GATEWAY_URL:
+            self.ws = create_connection(
+                self.WSS_GATEWAY_URL,
+                sslopt={
+                     "cert_reqs" : ssl.CERT_NONE,
+                     "check_hostname" : False,
+                     "ssl_version" : ssl.PROTOCOL_TLSv1 
+                }
+            )
+        else:
+            self.ws = create_connection(self.WS_GATEWAY_URL, timeout=1)
 
         #
         # login

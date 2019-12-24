@@ -2,6 +2,7 @@ import os
 import unittest
 import json
 import time
+import ssl
 from websocket import create_connection
 
 class WebGatewayTestCase(unittest.TestCase):
@@ -9,17 +10,28 @@ class WebGatewayTestCase(unittest.TestCase):
     def setUp(self):
         time.sleep(1)
 
+        self.WSS_GATEWAY_URL = os.getenv('WSS_GATEWAY_URL', "wss://127.0.0.1:8082")
         self.WS_GATEWAY_URL = os.getenv('WS_GATEWAY_URL', "ws://127.0.0.1:8082")
         self.OPC_SERVER_URL = os.getenv('OPC_SERVER_URL', "opc.tcp://127.0.0.1:8889")
-        self.SERVER_PKI_ROOT_DIR = os.path.join(os.getenv('SERVER_PKI_ROOT_DIR', '/tmp/'),
-                                                'etc/OpcUaStack/ASNeG-Demo/pki')
+        self.SERVER_PKI_ROOT_DIR = os.path.join(os.getenv('SERVER_PKI_ROOT_DIR', '/tmp/'), 'etc/OpcUaStack/ASNeG-Demo/pki')
 
         # TODO: Here the certs of client and server should be exchanged
 
         #
         # open web socket connection
         #
-        self.ws = create_connection(self.WS_GATEWAY_URL)
+        if self.WSS_GATEWAY_URL:
+            self.ws = create_connection(
+                self.WSS_GATEWAY_URL,
+                sslopt={
+                     "cert_reqs" : ssl.CERT_NONE,
+                     "check_hostname" : False,
+                     "ssl_version" : ssl.PROTOCOL_TLSv1 
+                }
+            )
+        else:
+            self.ws = create_connection(self.WS_GATEWAY_URL)
+
 
         #
         # send login request to open opc ua session

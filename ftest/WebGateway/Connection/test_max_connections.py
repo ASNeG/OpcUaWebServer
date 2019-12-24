@@ -2,12 +2,14 @@ import json
 import os
 import unittest
 import time
+import ssl
 from websocket import create_connection
 
 class TestMaxConnections(unittest.TestCase):
 
     def test_max_connections(self):
         self.ws = []
+        self.WSS_GATEWAY_URL = os.getenv('WSS_GATEWAY_URL', "wss://127.0.0.1:8082")
         self.WS_GATEWAY_URL = os.getenv('WS_GATEWAY_URL', "ws://127.0.0.1:8082")
   
 
@@ -17,12 +19,24 @@ class TestMaxConnections(unittest.TestCase):
         print("open 100 connections")
         for idx in range(0, 100, 1):
             try:
-                local_ws = create_connection(self.WS_GATEWAY_URL, timeout=3)
+                if self.WSS_GATEWAY_URL:
+                    local_ws = create_connection(
+                        self.WSS_GATEWAY_URL,
+                        timeout=3,
+                        sslopt={
+                            "cert_reqs" : ssl.CERT_NONE,
+                            "check_hostname" : False,
+                            "ssl_version" : ssl.PROTOCOL_TLSv1 
+                        }
+                    )
+                else:
+                    local_ws = create_connection(self.WS_GATEWAY_URL, timeout=3)
             except:
-                print("timeout error")
+                print("timeout connect error")
                 self.assertTrue(False)
             self.ws.append(local_ws)
             print("CONNECT: ", idx, self.ws[idx])
+        time.sleep(1)
 
 
         #
@@ -31,8 +45,20 @@ class TestMaxConnections(unittest.TestCase):
         print("test max connection limit")
         timeout = False
         try:
-            ws = create_connection(self.WS_GATEWAY_URL, timeout=3)
+            if self.WSS_GATEWAY_URL:
+                self.ws[idx] = create_connection(
+                    self.WSS_GATEWAY_URL,
+                    timeout=3,
+                    sslopt={
+                        "cert_reqs" : ssl.CERT_NONE,
+                        "check_hostname" : False,
+                        "ssl_version" : ssl.PROTOCOL_TLSv1 
+                    }
+                )
+            else:
+                self.ws = create_connection(self.WS_GATEWAY_URL, timeout=3)
         except:
+            print("timeout max connection ok")
             timeout = True
         self.assertTrue(timeout)
 
@@ -48,8 +74,21 @@ class TestMaxConnections(unittest.TestCase):
         print("open connection")
         timeout = False
         try:
-            self.ws[0] = create_connection(self.WS_GATEWAY_URL, timeout=1)
+            if self.WSS_GATEWAY_URL:
+                self.ws[0] = create_connection(
+                    self.WSS_GATEWAY_URL,
+                    timeout=3,
+                    sslopt={
+                        "cert_reqs" : ssl.CERT_NONE,
+                        "check_hostname" : False,
+                        "ssl_version" : ssl.PROTOCOL_TLSv1 
+                    }
+                )
+            else:
+                self.ws[0] = create_connection(self.WS_GATEWAY_URL, timeout=3)
+
         except:
+            print("timeout connect error")
             timeout = True
         self.assertFalse(timeout)
 
