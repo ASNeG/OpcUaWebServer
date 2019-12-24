@@ -15,6 +15,7 @@
    Autor: Kai Huebl (kai@huebl-sgh.de)
  */
 
+#include <boost/algorithm/string/case_conv.hpp>
 #include <boost/lexical_cast.hpp>
 #include "OpcUaStackCore/Base/Log.h"
 #include "OpcUaWebServer/WebGateway/WebGateway.h"
@@ -104,6 +105,9 @@ namespace OpcUaWebServer
 		webSocketConfig_.ioThread(ioThread);
 		webSocketConfig_.maxConnections(webGatewayConfig_.maxConnections());
 		webSocketConfig_.maxPacketLength(webGatewayConfig_.maxPacketLength());
+		webSocketConfig_.ssl(webGatewayConfig_.ssl());
+		webSocketConfig_.csrFile(webGatewayConfig_.csrFile());
+		webSocketConfig_.keyFile(webGatewayConfig_.keyFile());
 
 		auto receiveMessageCallback = [this](WebSocketMessage::SPtr& webSocketMessage) {
 			clientManager_.receiveMessage(webSocketMessage);
@@ -231,6 +235,43 @@ namespace OpcUaWebServer
 			return false;
 		}
 		webGatewayConfig_.maxConnections(maxConnections);
+
+		//
+		// now we read the optional ssl attributes
+		//
+
+		// read ssl element
+		std::string sslString;
+		success = config->getConfigParameter("OpcUaWebServerModel.WebGateway.SSL", sslString);
+		if (success && boost::to_upper_copy(sslString) == "ON") {
+			webGatewayConfig_.ssl(true);
+		}
+
+		// read certificate file
+		if (webGatewayConfig_.ssl()) {
+			std::string csrFile;
+			success = config->getConfigParameter("OpcUaWebServerModel.WebGateway.CSRFile", csrFile);
+			if (!success) {
+				Log(Error, "missing web gateway parameter in configuration file")
+					.parameter("Parameter", "OpcUaWebServerModel.WebGateway.CSRFile")
+					.parameter("ConfigurationFile", config->configFileName());
+				return false;
+			}
+			webGatewayConfig_.csrFile(csrFile);
+		}
+
+		// read private key
+		if (webGatewayConfig_.ssl()) {
+			std::string keyFile;
+			success = config->getConfigParameter("OpcUaWebServerModel.WebGateway.KeyFile", keyFile);
+			if (!success) {
+				Log(Error, "missing web gateway parameter in configuration file")
+					.parameter("Parameter", "OpcUaWebServerModel.WebGateway.KeyFile")
+					.parameter("ConfigurationFile", config->configFileName());
+				return false;
+			}
+			webGatewayConfig_.keyFile(keyFile);
+		}
 
 		return true;
 	}

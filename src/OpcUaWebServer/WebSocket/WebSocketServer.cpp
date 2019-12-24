@@ -67,14 +67,19 @@ namespace OpcUaWebServer
 
 		tcpAcceptor_.listen();
 
-		// TODO: read from configuration file (#61)
-		wss_ = false;
-		auto csrFile = Environment::confDir() + std::string("/ssl/crt/websocket.crt");
-		auto keyFile = Environment::confDir() + std::string("/ssl/key/websocket.pem");
+		// set ssl configuration parameter if exist
+		wss_ = webSocketConfig_->ssl();
+		auto csrFile = webSocketConfig_->csrFile();
+		auto keyFile = webSocketConfig_->keyFile();
 
-		Log(Info, "open ssl files")
-		    .parameter("CsrFile", csrFile)
-			.parameter("KeyFile", keyFile);
+		if (wss_) {
+			Log(Info, "use wss protocol")
+		    	.parameter("CsrFile", csrFile)
+				.parameter("KeyFile", keyFile);
+		}
+		else {
+			Log(Info, "use ws protocol");
+		}
 
 		if (wss_) {
 			// create context and add certificate and private key to context

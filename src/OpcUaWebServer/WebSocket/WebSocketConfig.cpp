@@ -144,39 +144,39 @@ namespace OpcUaWebServer
 	}
 
 	void
-	WebSocketConfig::useSecurityConnection(bool useSecurityConnection)
+	WebSocketConfig::ssl(bool ssl)
 	{
-		useSecurityConnection_ = useSecurityConnection;
+		ssl_ = ssl;
 	}
 
 	bool
-	WebSocketConfig::useSecurityConnection(void)
+	WebSocketConfig::ssl(void)
 	{
-		return useSecurityConnection_;
+		return ssl_;
 	}
 
 	void
-	WebSocketConfig::privateKeyFile(const std::string& privateKeyFile)
+	WebSocketConfig::csrFile(const std::string& csrFile)
 	{
-		privateKeyFile_ = privateKeyFile;
+		csrFile_ = csrFile;
 	}
 
 	std::string
-	WebSocketConfig::privateKeyFile(void)
+	WebSocketConfig::csrFile(void)
 	{
-		return privateKeyFile_;
+		return csrFile_;
 	}
 
 	void
-	WebSocketConfig::sslCertificateFile(const std::string& sslCertificateFile)
+	WebSocketConfig::keyFile(const std::string& keyFile)
 	{
-		sslCertificateFile_ = sslCertificateFile;
+		keyFile_ = keyFile;
 	}
 
 	std::string
-	WebSocketConfig::sslCertificateFile(void)
+	WebSocketConfig::keyFile(void)
 	{
-		return sslCertificateFile_;
+		return keyFile_;
 	}
 
 }

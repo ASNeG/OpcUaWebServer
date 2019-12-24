@@ -41,6 +41,13 @@ namespace OpcUaWebServer
 		void maxPacketLength(uint32_t maxPacketLength);
 		uint32_t maxPacketLength(void);
 
+		void ssl(bool ssl);
+		bool ssl(void);
+		void csrFile(const std::string& csrFile);
+		std::string csrFile(void);
+		void keyFile(const std::string& keyFile);
+		std::string keyFile(void);
+
 	  private:
 		bool active_;
 		std::string address_;
@@ -48,6 +55,10 @@ namespace OpcUaWebServer
 
 		uint32_t maxConnections_ = 0;
 		uint32_t maxPacketLength_ = 0;
+
+		bool ssl_ = false;
+		std::string csrFile_ = "";
+		std::string keyFile_ = "";
 	};
 
 }
