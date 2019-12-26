@@ -14,6 +14,10 @@ Default Configuration
       <Port>8081</Port>
       <RequestTimeout>5000</RequestTimeout>
       <IdleTimeout>3600000</IdleTimeout>
+
+      <SSL>on</SSL>
+      <CSRFile>@CONF_DIR@/ssl/crt/websocket.crt</CSRFile>
+      <KeyFile>@CONF_DIR@/ssl/key/websocket.pem</KeyFile>
   </WebSocketServer>
 
 
@@ -33,6 +37,16 @@ Configuration Settings
 +--------------------------------+-------------------------------------------------------------+
 | IdleTimeout                    | Time after the last message in milliseconds                 |
 |                                | that the server waits before closing the connection.        |
++--------------------------------+-------------------------------------------------------------+
+| SSL                            | activates ("on") or deactivates ("off") the websocket       |
+|                                | security. The SSL tag is optional. If the SSL tag is not    |
+|                                | available, the websocket security is deactivated            |
++--------------------------------+-------------------------------------------------------------+
+| CSRFile                        | Name of the certificate file. The tag must be specified     |
+|                                | when the websocket security is switched on                  |
++--------------------------------+-------------------------------------------------------------+
+| KeyFile                        | Name of the private key file. The tag must be specified     |
+|                                | when the websocket security is switched on.                 |
 +--------------------------------+-------------------------------------------------------------+
 
 
@@ -145,6 +159,58 @@ OpcUaClient Configuration Settings
 |        |      | MetaData       | Additional data that can be available through               |
 |        |      |                | :term:`JSON API`.                                           |
 +--------+------+----------------+-------------------------------------------------------------+
+
+WebSocket Gateway
+=================
+
+The **WebSocket Server** provides a :term:`JSON API` via bidirectional :term:`WebSocket` protocol for access to :term:`OPC UA` variables.
+Its configuration starts with XML tag *WebSocketServer* in **OpcUaWebServerModel.xml**.
+
+Default Configuration
+----------------------
+
+.. code-block:: xml
+
+  <WebSocketServer>
+      <Address>0.0.0.0</Address>
+      <Port>8081</Port>
+      <RequestTimeout>5000</RequestTimeout>
+      <IdleTimeout>3600000</IdleTimeout>
+
+      <SSL>on</SSL>
+      <CSRFile>@CONF_DIR@/ssl/crt/websocket.crt</CSRFile>
+      <KeyFile>@CONF_DIR@/ssl/key/websocket.pem</KeyFile>
+  </WebSocketServer>
+
+
+Configuration Settings
+----------------------
+
++--------------------------------+-------------------------------------------------------------+
+| XML tag                        | Description                                                 |
++================================+=============================================================+
+| IP Address                     | IP address bound by the WebSocket server                    |
++--------------------------------+-------------------------------------------------------------+
+| Port                           | Port bound by the WebSocket server                          |
++--------------------------------+-------------------------------------------------------------+
+| RequestTimeout                 | Time after the TCP connection establishment in milliseconds,|
+|                                | that the server waits for the request                       |
+|                                | from the client before closing the connection.              |
++--------------------------------+-------------------------------------------------------------+
+| IdleTimeout                    | Time after the last message in milliseconds                 |
+|                                | that the server waits before closing the connection.        |
++--------------------------------+-------------------------------------------------------------+
+| SSL                            | activates ("on") or deactivates ("off") the websocket       |
+|                                | security. The SSL tag is optional. If the SSL tag is not    |
+|                                | available, the websocket security is deactivated            |
++--------------------------------+-------------------------------------------------------------+
+| CSRFile                        | Name of the certificate file. The tag must be specified     |
+|                                | when the websocket security is switched on                  |
++--------------------------------+-------------------------------------------------------------+
+| KeyFile                        | Name of the private key file. The tag must be specified     |
+|                                | when the websocket security is switched on.                 |
++--------------------------------+-------------------------------------------------------------+
+
 
 
 .. note:: *NodeId* has the format common for OPC UA standard (e.g. "i=208;ns=0"), but be
