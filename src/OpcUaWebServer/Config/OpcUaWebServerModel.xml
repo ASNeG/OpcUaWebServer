@@ -39,7 +39,7 @@
   	<RequestTimeout>5000</RequestTimeout>
   	<IdleTimeout>3600000</IdleTimeout>
   	
-  	<SSL>off</SSL>
+  	<SSL>on</SSL>
   	<CSRFile>@CONF_DIR@/ssl/crt/websocket.crt</CSRFile>
   	<KeyFile>@CONF_DIR@/ssl/key/websocket.pem</KeyFile>
   </WebSocketServer>
