@@ -181,6 +181,43 @@ namespace OpcUaWebServer
 		}
 		webSocketConfig_.idleTimeout(idleTimeout);
 
+		//
+		// now we read the optional ssl attributes
+		//
+
+		// read ssl element
+		std::string sslString;
+		success = config->getConfigParameter("OpcUaWebServerModel.WebSocketServer.SSL", sslString);
+		if (success && boost::to_upper_copy(sslString) == "ON") {
+			webSocketConfig_.ssl(true);
+		}
+
+		// read certificate file
+		if (webSocketConfig_.ssl()) {
+			std::string csrFile;
+			success = config->getConfigParameter("OpcUaWebServerModel.WebSocketServer.CSRFile", csrFile);
+			if (!success) {
+				Log(Error, "missing web gateway parameter in configuration file")
+					.parameter("Parameter", "OpcUaWebServerModel.WebSocketServer.CSRFile")
+					.parameter("ConfigurationFile", config->configFileName());
+				return false;
+			}
+			webSocketConfig_.csrFile(csrFile);
+		}
+
+		// read private key
+		if (webSocketConfig_.ssl()) {
+			std::string keyFile;
+			success = config->getConfigParameter("OpcUaWebServerModel.WebSocketServer.KeyFile", keyFile);
+			if (!success) {
+				Log(Error, "missing web gateway parameter in configuration file")
+					.parameter("Parameter", "OpcUaWebServerModel.WebSocketServer.KeyFile")
+					.parameter("ConfigurationFile", config->configFileName());
+				return false;
+			}
+			webSocketConfig_.keyFile(keyFile);
+		}
+
 		return true;
 	}
 
