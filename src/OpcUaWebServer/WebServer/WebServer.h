@@ -1,5 +1,5 @@
 /*
-   Copyright 2015 Kai Huebl (kai@huebl-sgh.de)
+   Copyright 2015-2019 Kai Huebl (kai@huebl-sgh.de)
 
    Lizenziert gemäß Apache Licence Version 2.0 (die „Lizenz“); Nutzung dieser
    Datei nur in Übereinstimmung mit der Lizenz erlaubt.
@@ -35,11 +35,20 @@ namespace OpcUaWebServer
 	class WebServer
 	{
 	  public:
+		typedef std::function<void (bool error)> StartupCompleteCallback;
+		typedef std::function<void (bool error)> ShutdownCompleteCallback;
+
 		WebServer(void);
 		~WebServer(void);
 
-		bool startup(Config* config, const IOThread::SPtr& ioThread);
-		bool shutdown(void);
+		void startup(
+			Config* config,
+			const IOThread::SPtr& ioThread,
+			const StartupCompleteCallback& startupCompleteCallback
+		);
+		void shutdown(
+			const ShutdownCompleteCallback& shutdownCompleteCallback
+		);
 
 	  private:
 		bool getHttpConfig(Config* config);
@@ -48,7 +57,6 @@ namespace OpcUaWebServer
 		HttpServer::SPtr httpServer_;
 		HttpContent::SPtr httpContent_;
 		HttpConfig httpConfig_;
-		IOThread::SPtr ioThread_;
 	};
 
 }

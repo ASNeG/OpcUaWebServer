@@ -31,15 +31,28 @@ namespace OpcUaWebServer
 	: public HttpServerBase
 	{
 	  public:
+		typedef std::function<void (bool error)> StartupCompleteCallback;
+		typedef std::function<void (bool error)> ShutdownCompleteCallback;
 		typedef boost::shared_ptr<HttpServer> SPtr;
 
 		HttpServer(HttpConfig* httpConfig);
 		virtual ~HttpServer(void);
 
-		bool startup(void);
-		bool shutdown(void);
+		void startup(
+		    const StartupCompleteCallback& startupCompleteCallback
+		);
+		void shutdown(
+			const ShutdownCompleteCallback& shutdownCompleteCallback
+		);
 
 	  private:
+		void startupStrand(
+			const StartupCompleteCallback& startupCompleteCallback
+		);
+		void shutdownStrand(
+			const ShutdownCompleteCallback& shutdownCompleteCallback
+		);
+
 		void accept(void);
 		void handleAccept(const boost::system::error_code& error, HttpChannel* httpChannel);
 		void handleAccept1(const boost::system::error_code& error){}

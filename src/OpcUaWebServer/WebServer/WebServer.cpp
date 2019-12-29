@@ -31,7 +31,6 @@ namespace OpcUaWebServer
 	: httpServer_()
 	, httpContent_()
 	, httpConfig_()
-	, ioThread_()
 	{
 	}
 
@@ -39,45 +38,67 @@ namespace OpcUaWebServer
 	{
 	}
 
-	bool
-	WebServer::startup(Config* config, const IOThread::SPtr& ioThread)
+	void
+	WebServer::startup(
+		Config* config,
+		const IOThread::SPtr& ioThread,
+		const StartupCompleteCallback& startupCompleteCallback
+	)
 	{
-		ioThread_ = ioThread;
-
-		if (!getHttpConfig(config)) return false;
-
-		if (!httpConfig_.enable()) {
-			return true;
+		if (!getHttpConfig(config)) {
+			startupCompleteCallback(false);
+			return;
 		}
 
-		if (!getIPLoggerConfig(config)) return false;
+		if (!httpConfig_.enable()) {
+			startupCompleteCallback(true);
+			return;
+		}
 
-		httpConfig_.ioThread(ioThread_);
+		if (!getIPLoggerConfig(config)) {
+			startupCompleteCallback(false);
+			return;
+		}
 
+		httpConfig_.ioThread(ioThread);
+		httpConfig_.strand(ioThread->createStrand());
+
+		// startup http content reader
 		httpContent_ = boost::make_shared<HttpContent>();
 		httpContent_->httpConfig(&httpConfig_);
-		if (!httpContent_->startup()) return false;
-
-		httpServer_ = boost::make_shared<HttpServer>(&httpConfig_);
-		httpServer_->addHttpServerIf("GET", httpContent_.get());
-		if (!httpServer_->startup()) return false;
-
-		return true;
-	}
-
-	bool
-	WebServer::shutdown(void)
-	{
-		if (!httpConfig_.enable()) {
-			return true;
+		if (!httpContent_->startup()) {
+			startupCompleteCallback(false);
+			return;
 		}
 
-		httpServer_->shutdown();
-		httpServer_.reset();
+		// startup http server
+		httpServer_ = boost::make_shared<HttpServer>(&httpConfig_);
+		httpServer_->addHttpServerIf("GET", httpContent_.get());
+		httpServer_->startup(
+			[this, startupCompleteCallback](bool error) {
+				startupCompleteCallback(error);
+			}
+		);
+	}
 
-		httpContent_->shutdown();
-		httpContent_.reset();
-		return true;
+	void
+	WebServer::shutdown(
+		const ShutdownCompleteCallback& shutdownCompleteCallback
+	)
+	{
+		if (!httpConfig_.enable()) {
+			shutdownCompleteCallback(true);
+			return;
+		}
+
+		httpServer_->shutdown(
+			[this, shutdownCompleteCallback](bool error) {
+				httpContent_->shutdown();
+				httpServer_.reset();
+				httpContent_.reset();
+				shutdownCompleteCallback(error);
+			}
+		);
 	}
 
 	bool

@@ -56,8 +56,10 @@ namespace OpcUaWebServer
 		//- OpcUaClientManagerIf ----------------------------------------------
 
 	  private:
+		bool startupWebServer(Config& config);
 		bool startupWebSocket(Config& config);
 		bool startupWebGateway(Config& config);
+		bool shutdownWebServer(void);
 		bool shutdownWebSocket(void);
 		bool shutdownWebGateway(void);
 

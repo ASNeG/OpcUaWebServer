@@ -42,6 +42,8 @@ namespace OpcUaWebServer
 		uint32_t port(void);
 		void ioThread(const IOThread::SPtr& ioThread);
 		IOThread::SPtr& ioThread(void);
+		void strand(const boost::shared_ptr<boost::asio::io_service::strand>& strand);
+		boost::shared_ptr<boost::asio::io_service::strand>& strand(void);
 		void webDirectory(const std::string& webDirectory);
 		std::string webDirectory(void);
 		void requestTimeout(uint32_t requestTimeout);
@@ -63,6 +65,7 @@ namespace OpcUaWebServer
 		std::string address_;
 		uint32_t port_;
 		IOThread::SPtr ioThread_;
+		boost::shared_ptr<boost::asio::io_service::strand> strand_;
 		std::string webDirectory_;
 		uint32_t requestTimeout_;
 

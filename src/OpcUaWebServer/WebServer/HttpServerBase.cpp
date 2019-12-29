@@ -1,5 +1,5 @@
 /*
-   Copyright 2015 Kai Huebl (kai@huebl-sgh.de)
+   Copyright 2015-2019 Kai Huebl (kai@huebl-sgh.de)
 
    Lizenziert gemäß Apache Licence Version 2.0 (die „Lizenz“); Nutzung dieser
    Datei nur in Übereinstimmung mit der Lizenz erlaubt.
@@ -61,6 +61,7 @@ namespace OpcUaWebServer
 
 		// read data until \r\n\r\n
 		httpChannel->async_read_until(
+			httpConfig_->strand(),
 			httpChannel->recvBuffer_,
 			boost::bind(&HttpServerBase::handleReceiveRequestHeader, this, boost::asio::placeholders::error, boost::asio::placeholders::bytes_transferred, httpChannel),
 			"\r\n\r\n"
@@ -142,6 +143,7 @@ namespace OpcUaWebServer
 		httpConfig_->ioThread()->slotTimer()->start(httpChannel->slotTimerElement_);
 
 		httpChannel->async_read_exactly(
+			httpConfig_->strand(),
 			httpChannel->recvBuffer_,
 			boost::bind(&HttpServerBase::handleReceiveRequestContent, this, boost::asio::placeholders::error, boost::asio::placeholders::bytes_transferred, httpChannel),
 			contentLength-numAdditionalBytes
@@ -211,6 +213,7 @@ namespace OpcUaWebServer
 		std::ostream os(&httpChannel->sendBuffer_);
 		httpChannel->httpResponse_.encodeRequestHeader(os);
 		httpChannel->async_write(
+			httpConfig_->strand(),
 			httpChannel->sendBuffer_,
 			boost::bind(&HttpServerBase::handleWriteComplete, this, boost::asio::placeholders::error, httpChannel)
 		);

@@ -676,9 +676,9 @@
 			function connect() {
 				var ip;
 				if (location.hostname == null || location.hostname == "") {
-					ip = "ws://127.0.0.1:8081";
+					ip = "wss://127.0.0.1:8081";
 				} else {
-					ip = "ws://" + location.hostname  + ":8081";
+					ip = "wss://" + location.hostname  + ":8081";
 				}
 
 				ws = new WebSocket(ip, "json");
@@ -696,7 +696,7 @@
 			
 				connect();
 			
-				var myVar = setInterval(function () {myTimer()}, 1000);
+				var myVar = setInterval(function () {myTimer()}, 2000);
 			}
 
 		</script>		
