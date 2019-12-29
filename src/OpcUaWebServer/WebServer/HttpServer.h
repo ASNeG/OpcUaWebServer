@@ -19,6 +19,7 @@
 #ifndef __OpcUaWebServer_HttpServer_h__
 #define __OpcUaWebServer_HttpServer_h__
 
+#include <boost/asio/ssl.hpp>
 #include "OpcUaWebServer/WebServer/HttpServerBase.h"
 #include "OpcUaWebServer/WebServer/IPLogger.h"
 
@@ -52,12 +53,16 @@ namespace OpcUaWebServer
 		void shutdownStrand(
 			const ShutdownCompleteCallback& shutdownCompleteCallback
 		);
+		std::string getPassword() const;
+		HttpChannel* createHttpChannel(void);
 
 		void accept(void);
 		void handleAccept(const boost::system::error_code& error, HttpChannel* httpChannel);
 		void handleAccept1(const boost::system::error_code& error){}
 
+		bool ssl_ = false;
 		HttpConfig* httpConfig_;
+		boost::asio::ssl::context* context_ = nullptr;
 		IPLogger ipLogger_;
 	};
 

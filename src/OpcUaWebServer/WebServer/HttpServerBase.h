@@ -48,7 +48,6 @@ namespace OpcUaWebServer
 
 		HttpConfig* httpConfig_;
 		TCPAcceptor tcpAcceptor_;
-		boost::asio::streambuf recvBuffer_;
 
 		typedef std::map<std::string, HttpServerIf*> HttpServerIfMap;
 		HttpServerIfMap httpServerIfMap_;

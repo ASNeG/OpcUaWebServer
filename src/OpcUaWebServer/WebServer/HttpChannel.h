@@ -21,6 +21,7 @@
 
 #include "OpcUaStackCore/Network/TCPConnection.h"
 #include "OpcUaStackCore/Utility/SlotTimer.h"
+#include "OpcUaWebServer/Socket/SocketIf.h"
 #include "OpcUaWebServer/WebServer/HttpRequest.h"
 #include "OpcUaWebServer/WebServer/HttpResponse.h"
 
@@ -30,13 +31,14 @@ namespace OpcUaWebServer
 {
 
 	class HttpChannel
-	: public TCPConnection
 	{
 	  public:
 		static uint32_t gChannelId_;
 
-		HttpChannel(boost::asio::io_service& io_service);
+		HttpChannel(SocketIf::SPtr& socketIf);
 		virtual ~HttpChannel(void);
+
+		SocketIf& socket(void);
 
 		OpcUaStackCore::SlotTimerElement::SPtr slotTimerElement_;
 
@@ -47,6 +49,9 @@ namespace OpcUaWebServer
 		HttpRequest httpRequest_;
 		HttpResponse httpResponse_;
 		boost::asio::ip::tcp::endpoint partner_;
+
+	  private:
+		SocketIf::SPtr socketIf_ = nullptr;
 	};
 
 }

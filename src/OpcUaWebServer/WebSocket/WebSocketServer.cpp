@@ -18,7 +18,6 @@
 
 #include <boost/make_shared.hpp>
 #include "OpcUaStackCore/Base/Log.h"
-#include "OpcUaStackCore/Utility/Environment.h"
 #include "OpcUaWebServer/Socket/SocketRaw.h"
 #include "OpcUaWebServer/Socket/SocketSSL.h"
 #include "OpcUaWebServer/WebSocket/WebSocketServer.h"
