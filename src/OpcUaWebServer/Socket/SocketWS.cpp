@@ -17,7 +17,7 @@
  */
 
 #include <boost/system/error_code.hpp>
-#include "OpcUaWebServer/WebSocket/SocketWS.h"
+#include "OpcUaWebServer/Socket/SocketWS.h"
 
 namespace OpcUaWebServer
 {

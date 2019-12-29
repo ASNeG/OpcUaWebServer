@@ -19,9 +19,9 @@
 #include <boost/make_shared.hpp>
 #include "OpcUaStackCore/Base/Log.h"
 #include "OpcUaStackCore/Utility/Environment.h"
+#include "OpcUaWebServer/Socket/SocketWS.h"
+#include "OpcUaWebServer/Socket/SocketWSS.h"
 #include "OpcUaWebServer/WebSocket/WebSocketServer.h"
-#include "OpcUaWebServer/WebSocket/SocketWS.h"
-#include "OpcUaWebServer/WebSocket/SocketWSS.h"
 
 using namespace OpcUaStackCore;
 

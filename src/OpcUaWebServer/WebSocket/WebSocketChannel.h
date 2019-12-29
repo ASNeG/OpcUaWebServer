@@ -22,10 +22,10 @@
 #include <map>
 #include "OpcUaStackCore/Network/TCPConnection.h"
 #include "OpcUaStackCore/Utility/SlotTimer.h"
+#include "OpcUaWebServer/Socket/SocketIf.h"
 #include "OpcUaWebServer/WebSocket/WebSocketRequest.h"
 #include "OpcUaWebServer/WebSocket/WebSocketResponse.h"
 #include "OpcUaWebServer/WebSocket/SendQueue.h"
-#include "OpcUaWebServer/WebSocket/SocketIf.h"
 
 using namespace OpcUaStackCore;
 
