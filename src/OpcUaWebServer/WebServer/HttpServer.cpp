@@ -37,8 +37,22 @@ namespace OpcUaWebServer
 	{
 	}
 
-	bool
-	HttpServer::startup(void)
+	void
+	HttpServer::startup(
+		const StartupCompleteCallback& startupCompleteCallback
+	)
+	{
+		httpConfig_->strand()->dispatch(
+			[this, startupCompleteCallback](){
+			    startupStrand(startupCompleteCallback);
+		    }
+		);
+	}
+
+	void
+	HttpServer::startupStrand(
+		const StartupCompleteCallback& startupCompleteCallback
+	)
 	{
 		Log(Info, "open http listener socket")
 			.parameter("Address", httpConfig_->address())
@@ -47,22 +61,48 @@ namespace OpcUaWebServer
 		tcpAcceptor_.listen(128);
 		accept();
 
-		return true;
+		return startupCompleteCallback(true);
 	}
 
-	bool
-	HttpServer::shutdown(void)
+	void
+	HttpServer::shutdown(
+		const ShutdownCompleteCallback& shutdownCompleteCallback
+	)
+	{
+		httpConfig_->strand()->dispatch(
+			[this, shutdownCompleteCallback](){
+			    shutdownStrand(shutdownCompleteCallback);
+		    }
+		);
+	}
+
+	void
+	HttpServer::shutdownStrand(
+		const ShutdownCompleteCallback& shutdownCompleteCallback
+	)
 	{
 		tcpAcceptor_.close();
-		return true;
+		shutdownCompleteCallback(true);
 	}
 
 	void
 	HttpServer::accept(void)
 	{
-		HttpChannel* httpChannel = new HttpChannel(httpConfig_->ioThread()->ioService()->io_service());
+		auto httpChannel = new HttpChannel(httpConfig_->ioThread()->ioService()->io_service());
+
+#if 0
+		httpChannel->socket().async_accept(
+			httpConfig_->strand(),
+			&tcpAcceptor_,
+			[this, httpChannel](const boost::system::error_code& error) {
+				handleAccept(error, httpChannel);
+			}
+		);
+#endif
+
 		tcpAcceptor_.async_accept(
 			httpChannel->socket(),
+			httpConfig_->strand(),
 			boost::bind(&HttpServer::handleAccept, this, boost::asio::placeholders::error, httpChannel)
 		);
 		Log(Debug, "HttpServer is waiting for new connection");

@@ -48,7 +48,9 @@ namespace OpcUaWebServer
 	WebSocketServer::startup(const StartupCompleteCallback& startupCompleteCallback)
 	{
 		webSocketConfig_->strand()->dispatch(
-			[this, startupCompleteCallback](){ startupStrand(startupCompleteCallback); }
+			[this, startupCompleteCallback](){
+			    startupStrand(startupCompleteCallback);
+		    }
 		);
 	}
 
@@ -106,7 +108,9 @@ namespace OpcUaWebServer
 	{
 		ShutdownCompleteCallback tmpShutdownCompleteCallback = shutdownCompleteCallback;
 		webSocketConfig_->strand()->dispatch(
-			[this, tmpShutdownCompleteCallback](){ shutdownStrand(tmpShutdownCompleteCallback); }
+			[this, tmpShutdownCompleteCallback](){
+			    shutdownStrand(tmpShutdownCompleteCallback);
+		    }
 		);
 	}
 

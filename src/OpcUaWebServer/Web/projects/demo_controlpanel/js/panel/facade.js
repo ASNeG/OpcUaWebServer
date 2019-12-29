@@ -292,9 +292,9 @@ function Facade(html_ul_id, html_status_icon_id, html_board_id, html_dialog_id) 
 
     function getIp() {
         if (location.hostname == null || location.hostname == "") {
-            return "ws://127.0.0.1:8081";
+            return "wss://127.0.0.1:8081";
         } else {
-            return "ws://" + location.hostname  + ":8081";
+            return "wss://" + location.hostname  + ":8081";
         }
     }
 
