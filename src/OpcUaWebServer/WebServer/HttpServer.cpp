@@ -67,7 +67,7 @@ namespace OpcUaWebServer
 		// set ssl configuration parameter if exist
 		ssl_ = false;
 		auto csrFile = Environment::confDir() + std::string("/ssl/crt/websocket.crt");
-		auto keyFile = Environment::confDir() + std::string("/ssl/key/websocket.key");
+		auto keyFile = Environment::confDir() + std::string("/ssl/key/websocket.pem");
 
 		if (ssl_) {
 			Log(Info, "use https protocol")
@@ -174,7 +174,7 @@ namespace OpcUaWebServer
 
 		ipLogger_.logout(httpChannel->partner_.address().to_string());
 
-		receiveRequest(httpChannel);
+		performHandshake(httpChannel);
 
 		accept();
 	}

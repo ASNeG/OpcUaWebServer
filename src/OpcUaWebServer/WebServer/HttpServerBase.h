@@ -37,14 +37,45 @@ namespace OpcUaWebServer
 		void receiveRequest(HttpChannel* httpChannel);
 
 	  protected:
-		void handleReceiveRequestHeaderTimeout(HttpChannel* httpChannel);
-		void handleReceiveRequestHeader(const boost::system::error_code& error, std::size_t bytes_transfered, HttpChannel* httpChannel);
-		void handleReceiveRequestContentTimeout(HttpChannel* httpChannel);
-		void handleReceiveRequestContent(const boost::system::error_code& error, std::size_t bytes_transfered, HttpChannel* httpChannel);
-		void processRequest(HttpChannel* httpChannel, HttpRequest& httpRequest);
-		void handleWriteComplete(const boost::system::error_code& error, HttpChannel* httpChannel);
-		void closeHttpChannel(HttpChannel* httpChannel);
-		void timeoutHttpChannel(HttpChannel* httpChannel, const std::string& location);
+		void handleReceiveRequestHeaderTimeout(
+			HttpChannel* httpChannel
+		);
+		void handleReceiveRequestHeader(
+			const boost::system::error_code& error,
+			std::size_t bytes_transfered,
+			HttpChannel* httpChannel
+		);
+		void handleReceiveRequestContentTimeout(
+			HttpChannel* httpChannel
+		);
+		void handleReceiveRequestContent(
+			const boost::system::error_code& error,
+			std::size_t bytes_transfered,
+			HttpChannel* httpChannel
+		);
+		void processRequest(
+			HttpChannel* httpChannel,
+			HttpRequest& httpRequest
+		);
+		void handleWriteComplete(
+			const boost::system::error_code& error,
+			std::size_t bytes_transfered,
+			HttpChannel* httpChannel
+		);
+		void closeHttpChannel(
+			HttpChannel* httpChannel
+		);
+		void timeoutHttpChannel(
+			HttpChannel* httpChannel,
+			const std::string& location
+		);
+		void performHandshake(
+			HttpChannel* httpChannel
+		);
+		void performHandshakeComplete(
+			const boost::system::error_code& error,
+			HttpChannel* httpChannel
+		);
 
 		HttpConfig* httpConfig_;
 		TCPAcceptor tcpAcceptor_;
