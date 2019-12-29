@@ -214,7 +214,9 @@ namespace OpcUaWebServer
 			httpChannel->socket().async_write(
 				httpConfig_->strand(),
 				httpChannel->sendBuffer_,
-				boost::bind(&HttpServerBase::handleWriteComplete, this, boost::asio::placeholders::error, httpChannel)
+				[this, httpChannel](const boost::system::error_code& error, std::size_t bytes_transfered) {
+					handleWriteComplete(error, bytes_transfered, httpChannel);
+				}
 			);
 			return;
 		}
@@ -228,14 +230,20 @@ namespace OpcUaWebServer
 		httpChannel->socket().async_write(
 			httpConfig_->strand(),
 			httpChannel->sendBuffer_,
-			boost::bind(&HttpServerBase::handleWriteComplete, this, boost::asio::placeholders::error, httpChannel)
+			[this, httpChannel](const boost::system::error_code& error, std::size_t bytes_transfered) {
+				handleWriteComplete(error, bytes_transfered, httpChannel);
+			}
 		);
 
 		return;
 	}
 
 	void
-	HttpServerBase::handleWriteComplete(const boost::system::error_code& error, HttpChannel* httpChannel)
+	HttpServerBase::handleWriteComplete(
+		const boost::system::error_code& error,
+		std::size_t bytes_transfered,
+		HttpChannel* httpChannel
+	)
 	{
 		if (error) {
 			Log(Debug, "HttpServer send response error; close channel")
@@ -269,6 +277,57 @@ namespace OpcUaWebServer
 
 		httpChannel->timeout_ = true;
 		httpChannel->socket().cancel();
+	}
+
+	// ------------------------------------------------------------------------
+	// ------------------------------------------------------------------------
+	//
+	// handle handshake
+	//
+	// ------------------------------------------------------------------------
+	// ------------------------------------------------------------------------
+	void
+	HttpServerBase::performHandshake(HttpChannel* httpChannel)
+	{
+		// start timer
+		httpChannel->slotTimerElement_->expireFromNow(httpConfig_->requestTimeout());
+		httpChannel->slotTimerElement_->timeoutCallback(
+				httpConfig_->strand(),
+			[this, httpChannel](void) { timeoutHttpChannel(httpChannel, "perform handshake"); }
+		);
+		httpConfig_->ioThread()->slotTimer()->start(httpChannel->slotTimerElement_);
+
+		httpChannel->socket().performHandshake(
+			httpConfig_->strand(),
+			[this, httpChannel](const boost::system::error_code& error) {
+			    performHandshakeComplete(error, httpChannel);
+		    }
+		);
+	}
+
+	void
+	HttpServerBase::performHandshakeComplete(
+		const boost::system::error_code& error,
+		HttpChannel* httpChannel
+	)
+	{
+		// stop request timer
+		httpConfig_->ioThread()->slotTimer()->stop(httpChannel->slotTimerElement_);
+
+		if (httpChannel->timeout_ || error) {
+
+			if (error) {
+				Log(Debug, "http server receive handshake error; close channel")
+					.parameter("Address", httpChannel->partner_.address().to_string())
+					.parameter("Port", httpChannel->partner_.port())
+					.parameter("ChannelId", httpChannel->channelId_);
+			}
+
+			closeHttpChannel(httpChannel);
+			return;
+		}
+
+		receiveRequest(httpChannel);
 	}
 
 }
