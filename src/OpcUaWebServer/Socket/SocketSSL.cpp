@@ -16,12 +16,12 @@
 
  */
 
-#include "OpcUaWebServer/Socket/SocketWSS.h"
+#include "OpcUaWebServer/Socket/SocketSSL.h"
 
 namespace OpcUaWebServer
 {
 
-	SocketWSS::SocketWSS(
+	SocketSSL::SocketSSL(
 		boost::asio::io_service& io_service,
 		boost::asio::ssl::context& context
 	)
@@ -30,12 +30,12 @@ namespace OpcUaWebServer
 	{
 	}
 
-	SocketWSS::~SocketWSS(void)
+	SocketSSL::~SocketSSL(void)
 	{
 	}
 
 	boost::asio::ip::tcp::endpoint
-	SocketWSS::remote_endpoint(
+	SocketSSL::remote_endpoint(
 		void
 	)
 	{
@@ -43,7 +43,7 @@ namespace OpcUaWebServer
 	}
 
 	boost::asio::ip::tcp::endpoint
-	SocketWSS::local_endpoint(
+	SocketSSL::local_endpoint(
 		void
 	)
 	{
@@ -51,7 +51,7 @@ namespace OpcUaWebServer
 	}
 
 	void
-	SocketWSS::close(
+	SocketSSL::close(
 		void
 	)
 	{
@@ -59,7 +59,7 @@ namespace OpcUaWebServer
 	}
 
 	void
-	SocketWSS::cancel(
+	SocketSSL::cancel(
 		void
 	)
 	{
@@ -67,7 +67,7 @@ namespace OpcUaWebServer
 	}
 
 	void
-	SocketWSS::performHandshake(
+	SocketSSL::performHandshake(
 		boost::shared_ptr<boost::asio::io_service::strand>& strand,
 		const PerformHandshakeCompleteCallback& performHandshakeCompleteCallback
 	)
@@ -91,7 +91,7 @@ namespace OpcUaWebServer
 	}
 
 	void
-	SocketWSS::async_read_until(
+	SocketSSL::async_read_until(
 		boost::shared_ptr<boost::asio::io_service::strand>& strand,
 		boost::asio::streambuf& recvBuffer,
 		const std::string& content,
@@ -116,7 +116,7 @@ namespace OpcUaWebServer
 	}
 
 	void
-	SocketWSS::async_read_exactly(
+	SocketSSL::async_read_exactly(
 		boost::shared_ptr<boost::asio::io_service::strand>& strand,
 		boost::asio::streambuf& recvBuffer,
 		size_t contentSize,
@@ -141,7 +141,7 @@ namespace OpcUaWebServer
 	}
 
 	void
-	SocketWSS::async_write(
+	SocketSSL::async_write(
 		boost::shared_ptr<boost::asio::io_service::strand>& strand,
 		boost::asio::streambuf& sendBuffer,
 		const WriteCompleteCallback& writeCompleteCallback
@@ -164,7 +164,7 @@ namespace OpcUaWebServer
 	}
 
 	void
-	SocketWSS::async_accept(
+	SocketSSL::async_accept(
 		boost::shared_ptr<boost::asio::io_service::strand>& strand,
 		OpcUaStackCore::TCPAcceptor* acceptor,
 		const AcceptCallback& acceptCallback

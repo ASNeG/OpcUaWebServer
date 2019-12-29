@@ -19,8 +19,8 @@
 #include <boost/make_shared.hpp>
 #include "OpcUaStackCore/Base/Log.h"
 #include "OpcUaStackCore/Utility/Environment.h"
-#include "OpcUaWebServer/Socket/SocketWS.h"
-#include "OpcUaWebServer/Socket/SocketWSS.h"
+#include "OpcUaWebServer/Socket/SocketRaw.h"
+#include "OpcUaWebServer/Socket/SocketSSL.h"
 #include "OpcUaWebServer/WebSocket/WebSocketServer.h"
 
 using namespace OpcUaStackCore;
@@ -150,13 +150,13 @@ namespace OpcUaWebServer
 	{
 		SocketIf::SPtr socketIf;
 		if (wss_) {
-			socketIf = boost::make_shared<SocketWSS>(
+			socketIf = boost::make_shared<SocketSSL>(
 				webSocketConfig_->ioThread()->ioService()->io_service(),
 				*context_
 			);
 		}
 		else {
-			socketIf = boost::make_shared<SocketWS>(
+			socketIf = boost::make_shared<SocketRaw>(
 				webSocketConfig_->ioThread()->ioService()->io_service()
 			);
 		}
