@@ -16,23 +16,23 @@
 
  */
 
-#ifndef __OpcUaWebServer_SocketWS_h__
-#define __OpcUaWebServer_SocketWS_h__
+#ifndef __OpcUaWebServer_SocketSSL_h__
+#define __OpcUaWebServer_SocketSSL_h__
 
-#include "OpcUaStackCore/Network/TCPConnection.h"
+#include <boost/asio/ssl.hpp>
 #include "OpcUaWebServer/Socket/SocketIf.h"
 
 namespace OpcUaWebServer
 {
 
-	class SocketWS
+	class SocketSSL
 	: public SocketIf
 	{
 	  public:
-		typedef boost::shared_ptr<SocketWS> SPtr;
+		typedef boost::shared_ptr<SocketSSL> SPtr;
 
-		SocketWS(boost::asio::io_service& io_service);
-		virtual ~SocketWS(void);
+		SocketSSL(boost::asio::io_service& io_service, boost::asio::ssl::context& context);
+		virtual ~SocketSSL(void);
 
 		boost::asio::ip::tcp::endpoint remote_endpoint(
 			void
@@ -74,7 +74,12 @@ namespace OpcUaWebServer
 		) override;
 
 	  private:
-		OpcUaStackCore::TCPConnection tcpConnection_;
+		boost::asio::ssl::stream<boost::asio::ip::tcp::socket> stream_;
+		boost::shared_ptr<boost::asio::io_service::strand> strand_ = nullptr;
+		PerformHandshakeCompleteCallback performHandshakeCompleteCallback_ = nullptr;
+		AcceptCallback acceptCallback_ = nullptr;
+		ReceiveCallback receiveCallback_ = nullptr;
+		WriteCompleteCallback writeCompleteCallback_ = nullptr;
 	};
 
 }
