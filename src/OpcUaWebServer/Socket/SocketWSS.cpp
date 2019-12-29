@@ -16,7 +16,7 @@
 
  */
 
-#include "OpcUaWebServer/WebSocket/SocketWSS.h"
+#include "OpcUaWebServer/Socket/SocketWSS.h"
 
 namespace OpcUaWebServer
 {
