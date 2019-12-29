@@ -60,11 +60,17 @@ namespace OpcUaWebServer
 		httpConfig_->ioThread()->slotTimer()->start(httpChannel->slotTimerElement_);
 
 		// read data until \r\n\r\n
-		httpChannel->async_read_until(
+		httpChannel->socket().async_read_until(
 			httpConfig_->strand(),
 			httpChannel->recvBuffer_,
-			boost::bind(&HttpServerBase::handleReceiveRequestHeader, this, boost::asio::placeholders::error, boost::asio::placeholders::bytes_transferred, httpChannel),
-			"\r\n\r\n"
+			"\r\n\r\n",
+			[this, httpChannel](const boost::system::error_code& error, std::size_t bytes_transfered) {
+				handleReceiveRequestHeader(
+					error,
+					bytes_transfered,
+					httpChannel
+				);
+			}
 		);
 	}
 
@@ -142,11 +148,17 @@ namespace OpcUaWebServer
 		httpChannel->slotTimerElement_->timeoutCallback(boost::bind(&HttpServerBase::handleReceiveRequestContentTimeout, this, httpChannel));
 		httpConfig_->ioThread()->slotTimer()->start(httpChannel->slotTimerElement_);
 
-		httpChannel->async_read_exactly(
+		httpChannel->socket().async_read_exactly(
 			httpConfig_->strand(),
 			httpChannel->recvBuffer_,
-			boost::bind(&HttpServerBase::handleReceiveRequestContent, this, boost::asio::placeholders::error, boost::asio::placeholders::bytes_transferred, httpChannel),
-			contentLength-numAdditionalBytes
+			contentLength-numAdditionalBytes,
+			[this, httpChannel](const boost::system::error_code& error, std::size_t bytes_transfered) {
+			    handleReceiveRequestContent(
+			    	error,
+					bytes_transfered,
+					httpChannel
+			    );
+			}
 		);
 	}
 
@@ -199,7 +211,8 @@ namespace OpcUaWebServer
 
 			std::ostream os(&httpChannel->sendBuffer_);
 			httpChannel->httpResponse_.encodeRequestHeader(os);
-			httpChannel->async_write(
+			httpChannel->socket().async_write(
+				httpConfig_->strand(),
 				httpChannel->sendBuffer_,
 				boost::bind(&HttpServerBase::handleWriteComplete, this, boost::asio::placeholders::error, httpChannel)
 			);
@@ -212,7 +225,7 @@ namespace OpcUaWebServer
 		// send response
 		std::ostream os(&httpChannel->sendBuffer_);
 		httpChannel->httpResponse_.encodeRequestHeader(os);
-		httpChannel->async_write(
+		httpChannel->socket().async_write(
 			httpConfig_->strand(),
 			httpChannel->sendBuffer_,
 			boost::bind(&HttpServerBase::handleWriteComplete, this, boost::asio::placeholders::error, httpChannel)
@@ -234,14 +247,14 @@ namespace OpcUaWebServer
 			return;
 		}
 
-		httpChannel->close();
+		httpChannel->socket().close();
 		delete httpChannel;
 	}
 
 	void
 	HttpServerBase::closeHttpChannel(HttpChannel* httpChannel)
 	{
-		httpChannel->close();
+		httpChannel->socket().close();
 		delete httpChannel;
 	}
 
@@ -255,7 +268,7 @@ namespace OpcUaWebServer
 			.parameter("ChannelId", httpChannel->channelId_);
 
 		httpChannel->timeout_ = true;
-		httpChannel->cancel();
+		httpChannel->socket().cancel();
 	}
 
 }

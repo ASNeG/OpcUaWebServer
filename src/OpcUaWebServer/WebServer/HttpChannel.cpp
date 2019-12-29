@@ -24,8 +24,8 @@ namespace OpcUaWebServer
 
 	uint32_t HttpChannel::gChannelId_ = 0;
 
-	HttpChannel::HttpChannel(boost::asio::io_service& io_service)
-	: TCPConnection(io_service)
+	HttpChannel::HttpChannel(SocketIf::SPtr& socketIf)
+	: socketIf_(socketIf)
 	, channelId_()
 	, recvBuffer_()
 	, sendBuffer_()
@@ -43,6 +43,12 @@ namespace OpcUaWebServer
 
 	HttpChannel::~HttpChannel(void)
 	{
+	}
+
+	SocketIf&
+	HttpChannel::socket(void)
+	{
+		return *socketIf_.get();
 	}
 
 }

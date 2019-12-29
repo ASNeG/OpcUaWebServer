@@ -16,7 +16,11 @@
 
  */
 
+#include <boost/make_shared.hpp>
 #include "OpcUaStackCore/Base/Log.h"
+#include "OpcUaStackCore/Utility/Environment.h"
+#include "OpcUaWebServer/Socket/SocketRaw.h"
+#include "OpcUaWebServer/Socket/SocketSSL.h"
 #include "OpcUaWebServer/WebServer/HttpServer.h"
 
 namespace OpcUaWebServer
@@ -59,9 +63,45 @@ namespace OpcUaWebServer
 			.parameter("Port", httpConfig_->port());
 
 		tcpAcceptor_.listen(128);
+
+		// set ssl configuration parameter if exist
+		ssl_ = false;
+		auto csrFile = Environment::confDir() + std::string("/ssl/crt/websocket.crt");
+		auto keyFile = Environment::confDir() + std::string("/ssl/key/websocket.key");
+
+		if (ssl_) {
+			Log(Info, "use https protocol")
+		    	.parameter("CsrFile", csrFile)
+				.parameter("KeyFile", keyFile);
+		}
+		else {
+			Log(Info, "use http protocol");
+		}
+
+		if (ssl_) {
+			// create context and add certificate and private key to context
+			context_ = new boost::asio::ssl::context(
+				boost::asio::ssl::context::sslv23
+			);
+			context_->set_options(
+				boost::asio::ssl::context::default_workarounds |
+				boost::asio::ssl::context::no_sslv2 |
+				boost::asio::ssl::context::single_dh_use
+			);
+			context_->set_password_callback(boost::bind(&HttpServer::getPassword, this));
+			context_->use_certificate_chain_file(csrFile);
+			context_->use_private_key_file(keyFile, boost::asio::ssl::context::pem);
+		}
+
 		accept();
 
 		return startupCompleteCallback(true);
+	}
+
+	std::string
+	HttpServer::getPassword() const
+	{
+		return std::string("");
 	}
 
 	void
@@ -85,12 +125,29 @@ namespace OpcUaWebServer
 		shutdownCompleteCallback(true);
 	}
 
+	HttpChannel*
+	HttpServer::createHttpChannel(void)
+	{
+		SocketIf::SPtr socketIf;
+		if (ssl_) {
+			socketIf = boost::make_shared<SocketSSL>(
+				httpConfig_->ioThread()->ioService()->io_service(),
+				*context_
+			);
+		}
+		else {
+			socketIf = boost::make_shared<SocketRaw>(
+				httpConfig_->ioThread()->ioService()->io_service()
+			);
+		}
+		return new HttpChannel(socketIf);
+	}
+
 	void
 	HttpServer::accept(void)
 	{
-		auto httpChannel = new HttpChannel(httpConfig_->ioThread()->ioService()->io_service());
+		auto httpChannel = createHttpChannel();
 
-#if 0
 		httpChannel->socket().async_accept(
 			httpConfig_->strand(),
 			&tcpAcceptor_,
@@ -98,14 +155,6 @@ namespace OpcUaWebServer
 				handleAccept(error, httpChannel);
 			}
 		);
-#endif
-
-		tcpAcceptor_.async_accept(
-			httpChannel->socket(),
-			httpConfig_->strand(),
-			boost::bind(&HttpServer::handleAccept, this, boost::asio::placeholders::error, httpChannel)
-		);
-		Log(Debug, "HttpServer is waiting for new connection");
 	}
 
 	void
