@@ -65,7 +65,7 @@ namespace OpcUaWebServer
 		tcpAcceptor_.listen(128);
 
 		// set ssl configuration parameter if exist
-		ssl_ = false;
+		ssl_ = httpConfig_->ssl();
 		auto csrFile = Environment::confDir() + std::string("/ssl/crt/websocket.crt");
 		auto keyFile = Environment::confDir() + std::string("/ssl/key/websocket.pem");
 

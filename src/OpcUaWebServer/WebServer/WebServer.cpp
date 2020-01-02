@@ -171,6 +171,43 @@ namespace OpcUaWebServer
 		}
 		httpConfig_.requestTimeout(requestTimeout);
 
+		//
+		// now we read the optional ssl attributes
+		//
+
+		// read ssl element
+		std::string sslString;
+		success = config->getConfigParameter("OpcUaWebServerModel.HttpServer.SSL", sslString);
+		if (success && boost::to_upper_copy(sslString) == "ON") {
+			httpConfig_.ssl(true);
+		}
+
+		// read certificate file
+		if (httpConfig_.ssl()) {
+			std::string csrFile;
+			success = config->getConfigParameter("OpcUaWebServerModel.HttpServer.CSRFile", csrFile);
+			if (!success) {
+				Log(Error, "missing web server parameter in configuration file")
+					.parameter("Parameter", "OpcUaWebServerModel.HttpServer.CSRFile")
+					.parameter("ConfigurationFile", config->configFileName());
+				return false;
+			}
+			httpConfig_.csrFile(csrFile);
+		}
+
+		// read private key
+		if (httpConfig_.ssl()) {
+			std::string keyFile;
+			success = config->getConfigParameter("OpcUaWebServerModel.HttpServer.KeyFile", keyFile);
+			if (!success) {
+				Log(Error, "missing web server parameter in configuration file")
+					.parameter("Parameter", "OpcUaWebServerModel.HttpServer.KeyFile")
+					.parameter("ConfigurationFile", config->configFileName());
+				return false;
+			}
+			httpConfig_.keyFile(keyFile);
+		}
+
 		return true;
 	}
 

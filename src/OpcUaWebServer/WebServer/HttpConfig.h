@@ -58,6 +58,13 @@ namespace OpcUaWebServer
 		void maxIPAge(uint32_t maxIPAge);
 		uint32_t maxIPAge(void);
 
+		void ssl(bool ssl);
+		bool ssl(void);
+		void csrFile(const std::string& csrFile);
+		std::string csrFile(void);
+		void keyFile(const std::string& keyFile);
+		std::string keyFile(void);
+
 	  private:
 		bool enable_;
 
@@ -74,6 +81,11 @@ namespace OpcUaWebServer
 		uint32_t maxLogFileNumber_;
 		uint32_t maxLogFileSize_;
 		uint32_t maxIPAge_;
+
+		// ssl configuration parameter
+		bool ssl_ = false;
+		std::string csrFile_ = "";
+		std::string keyFile_ = "";
 	};
 
 }
