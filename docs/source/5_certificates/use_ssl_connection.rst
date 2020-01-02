@@ -13,10 +13,13 @@ browser when it is accessed.
 To do this, type the following into the browser and create an exception.
 
 ::
-    https://<IP-Address>:8080
+
+  https://<IP-Address>:8080
 
 ::
-    https://<IP-Address>:8081
+
+  https://<IP-Address>:8081
 
 ::
-    https://<IP-Address>:8082
+
+  https://<IP-Address>:8082
