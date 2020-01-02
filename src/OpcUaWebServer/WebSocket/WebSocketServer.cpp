@@ -116,7 +116,46 @@ namespace OpcUaWebServer
 	void
 	WebSocketServer::shutdownStrand(const ShutdownCompleteCallback& shutdownCompleteCallback)
 	{
-		shutdownCompleteCallback(true);
+		shutdownFlag_ = true;
+		shutdownCompleteCallback_ = shutdownCompleteCallback;
+
+		// close listener socket
+		if (active_) {
+			Log(Debug, "close websocket listener socket")
+				.parameter("Address", webSocketConfig_->address())
+				.parameter("Port", webSocketConfig_->port());
+			tcpAcceptor_.close();
+		}
+
+		// close channels
+		for (auto pair : webSocketChannelMap_) {
+			Log(Debug, "close websocket connection")
+				.parameter("Id", pair.second->id_);
+			pair.second->socket().close();
+		}
+
+		handleShutdown();
+	}
+
+	void
+	WebSocketServer::handleShutdown(void)
+	{
+		Log(Debug, "handle shutdown")
+			.parameter("Listener", active_ ? 1 : 0)
+			.parameter("Connections", webSocketChannelMap_.size());
+
+		// check if acceptor is active
+		if (active_) {
+			return;
+		}
+
+		// check if a socket connection is active
+		if (!webSocketChannelMap_.empty()) {
+			return;
+		}
+
+		// The shutdown process is ready.We can call the shutdown complete callback
+		shutdownCompleteCallback_(true);
 	}
 
 	void
@@ -179,12 +218,18 @@ namespace OpcUaWebServer
 	void
 	WebSocketServer::handleAccept(const boost::system::error_code& error, WebSocketChannel* webSocketChannel)
 	{
-		if (error) {
+		if (error || shutdownFlag_) {
 			Log(Info, "handle accept error")
 				.parameter("Address", webSocketConfig_->address())
 				.parameter("Port", webSocketConfig_->port());
 
+			active_ = false;
 			delete webSocketChannel;
+
+			if (shutdownFlag_) {
+				handleShutdown();
+			}
+
 			return;
 		}
 
@@ -223,6 +268,11 @@ namespace OpcUaWebServer
 	void
 	WebSocketServer::delWebSocketChannel(uint32_t count)
 	{
+		if (shutdownFlag_) {
+			handleShutdown();
+			return;
+		}
+
 		if (webSocketConfig_->maxConnections() == 0) {
 			return;
 		}
