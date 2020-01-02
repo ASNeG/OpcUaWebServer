@@ -167,4 +167,40 @@ namespace OpcUaWebServer
 		return maxIPAge_;
 	}
 
+	void
+	HttpConfig::ssl(bool ssl)
+	{
+		ssl_ = ssl;
+	}
+
+	bool
+	HttpConfig::ssl(void)
+	{
+		return ssl_;
+	}
+
+	void
+	HttpConfig::csrFile(const std::string& csrFile)
+	{
+		csrFile_ = csrFile;
+	}
+
+	std::string
+	HttpConfig::csrFile(void)
+	{
+		return csrFile_;
+	}
+
+	void
+	HttpConfig::keyFile(const std::string& keyFile)
+	{
+		keyFile_ = keyFile;
+	}
+
+	std::string
+	HttpConfig::keyFile(void)
+	{
+		return keyFile_;
+	}
+
 }
