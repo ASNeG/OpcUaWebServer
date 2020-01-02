@@ -21,6 +21,11 @@ Default Configuration
       <MaxLogFileNumber>5</MaxLogFileNumber>
       <MaxLogFileSize>100000</MaxLogFileSize>
       <MaxIPAge>3600000</MaxIPAge>
+
+      <SSL>on</SSL>
+      <CSRFile>@CONF_DIR@/ssl/crt/websocket.crt</CSRFile>
+      <KeyFile>@CONF_DIR@/ssl/key/websocket.pem</KeyFile>
+
     </IPLogger>
           
   </HttpServer>
@@ -55,5 +60,15 @@ Configuration Settings
 |          |                     | during this period in milliseconds, only one record         |
 |          |                     | is written in the log.                                      | 
 +----------+---------------------+-------------------------------------------------------------+
+| SSL                            | activates ("on") or deactivates ("off") the http/https      |
+|                                | protocol. The SSL tag is optional. If the SSL tag is not    |
+|                                | available, the http protocol will be used                   |
++--------------------------------+-------------------------------------------------------------+
+| CSRFile                        | Name of the certificate file. The tag must be specified     |
+|                                | when the http protocol is switched on                       |
++--------------------------------+-------------------------------------------------------------+
+| KeyFile                        | Name of the private key file. The tag must be specified     |
+|                                | when the http protocol is switched on.                      |
++--------------------------------+-------------------------------------------------------------+
 
 

@@ -17,6 +17,7 @@ Contents
    2_configuration/_index
    3_websocket_server/_index
    4_websocket_gateway/_index
+   5_certificates/_index
 
 Development Status
 ----------------------------------------------

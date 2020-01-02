@@ -18,7 +18,7 @@ openssl genrsa 2048 > privatekey.pem
 #
 echo "create csr file..."
 openssl req -new -key privatekey.pem -out csr.pem \
-    -subj /C=DE/ST=Hessen/L=Neukirchen/O=ASNeG/OU=OPC\ UA\ Service\ Department/CN=OpcUaWebServer
+    -subj /C=DE/ST=Hessen/L=Neukirchen/O=ASNeG/OU=OPC\ UA\ Service\ Department/CN=ASNeG.de
 
 
 #
