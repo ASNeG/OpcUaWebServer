@@ -66,6 +66,7 @@ namespace OpcUaWebServer
 		    WebSocketMessage::SPtr& webSocketMessage,
 			const SendCompleteCallback& sendCompleteCallback
 		);
+		void handleShutdown(void);
 
 		WebSocketChannel* createWebSocketChannel(void);
 		void accept(void);
@@ -75,6 +76,9 @@ namespace OpcUaWebServer
 		bool active_ = true;
 		WebSocketConfig* webSocketConfig_ = nullptr;
 		boost::asio::ssl::context* context_ = nullptr;
+
+		bool shutdownFlag_ = false;
+		ShutdownCompleteCallback shutdownCompleteCallback_;
 	};
 
 }
