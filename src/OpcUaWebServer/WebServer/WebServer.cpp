@@ -1,5 +1,5 @@
 /*
-   Copyright 2015-2019 Kai Huebl (kai@huebl-sgh.de)
+   Copyright 2015-2020 Kai Huebl (kai@huebl-sgh.de)
 
    Lizenziert gemäß Apache Licence Version 2.0 (die „Lizenz“); Nutzung dieser
    Datei nur in Übereinstimmung mit der Lizenz erlaubt.
@@ -170,6 +170,14 @@ namespace OpcUaWebServer
 			return false;
 		}
 		httpConfig_.requestTimeout(requestTimeout);
+
+		// read max connections
+		uint32_t maxConnections;
+		success = config->getConfigParameter("OpcUaWebServerModel.HttpServer.MaxConnections", maxConnections);
+		if (!success) {
+			maxConnections = 0;
+		}
+		httpConfig_.maxConnections(maxConnections);
 
 		//
 		// now we read the optional ssl attributes

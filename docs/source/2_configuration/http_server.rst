@@ -14,6 +14,7 @@ Default Configuration
       <Address>0.0.0.0</Address>
       <Port>8080</Port>
       <WebDirectory>@CONF_DIR@/../../../var/www/OpcUaWebServer</WebDirectory>
+      <MaxConnections>100</MaxConnections>
       <RequestTimeout>5000</RequestTimeout>
           
       <IPLogger>
@@ -40,6 +41,9 @@ Configuration Settings
 | IP Address                     | IP address bound by the HTTP server                         |
 +--------------------------------+-------------------------------------------------------------+
 | Port                           | Port bound by the HTTP server                               |
++--------------------------------+-------------------------------------------------------------+
+| MaxConnections                 | Maximum number of simultaneous connections that this server |
+|                                | supports.                                                   |
 +--------------------------------+-------------------------------------------------------------+
 | WebDirectory                   | Root directory. It should have *index.html* file.           |
 +--------------------------------+-------------------------------------------------------------+
