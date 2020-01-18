@@ -120,6 +120,21 @@ namespace OpcUaWebServer
 	}
 
 	void
+	HttpConfig::maxConnections(uint32_t maxConnections)
+	{
+		maxConnections_ = maxConnections;
+	}
+
+	uint32_t
+	HttpConfig::maxConnections(void)
+	{
+		return maxConnections_;
+	}
+
+	void maxPacketLength(uint32_t maxPacketLength);
+	uint32_t maxPacketLength(void);
+
+	void
 	HttpConfig::logFileName(const std::string& logFileName)
 	{
 		logFileName_ = logFileName;

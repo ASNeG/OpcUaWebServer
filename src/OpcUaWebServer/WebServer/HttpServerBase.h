@@ -1,5 +1,5 @@
 /*
-   Copyright 2015-2019 Kai Huebl (kai@huebl-sgh.de)
+   Copyright 2015-2020 Kai Huebl (kai@huebl-sgh.de)
 
    Lizenziert gemäß Apache Licence Version 2.0 (die „Lizenz“); Nutzung dieser
    Datei nur in Übereinstimmung mit der Lizenz erlaubt.
@@ -77,11 +77,20 @@ namespace OpcUaWebServer
 			HttpChannel* httpChannel
 		);
 
+		virtual void addHttpChannel(uint32_t count) = 0;
+		virtual void delHttpChannel(uint32_t count) = 0;
+
+	  protected:
+		void initHttpChannel(HttpChannel* httpChannel);
+		void cleanupHttpChannel(HttpChannel* httpChannel);
+
 		HttpConfig* httpConfig_;
 		TCPAcceptor tcpAcceptor_;
 
 		typedef std::map<std::string, HttpServerIf*> HttpServerIfMap;
 		HttpServerIfMap httpServerIfMap_;
+
+		HttpChannel::Map httpChannelMap_;
 	};
 
 }

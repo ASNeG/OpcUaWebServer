@@ -1,5 +1,5 @@
 /*
-   Copyright 2015-2019 Kai Huebl (kai@huebl-sgh.de)
+   Copyright 2015-2020 Kai Huebl (kai@huebl-sgh.de)
 
    Lizenziert gemäß Apache Licence Version 2.0 (die „Lizenz“); Nutzung dieser
    Datei nur in Übereinstimmung mit der Lizenz erlaubt.
@@ -121,8 +121,46 @@ namespace OpcUaWebServer
 		const ShutdownCompleteCallback& shutdownCompleteCallback
 	)
 	{
-		tcpAcceptor_.close();
-		shutdownCompleteCallback(true);
+		shutdownFlag_ = true;
+		shutdownCompleteCallback_ = shutdownCompleteCallback;
+
+		// shutdown listener socket
+		if (active_) {
+			Log(Debug, "close http listener socket")
+				.parameter("Address", httpConfig_->address())
+				.parameter("Port", httpConfig_->port());
+		    tcpAcceptor_.close();
+		}
+
+		// close channels
+		for (auto pair : httpChannelMap_) {
+			Log(Debug, "close http connection")
+				.parameter("Id", pair.second->id_);
+			pair.second->socket().close();
+		}
+
+		handleShutdown();
+	}
+
+	void
+	HttpServer::handleShutdown(void)
+	{
+		Log(Debug, "handle shutdown")
+			.parameter("Listener", active_ ? 1 : 0)
+			.parameter("Connections", httpChannelMap_.size());
+
+		// check if acceptor is active
+		if (active_) {
+			return;
+		}
+
+		// check if a socket connection is active
+		if (!httpChannelMap_.empty()) {
+			return;
+		}
+
+		// The shutdown process is ready.We can call the shutdown complete callback
+		shutdownCompleteCallback_(true);
 	}
 
 	HttpChannel*
@@ -160,9 +198,16 @@ namespace OpcUaWebServer
 	void
 	HttpServer::handleAccept(const boost::system::error_code& error, HttpChannel* httpChannel)
 	{
-		if (error) {
+		if (error || shutdownFlag_) {
 			Log(Error, "HttpServer error");
+
+			active_ = false;
 			delete httpChannel;
+
+			if (shutdownFlag_) {
+				handleShutdown();
+			}
+
 			return;
 		}
 
@@ -174,9 +219,53 @@ namespace OpcUaWebServer
 
 		ipLogger_.logout(httpChannel->partner_.address().to_string());
 
+		initHttpChannel(httpChannel);
 		performHandshake(httpChannel);
 
+		if (!active_) {
+			return;
+		}
+
 		accept();
+	}
+
+	void
+	HttpServer::addHttpChannel(uint32_t count)
+	{
+		if (httpConfig_->maxConnections() == 0) {
+			return;
+		}
+
+		if (count >= httpConfig_->maxConnections() && active_) {
+			Log(Warning, "close http listener socket, because max connection limit reached")
+				.parameter("Address", httpConfig_->address())
+				.parameter("Port", httpConfig_->port())
+				.parameter("MaxConnections", count);
+			active_ = false;
+		}
+	}
+
+	void
+	HttpServer::delHttpChannel(uint32_t count)
+	{
+		if (shutdownFlag_) {
+			handleShutdown();
+			return;
+		}
+
+		if (httpConfig_->maxConnections() == 0) {
+			return;
+		}
+
+		if (count < httpConfig_->maxConnections() && !active_) {
+			Log(Info, "open http listener socket")
+				.parameter("Address", httpConfig_->address())
+				.parameter("Port", httpConfig_->port())
+				.parameter("MaxConnections", count);
+
+			active_ = true;
+			accept();
+		}
 	}
 
 }

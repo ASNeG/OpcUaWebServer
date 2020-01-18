@@ -1,5 +1,5 @@
 /*
-   Copyright 2015-2019 Kai Huebl (kai@huebl-sgh.de)
+   Copyright 2015-2020 Kai Huebl (kai@huebl-sgh.de)
 
    Lizenziert gemäß Apache Licence Version 2.0 (die „Lizenz“); Nutzung dieser
    Datei nur in Übereinstimmung mit der Lizenz erlaubt.
@@ -33,6 +33,8 @@ namespace OpcUaWebServer
 	class HttpChannel
 	{
 	  public:
+		typedef std::map<uint32_t, HttpChannel*> Map;
+
 		static uint32_t gChannelId_;
 
 		HttpChannel(SocketIf::SPtr& socketIf);
@@ -42,6 +44,7 @@ namespace OpcUaWebServer
 
 		OpcUaStackCore::SlotTimerElement::SPtr slotTimerElement_;
 
+		uint32_t id_;
 		bool timeout_;
 		std::string channelId_;
 		boost::asio::streambuf recvBuffer_;
