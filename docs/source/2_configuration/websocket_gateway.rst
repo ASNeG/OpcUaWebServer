@@ -13,6 +13,7 @@ Default Configuration
       <Address>0.0.0.0</Address>
       <Port>8082</Port>
       <RequestTimeout>5000</RequestTimeout>
+      <MaxConnections>100</MaxConnections>
       <IdleTimeout>3600000</IdleTimeout>
 
       <SSL>on</SSL>
@@ -29,6 +30,9 @@ Configuration Settings
 | IP Address                     | IP address bound by the WebSocket gateway                   |
 +--------------------------------+-------------------------------------------------------------+
 | Port                           | Port bound by the WebSocket gateway                         |
++--------------------------------+-------------------------------------------------------------+
+| MaxConnections                 | Maximum number of simultaneous connections that this server |
+|                                | supports.                                                   |
 +--------------------------------+-------------------------------------------------------------+
 | SSL                            | activates ("on") or deactivates ("off") the websocket       |
 |                                | security. The SSL tag is optional. If the SSL tag is not    |

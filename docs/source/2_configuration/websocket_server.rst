@@ -12,6 +12,7 @@ Default Configuration
   <WebSocketServer>
       <Address>0.0.0.0</Address>
       <Port>8081</Port>
+      <MaxConnections>100</MaxConnections> 
       <RequestTimeout>5000</RequestTimeout>
       <IdleTimeout>3600000</IdleTimeout>
 
@@ -30,6 +31,9 @@ Configuration Settings
 | IP Address                     | IP address bound by the WebSocket server                    |
 +--------------------------------+-------------------------------------------------------------+
 | Port                           | Port bound by the WebSocket server                          |
++--------------------------------+-------------------------------------------------------------+
+| MaxConnections                 | Maximum number of simultaneous connections that this server |
+|                                | supports.                                                   |
 +--------------------------------+-------------------------------------------------------------+
 | RequestTimeout                 | Time after the TCP connection establishment in milliseconds,|
 |                                | that the server waits for the request                       |
