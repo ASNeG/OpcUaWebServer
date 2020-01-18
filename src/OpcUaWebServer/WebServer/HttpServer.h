@@ -1,5 +1,5 @@
 /*
-   Copyright 2015-2019 Kai Huebl (kai@huebl-sgh.de)
+   Copyright 2015-2020 Kai Huebl (kai@huebl-sgh.de)
 
    Lizenziert gemäß Apache Licence Version 2.0 (die „Lizenz“); Nutzung dieser
    Datei nur in Übereinstimmung mit der Lizenz erlaubt.
@@ -46,6 +46,9 @@ namespace OpcUaWebServer
 			const ShutdownCompleteCallback& shutdownCompleteCallback
 		);
 
+		void addHttpChannel(uint32_t count) override;
+		void delHttpChannel(uint32_t count) override;
+
 	  private:
 		void startupStrand(
 			const StartupCompleteCallback& startupCompleteCallback
@@ -53,6 +56,7 @@ namespace OpcUaWebServer
 		void shutdownStrand(
 			const ShutdownCompleteCallback& shutdownCompleteCallback
 		);
+		void handleShutdown(void);
 		std::string getPassword() const;
 		HttpChannel* createHttpChannel(void);
 
@@ -61,9 +65,13 @@ namespace OpcUaWebServer
 		void handleAccept1(const boost::system::error_code& error){}
 
 		bool ssl_ = false;
+		bool active_ = true;
 		HttpConfig* httpConfig_;
 		boost::asio::ssl::context* context_ = nullptr;
 		IPLogger ipLogger_;
+
+		bool shutdownFlag_ = false;
+		ShutdownCompleteCallback shutdownCompleteCallback_;
 	};
 
 }

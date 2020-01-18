@@ -1,5 +1,5 @@
 /*
-   Copyright 2015 Kai Huebl (kai@huebl-sgh.de)
+   Copyright 2015-2020 Kai Huebl (kai@huebl-sgh.de)
 
    Lizenziert gemäß Apache Licence Version 2.0 (die „Lizenz“); Nutzung dieser
    Datei nur in Übereinstimmung mit der Lizenz erlaubt.
@@ -48,6 +48,10 @@ namespace OpcUaWebServer
 		std::string webDirectory(void);
 		void requestTimeout(uint32_t requestTimeout);
 		uint32_t requestTimeout(void);
+		void maxConnections(uint32_t maxConnections);
+		uint32_t maxConnections(void);
+		void maxPacketLength(uint32_t maxPacketLength);
+		uint32_t maxPacketLength(void);
 
 		void logFileName(const std::string& logFileName);
 		std::string logFileName(void);
@@ -75,6 +79,8 @@ namespace OpcUaWebServer
 		boost::shared_ptr<boost::asio::io_service::strand> strand_;
 		std::string webDirectory_;
 		uint32_t requestTimeout_;
+		uint32_t maxConnections_ = 0;
+		uint32_t maxPacketLength_ = 0;
 
 		// IP logger configuration
 		std::string logFileName_;

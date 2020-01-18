@@ -1,5 +1,5 @@
 /*
-   Copyright 2015-2019 Kai Huebl (kai@huebl-sgh.de)
+   Copyright 2015-2020 Kai Huebl (kai@huebl-sgh.de)
 
    Lizenziert gemäß Apache Licence Version 2.0 (die „Lizenz“); Nutzung dieser
    Datei nur in Übereinstimmung mit der Lizenz erlaubt.
@@ -263,6 +263,7 @@ namespace OpcUaWebServer
 	HttpServerBase::closeHttpChannel(HttpChannel* httpChannel)
 	{
 		httpChannel->socket().close();
+		cleanupHttpChannel(httpChannel);
 		delete httpChannel;
 	}
 
@@ -277,6 +278,38 @@ namespace OpcUaWebServer
 
 		httpChannel->timeout_ = true;
 		httpChannel->socket().cancel();
+	}
+
+	// ------------------------------------------------------------------------
+	// ------------------------------------------------------------------------
+	//
+	// http channel management
+	//
+	// ------------------------------------------------------------------------
+	// ------------------------------------------------------------------------
+	void
+	HttpServerBase::initHttpChannel(HttpChannel* httpChannel)
+	{
+		httpChannelMap_.insert(std::make_pair(httpChannel->id_, httpChannel));
+		Log(Debug, "create http socket")
+		    .parameter("ChannelId", httpChannel->id_)
+			.parameter("NumberConnections", httpChannelMap_.size());
+
+		addHttpChannel(httpChannelMap_.size());
+	}
+
+	void
+	HttpServerBase::cleanupHttpChannel(HttpChannel* httpChannel)
+	{
+		Log(Debug, "delete http socket")
+		    .parameter("ChannelId", httpChannel->id_)
+			.parameter("NumberConnections", httpChannelMap_.size());
+
+		auto it = httpChannelMap_.find(httpChannel->id_);
+		if (it != httpChannelMap_.end()) {
+			httpChannelMap_.erase(it);
+			delHttpChannel(httpChannelMap_.size());
+		}
 	}
 
 	// ------------------------------------------------------------------------
