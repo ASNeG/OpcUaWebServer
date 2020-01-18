@@ -60,6 +60,7 @@ namespace OpcUaWebServer
 		httpConfig_->ioThread()->slotTimer()->start(httpChannel->slotTimerElement_);
 
 		// read data until \r\n\r\n
+		httpChannel->asyncRead_ = true;
 		httpChannel->socket().async_read_until(
 			httpConfig_->strand(),
 			httpChannel->recvBuffer_,
@@ -77,30 +78,31 @@ namespace OpcUaWebServer
 	void
 	HttpServerBase::handleReceiveRequestHeaderTimeout(HttpChannel* httpChannel)
 	{
+		httpChannel->asyncRead_ = false;
 		timeoutHttpChannel(httpChannel, "request header");
 	}
 
 	void
-	HttpServerBase::handleReceiveRequestHeader(const boost::system::error_code& error, std::size_t bytes_transfered, HttpChannel* httpChannel)
+	HttpServerBase::handleReceiveRequestHeader(
+		const boost::system::error_code& error,
+		std::size_t bytes_transfered,
+		HttpChannel* httpChannel)
 	{
-		if (httpChannel->timeout_) {
+		httpChannel->asyncRead_ = false;
+
+		if (httpChannel->timeout_ || error || httpChannel->shutdown_) {
+			if (error) {
+				Log(Debug, "HttpServer receive request header error; close channel")
+					.parameter("Address", httpChannel->partner_.address().to_string())
+					.parameter("Port", httpChannel->partner_.port())
+					.parameter("ChannelId", httpChannel->channelId_);
+			}
 			closeHttpChannel(httpChannel);
 			return;
 		}
 
 		// stop request timer
 		httpConfig_->ioThread()->slotTimer()->stop(httpChannel->slotTimerElement_);
-
-		// handle error
-		if (error) {
-			Log(Debug, "HttpServer receive request header error; close channel")
-				.parameter("Address", httpChannel->partner_.address().to_string())
-				.parameter("Port", httpChannel->partner_.port())
-				.parameter("ChannelId", httpChannel->channelId_);
-
-			closeHttpChannel(httpChannel);
-			return;
-		}
 
 		size_t numAdditionalBytes = httpChannel->recvBuffer_.size() - bytes_transfered;
 		std::istream is(&httpChannel->recvBuffer_);
@@ -148,6 +150,7 @@ namespace OpcUaWebServer
 		httpChannel->slotTimerElement_->timeoutCallback(boost::bind(&HttpServerBase::handleReceiveRequestContentTimeout, this, httpChannel));
 		httpConfig_->ioThread()->slotTimer()->start(httpChannel->slotTimerElement_);
 
+		httpChannel->asyncRead_ = true;
 		httpChannel->socket().async_read_exactly(
 			httpConfig_->strand(),
 			httpChannel->recvBuffer_,
@@ -165,29 +168,28 @@ namespace OpcUaWebServer
 	void
 	HttpServerBase::handleReceiveRequestContentTimeout(HttpChannel* httpChannel)
 	{
+		httpChannel->asyncRead_ = false;
 		timeoutHttpChannel(httpChannel, "request Content");
 	}
 
 	void
 	HttpServerBase::handleReceiveRequestContent(const boost::system::error_code& error, std::size_t bytes_transfered, HttpChannel* httpChannel)
 	{
-		if (httpChannel->timeout_) {
+		httpChannel->asyncRead_ = false;
+
+		if (httpChannel->timeout_ || error || httpChannel->shutdown_) {
+			if (error) {
+				Log(Debug, "HttpServer receive request content error; close channel")
+					.parameter("Address", httpChannel->partner_.address().to_string())
+					.parameter("Port", httpChannel->partner_.port())
+					.parameter("ChannelId", httpChannel->channelId_);
+			}
 			closeHttpChannel(httpChannel);
 			return;
 		}
 
 		// stop request timer
 		httpConfig_->ioThread()->slotTimer()->stop(httpChannel->slotTimerElement_);
-
-		if (error) {
-			Log(Debug, "HttpServer receive request content error; close channel")
-				.parameter("Address", httpChannel->partner_.address().to_string())
-				.parameter("Port", httpChannel->partner_.port())
-				.parameter("ChannelId", httpChannel->channelId_);
-
-			closeHttpChannel(httpChannel);
-			return;
-		}
 
 		//
 		// read content
@@ -211,6 +213,8 @@ namespace OpcUaWebServer
 
 			std::ostream os(&httpChannel->sendBuffer_);
 			httpChannel->httpResponse_.encodeRequestHeader(os);
+
+			httpChannel->asyncWrite_ = true;
 			httpChannel->socket().async_write(
 				httpConfig_->strand(),
 				httpChannel->sendBuffer_,
@@ -227,6 +231,8 @@ namespace OpcUaWebServer
 		// send response
 		std::ostream os(&httpChannel->sendBuffer_);
 		httpChannel->httpResponse_.encodeRequestHeader(os);
+
+		httpChannel->asyncWrite_ = true;
 		httpChannel->socket().async_write(
 			httpConfig_->strand(),
 			httpChannel->sendBuffer_,
@@ -245,6 +251,8 @@ namespace OpcUaWebServer
 		HttpChannel* httpChannel
 	)
 	{
+		httpChannel->asyncWrite_ = false;
+
 		if (error) {
 			Log(Debug, "HttpServer send response error; close channel")
 				.parameter("Address", httpChannel->partner_.address().to_string())
@@ -252,16 +260,28 @@ namespace OpcUaWebServer
 				.parameter("ChannelId", httpChannel->channelId_);
 
 			closeHttpChannel(httpChannel);
-			return;
 		}
 
-		httpChannel->socket().close();
-		delete httpChannel;
+		closeHttpChannel(httpChannel);
 	}
 
 	void
 	HttpServerBase::closeHttpChannel(HttpChannel* httpChannel)
 	{
+		Log(Info, "close web socket channel")
+			.parameter("Address", httpChannel->partner_.address().to_string())
+			.parameter("Port", httpChannel->partner_.port())
+			.parameter("asyncWrite", httpChannel->asyncWrite_)
+			.parameter("asyncRead", httpChannel->asyncRead_);
+
+		if (httpChannel->asyncWrite_ || httpChannel->asyncRead_) {
+			httpChannel->shutdown_ = true;
+			return;
+		}
+
+		// stop request timer
+		httpConfig_->ioThread()->slotTimer()->stop(httpChannel->slotTimerElement_);
+
 		httpChannel->socket().close();
 		cleanupHttpChannel(httpChannel);
 		delete httpChannel;
