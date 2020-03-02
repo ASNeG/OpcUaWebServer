@@ -26,6 +26,8 @@ services:
       && sed -i 's/127.0.0.1:8889/asneg-demo:8889/' /etc/OpcUaStack/OpcUaWebServer/OpcUaClient1.xml 
       && sed -i 's/127.0.0.1:8889/asneg-demo:8889/' /etc/OpcUaStack/OpcUaWebServer/OpcUaClientTest.xml
       && OpcUaServer4 /etc/OpcUaStack/OpcUaWebServer/OpcUaServer.xml"
+    ports:
+    - "8882:8882"
 
   test_client:
     container_name: test_client${BUILD_TAG}

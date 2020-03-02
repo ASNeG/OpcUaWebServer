@@ -61,10 +61,9 @@
   	<MaxConnections>100</MaxConnections>
   	<MaxPacketLength>0</MaxPacketLength>
   	
-  	<SSL>on</SSL> 
+  	<SSL>off</SSL>
   	<CSRFile>@CONF_DIR@/ssl/crt/websocket.crt</CSRFile>
   	<KeyFile>@CONF_DIR@/ssl/key/websocket.pem</KeyFile>
-
   </WebGateway>
   
 </OpcUaWebServerModel>

@@ -1,7 +1,7 @@
 .. _valueinfo:
 
 Value Info
-=========
+==========
 
 Knowing the variable names the client can get the information about the configuration of the variables
 by using *VALUEINFO_REQUEST* request.
