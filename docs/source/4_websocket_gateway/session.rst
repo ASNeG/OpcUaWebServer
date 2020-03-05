@@ -207,8 +207,10 @@ GW_LogoutResponse
 +------------+---------------------+------------------------------------------------------------------+
 
 
-Example in Python
------------------
+.. _gw_session_example:
+
+Handling OPCUA Session in Python
+--------------------------------
 
 .. code-block:: python
 

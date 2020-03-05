@@ -72,3 +72,37 @@ All the HTTP requests from a client to the gateway must have a :term:`JSON` mess
 +------------+-----------------+------------------------------------------------------------+
 
 All the JSON messages are described by using our :ref:`notation`.
+
+Common OPCUA Structures
+-----------------------
+
+OPCUA has some common data structures that have the same format in the different services. So we describe them
+here to avoid of the duplication in other sections of the document
+
+.. _node_id_json:
+
+NodeId
+``````
+An unique identifier of OPC UA Node
+
++------------+-----------------+------------------------------------------------------------+
+| **NodId**  |                 |                                                            |
++------------+-----------------+------------------------------------------------------------+
+|            | Namespace       | Number of namepsace (0,1,2..)                              |
++------------+-----------------+------------------------------------------------------------+
+|            | Id              | Identifier can be Number, String, GUID or BinaryString     |
++------------+-----------------+------------------------------------------------------------+
+
+.. _variant_json:
+
+Variant
+```````
+A type that can contain the value of different types
+
++------------+-----------------+------------------------------------------------------------+
+| **Variant**|                 |                                                            |
++------------+-----------------+------------------------------------------------------------+
+|            | Type            | The PCUA code of the value type                            |
++------------+-----------------+------------------------------------------------------------+
+|            | Body            | The value                                                  |
++------------+-----------------+------------------------------------------------------------+

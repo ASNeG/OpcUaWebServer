@@ -61,7 +61,7 @@
   	<MaxConnections>100</MaxConnections>
   	<MaxPacketLength>0</MaxPacketLength>
   	
-  	<SSL>off</SSL>
+  	<SSL>on</SSL>
   	<CSRFile>@CONF_DIR@/ssl/crt/websocket.crt</CSRFile>
   	<KeyFile>@CONF_DIR@/ssl/key/websocket.pem</KeyFile>
   </WebGateway>
