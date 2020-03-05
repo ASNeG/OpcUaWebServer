@@ -23,17 +23,17 @@ All the HTTP requests from a client to the gateway must have a :term:`JSON` mess
 |            |                 +------------------------------------------------------------+
 |            |                 | :ref:`GW_LogoutResponse<gw_logout_response>`               |
 |            |                 +------------------------------------------------------------+
-|            |                 | GW_ReadRequest                                             |
+|            |                 | :ref:`GW_ReadRequest<gw_read_request>`                     |
 |            |                 +------------------------------------------------------------+
-|            |                 | GW_ReadResponse                                            |
+|            |                 | :ref:`GW_ReadResponse<gw_read_response>`                   |
 |            |                 +------------------------------------------------------------+
-|            |                 | GW_WriteRequest                                            |
+|            |                 | :ref:`GW_WriteRequest<gw_write_request>`                   |
 |            |                 +------------------------------------------------------------+
-|            |                 | GW_WriteResponse                                           |
+|            |                 | :ref:`GW_WriteResponse<gw_write_response>`                 |
 |            |                 +------------------------------------------------------------+
-|            |                 | GW_HistoryReadRequest                                      |
+|            |                 | :ref:`GW_HistoryReadRequest<gw_history_read_request>`      |
 |            |                 +------------------------------------------------------------+
-|            |                 | GW_HistoryReadResponse                                     |
+|            |                 | :ref:`GW_HistoryReadResponse<gw_history_read_response>`    |
 |            |                 +------------------------------------------------------------+
 |            |                 | GW_CreateSubscriptionRequest                               |
 |            |                 +------------------------------------------------------------+

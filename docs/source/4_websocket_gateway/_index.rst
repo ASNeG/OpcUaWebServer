@@ -11,5 +11,4 @@ specifications. In this documentation we're going to learn some basic things to 
 
    message_format
    session
-   data_access
-   methods
+   attribute_services
