@@ -77,7 +77,8 @@ Common OPCUA Structures
 -----------------------
 
 OPCUA has some common data structures that have the same format in the different services. So we describe them
-here to avoid of the duplication in other sections of the document
+here to avoid of the duplication in other sections of the document. You can find more information about. how
+OPCUA types are encoded in JSON, in *SPEC 6 "Mapping" Section 5.4.2*.
 
 .. _node_id_json:
 
@@ -88,21 +89,54 @@ An unique identifier of OPC UA Node
 +------------+-----------------+------------------------------------------------------------+
 | **NodId**  |                 |                                                            |
 +------------+-----------------+------------------------------------------------------------+
-|            | Namespace       | Number of namepsace (0,1,2..)                              |
+|            | [Namespace]     | Number of namepsace (0,1,2..). Default 0.                  |
 +------------+-----------------+------------------------------------------------------------+
 |            | Id              | Identifier can be Number, String, GUID or BinaryString     |
++------------+-----------------+------------------------------------------------------------+
+|            | [TypeId]        |  The IdentifierType encoded as a JSON number:              |
+|            |                 |  Allowed values are:                                       |
+|            |                 |    0 - UInt32 Identifier                                   |
+|            |                 |    1 - A String Identifier                                 |
+|            |                 |    2 - A Guid Identifier encoded                           |
+|            |                 |    3 - A ByteString Identifier                             |
 +------------+-----------------+------------------------------------------------------------+
 
 .. _variant_json:
 
 Variant
 ```````
-A type that can contain the value of different types
+A type that can contain the value of different types.
 
 +------------+-----------------+------------------------------------------------------------+
 | **Variant**|                 |                                                            |
 +------------+-----------------+------------------------------------------------------------+
-|            | Type            | The PCUA code of the value type                            |
+|            | Type            | The OPCUA code of the value type                           |
 +------------+-----------------+------------------------------------------------------------+
 |            | Body            | The value                                                  |
 +------------+-----------------+------------------------------------------------------------+
+|            | [Dimensions]    | The dimensions of the array encoded                        |
+|            |                 |  as an JSON array of JSON numbers. Default scalar value.   |
++------------+-----------------+------------------------------------------------------------+
+
+.. _data_value_json:
+
+DataValue
+`````````
+
++---------------+--------------------+------------------------------------------------------------------+
+| **DataValue** |                    |                                                                  |
++---------------+--------------------+------------------------------------------------------------------+
+|               | Value              | See :ref:`variant_json`                                          |
++---------------+--------------------+------------------------------------------------------------------+
+|               | [Status]           | The OPC UA status of the variable if it is not *Success*         |
++---------------+--------------------+------------------------------------------------------------------+
+|               | [SourceTimestamp]  | The time of the value given by the source in ISO                 |
+|               |                    | 8601 format. Example: "2015-09-06T09:03:21Z"                     |
++---------------+--------------------+------------------------------------------------------------------+
+|               | [SourcePicoSeconds]| The number of 10 picosecond intervals for the SourceTimestamp    |
++---------------+--------------------+------------------------------------------------------------------+
+|               | [ServerTimestamp]  | The time of the value given by the server in ISO                 |
+|               |                    | 8601 format. Example: "2015-09-06T09:03:21Z"                     |
++---------------+--------------------+------------------------------------------------------------------+
+|               | [ServerPicoSeconds]| The number of 10 picosecond intervals for the ServerTimestamp    |
++---------------+--------------------+------------------------------------------------------------------+
