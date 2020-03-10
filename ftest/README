@@ -1,0 +1,37 @@
+
+The nosetests tool is required to run the test scripts. The document provides
+an overview of the installation of nosetests.
+
+(Install all: pip install -r ./requirements.txt)
+
+
+1. Install Python 3
+===================
+
+$ sudo apt install python3-pip
+$ sudo apt install python-pip
+
+
+2. Install websockets and opcua
+===============================
+
+$ sudo pip install websocket
+$ sudo pip install websocket-client
+$ sudo pip install opcua
+
+
+3. Install nosetests
+====================
+
+$ sudo pip install distribute
+$ sudo pip install nose
+$ sudo pip install virtualenv
+
+
+4. Execute tests
+================
+
+Change to directory <Project-Directory>/ftest an run test script
+
+$ sh test.sh
+
