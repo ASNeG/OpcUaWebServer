@@ -8,12 +8,15 @@ So you should request to open the session before starting the communication with
 close it after the communication has been ended.
 
 
+Login
+------
+
+Opens a session with an OPC UA Server by using *DiscoveryUrl*.
+
 .. _gw_login_request:
 
 GW_LoginRequest
----------------
-
-Opens a session with an OPC UA Server by using *DiscoveryUrl*.
+```````````````
 
 +----------------------------------+------------------------------------------------------------------+
 | Field                            | Description                                                      |
@@ -125,7 +128,7 @@ Service to the Server. These tokens may be text or binary.
 .. _gw_login_response:
 
 GW_LoginResponse
-----------------
+````````````````
 
 +----------------------------------+------------------------------------------------------------------+
 | Field                            | Description                                                      |
@@ -144,7 +147,7 @@ GW_LoginResponse
 .. _gw_session_status_notify:
 
 GW_SessionStatusNotify
-----------------------
+```````````````````````
 
 **WebSocket Gateway** notifies the clients if the connection has changed its status by sending a special JSON message
 asynchronously.
@@ -168,7 +171,7 @@ asynchronously.
 .. _gw_logout_request:
 
 GW_LogoutRequest
-----------------
+`````````````````
 
 The client should request closing OPCUA session by sending *GW_LogoutRequest* request
 
@@ -187,10 +190,13 @@ The client should request closing OPCUA session by sending *GW_LogoutRequest* re
 +------------+---------------------+------------------------------------------------------------------+
 
 
+Logout
+------
+
 .. _gw_logout_response:
 
 GW_LogoutResponse
------------------
+``````````````````
 
 +----------------------------------+------------------------------------------------------------------+
 | Field                            | Description                                                      |
@@ -210,7 +216,7 @@ GW_LogoutResponse
 .. _gw_session_example:
 
 Handling OPCUA Session in Python
---------------------------------
+`````````````````````````````````
 
 .. code-block:: python
 

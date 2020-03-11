@@ -68,6 +68,8 @@ All the HTTP requests from a client to the gateway must have a :term:`JSON` mess
 |            | [SessionId]     | The integer identifier of session. It have to be in        |
 |            |                 |                                                            |
 +------------+-----------------+------------------------------------------------------------+
+|            | RequestTimeout  |                                                            |
++------------+-----------------+------------------------------------------------------------+
 | **Body**   |                 |  MessageType specific                                      |
 +------------+-----------------+------------------------------------------------------------+
 

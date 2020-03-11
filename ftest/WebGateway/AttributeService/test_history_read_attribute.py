@@ -44,8 +44,8 @@ class TestHistoryReadAttribute(WebGatewayTestCase):
                     }
                 ]
             }
-
         }
+
         print("SEND: ", json.dumps(req, indent=4))
         self.ws.send(json.dumps(req))
 
