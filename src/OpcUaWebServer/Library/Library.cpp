@@ -1,5 +1,5 @@
 /*
-   Copyright 2015-2019 Kai Huebl (kai@huebl-sgh.de)
+   Copyright 2015-2020 Kai Huebl (kai@huebl-sgh.de)
 
    Lizenziert gemäß Apache Licence Version 2.0 (die „Lizenz“); Nutzung dieser
    Datei nur in Übereinstimmung mit der Lizenz erlaubt.
@@ -35,7 +35,6 @@ namespace OpcUaWebServer
 	, webSocket_()
 	, messageServer_()
 	, opcUaClientManager_()
-	, ioThread_()
 	{
 	}
 
@@ -49,7 +48,12 @@ namespace OpcUaWebServer
 		bool rc;
 		Log(Debug, "Library::startup");
 
+		// create message bus
+		messageBus_ = boost::shared_ptr<MessageBus>();
+
+		// create thread pool
 		ioThread_ = boost::make_shared<IOThread>();
+		ioThread_->name(std::string("OpcUaWebServer"));
 		ioThread_->numberThreads(2);
 		if (!ioThread_->startup()) {
 			return false;
@@ -90,7 +94,7 @@ namespace OpcUaWebServer
 		}
 
 		Log(Info, "startup opc ua client manager");
-		if (!opcUaClientManager_.startup(&config, this, ioThread_, cryptoManager())) {
+		if (!opcUaClientManager_.startup(&config, this, ioThread_, messageBus_, cryptoManager())) {
 			return false;
 		}
 
@@ -161,6 +165,7 @@ namespace OpcUaWebServer
 		webGateway_.startup(
 			&config,
 			ioThread_,
+			messageBus_,
 			cryptoManager(),
 			startupCompleteCallback
 		);

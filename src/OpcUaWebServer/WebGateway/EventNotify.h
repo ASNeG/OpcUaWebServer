@@ -1,5 +1,5 @@
 /*
-   Copyright 2019 Kai Huebl (kai@huebl-sgh.de)
+   Copyright 2019-2020 Kai Huebl (kai@huebl-sgh.de)
 
    Lizenziert gemäß Apache Licence Version 2.0 (die „Lizenz“); Nutzung dieser
    Datei nur in Übereinstimmung mit der Lizenz erlaubt.
@@ -21,20 +21,18 @@
 #include <boost/property_tree/ptree.hpp>
 #include "OpcUaStackCore/BuildInTypes/OpcUaVariant.h"
 
-using namespace OpcUaStackCore;
-
 namespace OpcUaWebServer
 {
 
 	class EventNotify
-	: public JsonFormatter
+	: public OpcUaStackCore::JsonFormatter
 	{
 	  public:
 		EventNotify(void);
 		virtual ~EventNotify(void);
 
 		uint32_t& clientHandle(void);
-		OpcUaVariantArray& event(void);
+		OpcUaStackCore::OpcUaVariantArray& event(void);
 
       protected:
         bool jsonEncodeImpl(boost::property_tree::ptree& pt) const override;
@@ -42,7 +40,7 @@ namespace OpcUaWebServer
 
 	  private:
 		uint32_t clientHandle_;
-		OpcUaVariantArray event_;
+		OpcUaStackCore::OpcUaVariantArray event_;
 	};
 
 }

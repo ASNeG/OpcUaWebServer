@@ -1,5 +1,5 @@
 /*
-   Copyright 2019 Kai Huebl (kai@huebl-sgh.de)
+   Copyright 2019-2020 Kai Huebl (kai@huebl-sgh.de)
 
    Lizenziert gemäß Apache Licence Version 2.0 (die „Lizenz“); Nutzung dieser
    Datei nur in Übereinstimmung mit der Lizenz erlaubt.
@@ -19,6 +19,7 @@
 #include <boost/make_shared.hpp>
 #include "OpcUaStackCore/Base/ConfigJson.h"
 #include "OpcUaStackCore/Base/Utility.h"
+#include "OpcUaStackCore/Utility/UniqueId.h"
 #include "OpcUaWebServer/WebGateway/Client.h"
 #include "OpcUaWebServer/WebGateway/LoginRequest.h"
 #include "OpcUaWebServer/WebGateway/LogoutRequest.h"
@@ -69,6 +70,19 @@ namespace OpcUaWebServer
 		cryptoManager_ = cryptoManager;
 	}
 
+    void
+	Client::ioThread(OpcUaStackCore::IOThread::SPtr& ioThread)
+    {
+    	ioThread_ = ioThread;
+		strand_ = ioThread_->createStrand();
+    }
+
+    void
+	Client::messageBus(OpcUaStackCore::MessageBus::SPtr& messageBus)
+    {
+    	messageBus_ = messageBus;
+    }
+
 	OpcUaStatusCode
 	Client::login(
 		boost::property_tree::ptree& requestBody,
@@ -81,6 +95,27 @@ namespace OpcUaWebServer
 
 		sessionStatusCallback_ = sessionStatusCallback;
 
+		// session service state callback
+		auto sessionStateUpdate =
+		    [this] (SessionBase& session, SessionServiceStateId sessionState) {
+			    if (sessionState != SessionServiceStateId::Established && sessionState != SessionServiceStateId::Disconnected) {
+			    	return;
+			    }
+
+			    if (sessionState == SessionServiceStateId::Established) {
+				    sessionStatusCallback_("Connect");
+				}
+				else {
+				    if (logoutResponseCallback_) {
+						boost::property_tree::ptree responseBody;
+						logoutResponseCallback_(Success, responseBody);
+						return;
+					}
+
+					sessionStatusCallback_("Disconnect");
+				}
+			};
+
 		// parse login request
 		LoginRequest loginRequest;
 		if (!loginRequest.jsonDecode(requestBody)) {
@@ -90,14 +125,24 @@ namespace OpcUaWebServer
 		}
 		loginRequest.log("login request parameter");
 
-		// set secure channel configuration
+		// register thread in service set manager. All services are using the
+		// same thread pool
+		serviceSetManager_.registerIOThread(ioThread_->name(), ioThread_);
+		serviceSetManager_.messageBus(messageBus_);
+
+		// create session service
 		SessionServiceConfig sessionServiceConfig;
 		sessionServiceConfig.secureChannelClient_->discoveryUrl(loginRequest.discoveryUrl());
 		sessionServiceConfig.secureChannelClient_->cryptoManager(cryptoManager_);
 		sessionServiceConfig.secureChannelClient_->securityMode(loginRequest.securityMode());
 		sessionServiceConfig.secureChannelClient_->securityPolicy(loginRequest.securityPolicy());
 		sessionServiceConfig.session_->sessionName(sessionName_);
-		sessionServiceConfig.ioThreadName(sessionName_);
+		sessionServiceConfig.ioThreadName(ioThread_->name());
+		//sessionServiceConfig.sessionMode_ = SessionMode::SecureChannel;
+		sessionServiceConfig.sessionServiceChangeHandler_ = sessionStateUpdate;
+		sessionServiceConfig.sessionServiceChangeHandlerStrand_ = strand_;
+		sessionServiceConfig.session_->reconnectTimeout(0);
+		sessionServiceConfig.sessionServiceName_ = std::string("SessionService_") + UniqueId::createStringUniqueId();
 		switch (loginRequest.userAuthentication().userAuthType())
 		{
 			case UserAuthType::Anonymous:
@@ -176,13 +221,20 @@ namespace OpcUaWebServer
 		}
 		sessionServiceConfig.sessionServiceChangeHandler_ =
 			[this] (SessionBase& session, SessionServiceStateId sessionState) {
+			    sessionState_ = sessionState;
+
+			    if (sessionState != SessionServiceStateId::Established &&
+				    sessionState != SessionServiceStateId::Disconnected) {
+				    return;
+			    }
+
 				if (sessionState == SessionServiceStateId::Established) {
 					sessionStatusCallback_("Connect");
 				}
-				else if (sessionState == SessionServiceStateId::Disconnected) {
-					if (logoutResponseCallback_) {
-						boost::property_tree::ptree responseBody;
-						logoutResponseCallback_(Success, responseBody);
+
+				if (sessionState == SessionServiceStateId::Disconnected) {
+					if (logoutContext_) {
+						logoutComplete();
 						return;
 					}
 
@@ -212,6 +264,19 @@ namespace OpcUaWebServer
 		const LogoutResponseCallback& logoutResponseCallback
 	)
 	{
+		// check if the function is called outside the strand
+		if (!strand_->running_in_this_thread()) {
+			auto logoutContext = boost::make_shared<LogoutContext>();
+			logoutContext->requestBody_ = requestBody;
+			logoutContext->logoutResponseCallback_ = logoutResponseCallback;
+			strand_->dispatch(
+				[this, logoutContext]() {
+				    logout(logoutContext->requestBody_, logoutContext->logoutResponseCallback_);
+			    }
+			);
+			return;
+		}
+
 		Log(Debug, "receive logout request")
 			.parameter("Id", id_);
 
@@ -224,7 +289,6 @@ namespace OpcUaWebServer
 			logoutResponseCallback(BadInvalidArgument, responseBody);
 			return;
 		}
-		logoutResponseCallback_ = logoutResponseCallback;
 
 		// parse logout request
 		LogoutRequest logoutRequest;
@@ -235,8 +299,39 @@ namespace OpcUaWebServer
 			return;
 		}
 
+		// init logout context
+		logoutContext_ = boost::make_shared<LogoutContext>();
+		logoutContext_->logoutResponseCallback_ = logoutResponseCallback;
+
 		// close the connection to the opc ua server
-		sessionService_->asyncDisconnect();
+		if (sessionState_ != SessionServiceStateId::Disconnected) {
+		    sessionService_->asyncDisconnect();
+		    return;
+		}
+
+		// opc ua connection is closed
+		logoutComplete();
+	}
+
+	void
+	Client::logoutComplete(void)
+	{
+    	// delete services
+    	sessionService_.reset();
+    	attributeService_.reset();
+        methodService_.reset();
+        subscriptionService_.reset();
+    	monitoredItemService_.reset();
+
+    	// deregister io thread from service set manager
+    	serviceSetManager_.deregisterIOThread(ioThread_->name());
+
+    	// call logout complete callback
+    	auto logoutResponseCallback = logoutContext_->logoutResponseCallback_;
+    	logoutContext_ = nullptr;
+
+    	boost::property_tree::ptree responseBody;
+    	logoutResponseCallback(Success, responseBody);
 	}
 
 	// ----------------------------------------------------------------------
@@ -251,7 +346,8 @@ namespace OpcUaWebServer
 	{
 		if (!attributeService_) {
 			AttributeServiceConfig attributeServiceConfig;
-			attributeServiceConfig.ioThreadName(sessionName_);
+			attributeServiceConfig.ioThreadName(ioThread_->name());
+			attributeServiceConfig.attributeServiceName_ = std::string("AttributeService_") + UniqueId::createStringUniqueId();
 			attributeService_ = serviceSetManager_.attributeService(sessionService_, attributeServiceConfig);
 			if (!attributeService_) {
 				Log(Error, "attribute service error")
@@ -437,7 +533,8 @@ namespace OpcUaWebServer
 	{
 		if (!methodService_) {
 			MethodServiceConfig methodServiceConfig;
-			methodServiceConfig.ioThreadName(sessionName_);
+			methodServiceConfig.ioThreadName(ioThread_->name());
+			methodServiceConfig.methodServiceName_ = std::string("MethodService_") + UniqueId::createStringUniqueId();
 			methodService_ = serviceSetManager_.methodService(sessionService_, methodServiceConfig);
 			if (!methodService_) {
 				Log(Error, "method service error")
@@ -544,10 +641,11 @@ namespace OpcUaWebServer
 			};
 
 			SubscriptionServiceConfig subscriptionServiceConfig;
-			subscriptionServiceConfig.ioThreadName(sessionName_);
+			subscriptionServiceConfig.ioThreadName(ioThread_->name());
 			subscriptionServiceConfig.dataChangeNotificationHandler_ = dataChangeHandler;
 			subscriptionServiceConfig.eventNotificationHandler_ = eventHandler;
 			subscriptionServiceConfig.subscriptionStateUpdateHandler_ = subscriptionStateHandler;
+			subscriptionServiceConfig.subscriptionServiceName_ = std::string("SubscriptionService_") + UniqueId::createStringUniqueId();
 			subscriptionService_ = serviceSetManager_.subscriptionService(sessionService_, subscriptionServiceConfig);
 			if (!subscriptionService_) {
 				Log(Error, "subscription service error")
@@ -695,7 +793,8 @@ namespace OpcUaWebServer
 	{
 		if (!monitoredItemService_) {
 			MonitoredItemServiceConfig monitoredItemServiceConfig;
-			monitoredItemServiceConfig.ioThreadName(sessionName_);
+			monitoredItemServiceConfig.ioThreadName(ioThread_->name());
+			monitoredItemServiceConfig.monitoredItemServiceName_ = std::string("MonitoredItemService_") + UniqueId::createStringUniqueId();
 			monitoredItemService_ = serviceSetManager_.monitoredItemService(sessionService_, monitoredItemServiceConfig);
 			if (!monitoredItemService_) {
 				Log(Error, "monitored item service error")

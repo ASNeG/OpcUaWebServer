@@ -1,5 +1,5 @@
 /*
-   Copyright 2015-2019 Kai Huebl (kai@huebl-sgh.de)
+   Copyright 2015-2020 Kai Huebl (kai@huebl-sgh.de)
 
    Lizenziert gemäß Apache Licence Version 2.0 (die „Lizenz“); Nutzung dieser
    Datei nur in Übereinstimmung mit der Lizenz erlaubt.
@@ -61,7 +61,8 @@ namespace OpcUaWebServer
 
 		bool startup(
 			const OpcUaClient::SPtr& opcUaClient,
-			IOThread::SPtr ioThread,
+			IOThread::SPtr& ioThread,
+			MessageBus::SPtr& messageBus,
 			CryptoManager::SPtr& cryptoManager
 		);
 		bool shutdown(void);
@@ -127,10 +128,13 @@ namespace OpcUaWebServer
 		void polling(void);
 
 		bool polling_;
-		IOThread::SPtr ioThread_;
 		Config* config_;
 		OpcUaClientIf* opcUaClientIf_;
 		OpcUaClientConfig::SPtr opcUaClientConfig_;
+
+		boost::shared_ptr<boost::asio::io_service::strand> strand_ = nullptr;
+		OpcUaStackCore::MessageBus::SPtr messageBus_ = nullptr;
+		OpcUaStackCore::IOThread::SPtr ioThread_ = nullptr;
 
 		State state_;
 		typedef std::map<uint32_t, uint32_t> NamespaceMap;

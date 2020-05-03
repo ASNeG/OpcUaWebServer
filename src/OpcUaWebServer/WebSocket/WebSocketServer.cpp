@@ -1,5 +1,5 @@
 /*
-   Copyright 2015-2019 Kai Huebl (kai@huebl-sgh.de)
+   Copyright 2015-2020 Kai Huebl (kai@huebl-sgh.de)
 
    Lizenziert gemäß Apache Licence Version 2.0 (die „Lizenz“); Nutzung dieser
    Datei nur in Übereinstimmung mit der Lizenz erlaubt.
@@ -77,12 +77,7 @@ namespace OpcUaWebServer
 			Log(Info, "use wss protocol")
 		    	.parameter("CsrFile", csrFile)
 				.parameter("KeyFile", keyFile);
-		}
-		else {
-			Log(Info, "use ws protocol");
-		}
 
-		if (wss_) {
 			// create context and add certificate and private key to context
 			context_ = new boost::asio::ssl::context(
 				boost::asio::ssl::context::sslv23
@@ -95,6 +90,9 @@ namespace OpcUaWebServer
 			context_->set_password_callback(boost::bind(&WebSocketServer::getPassword, this));
 			context_->use_certificate_chain_file(csrFile);
 			context_->use_private_key_file(keyFile, boost::asio::ssl::context::pem);
+		}
+		else {
+			Log(Info, "use ws protocol");
 		}
 
 		accept();
@@ -121,10 +119,7 @@ namespace OpcUaWebServer
 
 		// close listener socket
 		if (active_) {
-			Log(Debug, "close websocket listener socket")
-				.parameter("Address", webSocketConfig_->address())
-				.parameter("Port", webSocketConfig_->port());
-			tcpAcceptor_.close();
+			closeWebSocketChannel();
 		}
 
 		// close channels
@@ -239,7 +234,10 @@ namespace OpcUaWebServer
 			.parameter("Port", webSocketChannel->partner_.port())
 			.parameter("Connections", webSocketChannelMap_.size());
 
+		// add a new web socket channel to the web socket channel map and call
+		// function addWebSocketChannel
 		initWebSocketChannel(webSocketChannel);
+
 		performHandshake(webSocketChannel);
 
 		if (!active_) {
@@ -252,15 +250,18 @@ namespace OpcUaWebServer
 	void
 	WebSocketServer::addWebSocketChannel(uint32_t count)
 	{
+		// This function is called indirectly from function handleAccept (initWebSocketChannel)
+
 		if (webSocketConfig_->maxConnections() == 0) {
 			return;
 		}
 
 		if (count >= webSocketConfig_->maxConnections() && active_) {
-			Log(Warning, "close websocket listener socket, because max connection limit reached")
+			Log(Warning, "websocket max connection limit reached")
 				.parameter("Address", webSocketConfig_->address())
 				.parameter("Port", webSocketConfig_->port())
-				.parameter("MaxConnections", count);
+				.parameter("ActConnections", count);
+			closeWebSocketChannel();
 			active_ = false;
 		}
 	}
@@ -278,14 +279,66 @@ namespace OpcUaWebServer
 		}
 
 		if (count < webSocketConfig_->maxConnections() && !active_) {
-			Log(Info, "open websocket listener socket")
+			Log(Info, "websocket connection info")
 				.parameter("Address", webSocketConfig_->address())
 				.parameter("Port", webSocketConfig_->port())
-				.parameter("MaxConnections", count);
+				.parameter("ActConnections", count)
+				.parameter("MaxConnections", webSocketConfig_->maxConnections());
 
 			active_ = true;
+			tcpAcceptor_.reopen();
+			openWebSocketChannel();
 			accept();
 		}
+	}
+
+	void
+	WebSocketServer::openWebSocketChannel(void)
+	{
+		Log(Info, "open websocket listener socket")
+			.parameter("Address", webSocketConfig_->address())
+			.parameter("Port", webSocketConfig_->port());
+
+		tcpAcceptor_.listen();
+
+		// set ssl configuration parameter if exist
+		wss_ = webSocketConfig_->ssl();
+		auto csrFile = webSocketConfig_->csrFile();
+		auto keyFile = webSocketConfig_->keyFile();
+
+		if (wss_) {
+			Log(Info, "use wss protocol")
+		    	.parameter("CsrFile", csrFile)
+				.parameter("KeyFile", keyFile);
+
+			// create context and add certificate and private key to context
+			context_ = new boost::asio::ssl::context(
+				boost::asio::ssl::context::sslv23
+			);
+			context_->set_options(
+				boost::asio::ssl::context::default_workarounds |
+				boost::asio::ssl::context::no_sslv2 |
+				boost::asio::ssl::context::single_dh_use
+			);
+			context_->set_password_callback(boost::bind(&WebSocketServer::getPassword, this));
+			context_->use_certificate_chain_file(csrFile);
+			context_->use_private_key_file(keyFile, boost::asio::ssl::context::pem);
+		}
+		else {
+			Log(Info, "use ws protocol");
+		}
+	}
+
+	void
+	WebSocketServer::closeWebSocketChannel(void)
+	{
+		Log(Debug, "close websocket listener socket")
+			.parameter("Address", webSocketConfig_->address())
+			.parameter("Port", webSocketConfig_->port());
+
+		tcpAcceptor_.close();
+		delete context_;
+		context_ = nullptr;
 	}
 
 }

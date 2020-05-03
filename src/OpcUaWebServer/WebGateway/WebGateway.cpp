@@ -1,5 +1,5 @@
 /*
-   Copyright 2019 Kai Huebl (kai@huebl-sgh.de)
+   Copyright 2019-2020 Kai Huebl (kai@huebl-sgh.de)
 
    Lizenziert gemäß Apache Licence Version 2.0 (die „Lizenz“); Nutzung dieser
    Datei nur in Übereinstimmung mit der Lizenz erlaubt.
@@ -43,6 +43,7 @@ namespace OpcUaWebServer
 	WebGateway::startup(
 		Config* config,
 		IOThread::SPtr ioThread,
+		MessageBus::SPtr messageBus,
 		CryptoManager::SPtr cryptoManager,
 		const StartupCompleteCallback& startupCompleteCallback
 	)
@@ -50,8 +51,8 @@ namespace OpcUaWebServer
 		StartupCompleteCallback tmpStartupCompleteCallback = startupCompleteCallback;
 		strand_ = ioThread->createStrand();
 		strand_->post(
-			[this, config, ioThread, cryptoManager, tmpStartupCompleteCallback]() {
-				startupStrand(config, ioThread, cryptoManager, tmpStartupCompleteCallback);
+			[this, config, ioThread, messageBus, cryptoManager, tmpStartupCompleteCallback]() {
+				startupStrand(config, ioThread, messageBus, cryptoManager, tmpStartupCompleteCallback);
 			}
 		);
 	}
@@ -60,6 +61,7 @@ namespace OpcUaWebServer
 	WebGateway::startupStrand(
 		Config* config,
 		IOThread::SPtr ioThread,
+		MessageBus::SPtr messageBus,
 		CryptoManager::SPtr cryptoManager,
 		const StartupCompleteCallback& startupCompleteCallback
 	)
@@ -91,7 +93,7 @@ namespace OpcUaWebServer
 
 		clientManager_.sendMessageCallback(sendMessageCallback);
 		clientManager_.disconnectChannelCallback(disconnectChannelCallback);
-		if (!clientManager_.startup(ioThread, cryptoManager)) {
+		if (!clientManager_.startup(ioThread, messageBus, cryptoManager)) {
 			startupCompleteCallback(false);
 			return;
 		}

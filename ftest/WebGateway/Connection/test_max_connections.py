@@ -71,6 +71,7 @@ class TestMaxConnections(unittest.TestCase):
         #
         # test connect
         #
+        time.sleep(1)
         print("open connection")
         timeout = False
         try:
