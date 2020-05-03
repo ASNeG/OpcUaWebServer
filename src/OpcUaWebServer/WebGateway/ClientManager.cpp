@@ -1,5 +1,5 @@
 /*
-   Copyright 2019 Kai Huebl (kai@huebl-sgh.de)
+   Copyright 2019-2020 Kai Huebl (kai@huebl-sgh.de)
 
    Lizenziert gemäß Apache Licence Version 2.0 (die „Lizenz“); Nutzung dieser
    Datei nur in Übereinstimmung mit der Lizenz erlaubt.
@@ -50,10 +50,12 @@ namespace OpcUaWebServer
 	bool
 	ClientManager::startup(
 		IOThread::SPtr& ioThread,
+		MessageBus::SPtr& messageBus,
 		CryptoManager::SPtr& cryptoManager
 	)
 	{
 		ioThread_ = ioThread;
+		messageBus_ = messageBus;
 		cryptoManager_ = cryptoManager;
 		return true;
 	}
@@ -254,6 +256,8 @@ namespace OpcUaWebServer
 		// create new opc ua client
 		auto client = boost::make_shared<Client>();
 		client->cryptoManager(cryptoManager_);
+		client->ioThread(ioThread_);
+		client->messageBus(messageBus_);
 		auto sessionId = client->id();
 
 		Log(Debug, "WSG receive login request")
@@ -271,14 +275,6 @@ namespace OpcUaWebServer
 			sessionStatusNotify.jsonEncode(notifyBody);
 			sendNotify(channelId, notifyHeader, notifyBody);
 		};
-
-		// create new opc ua client session
-		boost::property_tree::ptree responseBody;
-		auto statusCode = client->login(requestBody, responseBody, sessionStatusCallback);
-		if (statusCode != Success) {
-			sendErrorResponse(channelId, requestHeader, statusCode);
-			return;
-		}
 
 		// register subscription status callback
 		auto subscriptionStatusCallback = [this, channelId, clientHandle, sessionId](uint32_t subscriptionId, const std::string& subscriptionStatus) {
@@ -322,6 +318,14 @@ namespace OpcUaWebServer
 		};
 		client->eventCallback(eventCallback);
 
+		// create new opc ua client session
+		boost::property_tree::ptree responseBody;
+		auto statusCode = client->login(requestBody, responseBody, sessionStatusCallback);
+		if (statusCode != Success) {
+			sendErrorResponse(channelId, requestHeader, statusCode);
+			return;
+		}
+
 		// added client to manager map
 		mutex_.lock();
 		auto it = clientMap_.insert(std::make_pair(sessionId, client));
@@ -360,10 +364,23 @@ namespace OpcUaWebServer
 			return;
 		}
 		auto client = it->second;
+
+		// remove element from client session map
+		auto result = channelIdSessionIdMap_.equal_range(channelId);
+		for (auto it = result.first; it != result.second; it++) {
+			if (it->second == requestHeader.sessionId().toStdString()) {
+				channelIdSessionIdMap_.erase(it);
+				break;
+			}
+		}
+
+		// remove client from client map
+		clientMap_.erase(requestHeader.sessionId());
+
 		mutex_.unlock();
 
 		// logout
-		auto logoutResponseCallback = [this, channelId, requestHeader](OpcUaStatusCode statusCode, boost::property_tree::ptree& responseBody) mutable {
+		auto logoutResponseCallback = [this, channelId, requestHeader, client](OpcUaStatusCode statusCode, boost::property_tree::ptree& responseBody) mutable {
 			if (statusCode != Success) {
 				sendErrorResponse(channelId, requestHeader, statusCode);
 				return;
@@ -376,23 +393,8 @@ namespace OpcUaWebServer
 
 			sendResponse(channelId, requestHeader, responseBody);
 
-			std::string sessionId = requestHeader.sessionId();
-			std::thread thr([this, sessionId]() {
-				mutex_.lock();
-				clientMap_.erase(sessionId);
-				mutex_.unlock();
-				if (shutdownCallback_) shutdownCallback_();
-			});
-			thr.detach();
+			if (shutdownCallback_) shutdownCallback_();
 		};
-
-		// remove element from client session map
-		auto result = channelIdSessionIdMap_.equal_range(channelId);
-		for (auto it = result.first; it != result.second; it++) {
-			if (it->second == requestHeader.sessionId().toStdString()) {
-				channelIdSessionIdMap_.erase(it);
-			}
-		}
 
 		client->logout(requestBody, logoutResponseCallback);
 	}

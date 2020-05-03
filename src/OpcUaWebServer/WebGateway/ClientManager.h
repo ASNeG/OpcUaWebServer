@@ -1,5 +1,5 @@
 /*
-   Copyright 2019 Kai Huebl (kai@huebl-sgh.de)
+   Copyright 2019-2020 Kai Huebl (kai@huebl-sgh.de)
 
    Lizenziert gemäß Apache Licence Version 2.0 (die „Lizenz“); Nutzung dieser
    Datei nur in Übereinstimmung mit der Lizenz erlaubt.
@@ -26,24 +26,23 @@
 #include "OpcUaWebServer/WebGateway/NotifyHeader.h"
 #include "OpcUaWebServer/WebGateway/Client.h"
 
-using namespace OpcUaStackCore;
-
 namespace OpcUaWebServer
 {
 
 	class ClientManager
 	{
 	  public:
-		typedef std::function<void (WebSocketMessage::SPtr& webSocketMessage)> SendMessageCallback;
-		typedef std::function<void (uint32_t channelId)> DisconnectChannelCallback;
-		typedef std::function<void (void)> ShutdownCallback;
+		using SendMessageCallback = std::function<void (WebSocketMessage::SPtr& webSocketMessage)>;
+		using DisconnectChannelCallback = std::function<void (uint32_t channelId)>;
+		using ShutdownCallback = std::function<void (void)>;
 
 		ClientManager(void);
 		virtual ~ClientManager(void);
 
 		bool startup(
-			IOThread::SPtr& ioThread,
-			CryptoManager::SPtr& cryptoManager
+			OpcUaStackCore::IOThread::SPtr& ioThread,
+			OpcUaStackCore::MessageBus::SPtr& messageBus,
+			OpcUaStackCore::CryptoManager::SPtr& cryptoManager
 		);
 		bool shutdown(void);
 
@@ -85,7 +84,7 @@ namespace OpcUaWebServer
 		void sendErrorResponse(
 			uint32_t channelId,
 			RequestHeader& requestHeader,
-			OpcUaStatusCode statusCode
+			OpcUaStackCore::OpcUaStatusCode statusCode
 		);
 
 		boost::mutex mutex_;
@@ -97,8 +96,9 @@ namespace OpcUaWebServer
 		SendMessageCallback sendMessageCallback_;
 		ShutdownCallback shutdownCallback_;
 
-		IOThread::SPtr ioThread_;
-		CryptoManager::SPtr cryptoManager_;
+		OpcUaStackCore::IOThread::SPtr ioThread_ = nullptr;
+		OpcUaStackCore::MessageBus::SPtr messageBus_ = nullptr;
+		OpcUaStackCore::CryptoManager::SPtr cryptoManager_ = nullptr;
 	};
 
 }

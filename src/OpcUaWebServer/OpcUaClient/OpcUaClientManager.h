@@ -1,5 +1,5 @@
 /*
-   Copyright 2015-2019 Kai Huebl (kai@huebl-sgh.de)
+   Copyright 2015-2020 Kai Huebl (kai@huebl-sgh.de)
 
    Lizenziert gemäß Apache Licence Version 2.0 (die „Lizenz“); Nutzung dieser
    Datei nur in Übereinstimmung mit der Lizenz erlaubt.
@@ -39,6 +39,7 @@ namespace OpcUaWebServer
 			Config* config,
 			OpcUaClientManagerIf* opcUaClientManagerIf,
 			IOThread::SPtr ioThread,
+			MessageBus::SPtr& messageBus,
 			CryptoManager::SPtr& cryptoManager
 		);
 		bool shutdown(void);
@@ -65,9 +66,10 @@ namespace OpcUaWebServer
 
 		bool enable_;
 
-		Config* config_;
-		IOThread::SPtr ioThread_;
-		CryptoManager::SPtr cryptoManager_;
+		Config* config_ = nullptr;
+		IOThread::SPtr ioThread_ = nullptr;
+		OpcUaStackCore::MessageBus::SPtr messageBus_ = nullptr;
+		CryptoManager::SPtr cryptoManager_ = nullptr;
 
 		OpcUaClientManagerIf* opcUaClientManagerIf_;
 		OpcUaClientConfig::Map opcUaClientConfigMap_;

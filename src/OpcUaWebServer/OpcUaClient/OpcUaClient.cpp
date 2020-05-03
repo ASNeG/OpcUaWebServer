@@ -1,5 +1,5 @@
 /*
-   Copyright 2015-2019 Kai Huebl (kai@huebl-sgh.de)
+   Copyright 2015-2020 Kai Huebl (kai@huebl-sgh.de)
 
    Lizenziert gemäß Apache Licence Version 2.0 (die „Lizenz“); Nutzung dieser
    Datei nur in Übereinstimmung mit der Lizenz erlaubt.
@@ -17,6 +17,7 @@
  */
 
 #include "OpcUaStackCore/Base/Log.h"
+#include "OpcUaStackCore/Utility/UniqueId.h"
 #include "OpcUaWebServer/OpcUaClient/OpcUaClient.h"
 
 using namespace OpcUaStackCore;
@@ -72,43 +73,56 @@ namespace OpcUaWebServer
 	bool
 	OpcUaClient::startup(
 		const OpcUaClient::SPtr& opcUaClient,
-		IOThread::SPtr ioThread,
+		IOThread::SPtr& ioThread,
+		MessageBus::SPtr& messageBus,
 		CryptoManager::SPtr& cryptoManager
 	)
 	{
 		std::cout << "client startup " << opcUaClientConfig_->opcUaClientEndpoint_.serverUri_ << std::endl;
 
 		ioThread_ = ioThread;
+		messageBus_ = messageBus;
+		strand_ = ioThread_->createStrand();
 
 		// create value info map
-		if (!valueInfo_.addClientConfig(opcUaClientConfig_, opcUaClient)) return false;
+		if (!valueInfo_.addClientConfig(opcUaClientConfig_, opcUaClient)) {
+			return false;
+		}
+
+		auto sessionStateUpdateCallback = [this](SessionBase& session, SessionServiceStateId sessionState) {
+			sessionStateUpdate(session, sessionState);
+		};
 
 		// init service sets
-		serviceSetManager_.registerIOThread("GlobalIOThread", ioThread);
+		serviceSetManager_.registerIOThread(ioThread->name(), ioThread);
 
 		// create session service
 		SessionServiceConfig sessionServiceConfig;
-		sessionServiceConfig.ioThreadName("GlobalIOThread");
-		sessionServiceConfig.sessionServiceChangeHandler_ = [this](SessionBase& session, SessionServiceStateId sessionState) {
-			sessionStateUpdate(session, sessionState);
-		};
-		sessionServiceConfig.secureChannelClient_->endpointUrl(opcUaClientConfig_->opcUaClientEndpoint_.serverUri_);
+		sessionServiceConfig.secureChannelClient_->endpointUrl(opcUaClientConfig_->opcUaClientEndpoint_.serverUri_); // FIXME: use discoveryUrl?
 		sessionServiceConfig.secureChannelClient_->cryptoManager(cryptoManager);
+		//sessionServiceConfig.secureChannelClient_->securityMode(opcUaClientConfig_->securityMode); // FIXME: add security
+		//sessionServiceConfig.secureChannelClient_->securityPolicy(opcUaClientConfig_->securityPolicy); // FIXME: add security
 		sessionServiceConfig.session_->sessionName("ASNeGWebServer");
+		sessionServiceConfig.ioThreadName(ioThread_->name());
+		sessionServiceConfig.sessionServiceChangeHandler_ = sessionStateUpdateCallback;
+		sessionServiceConfig.sessionServiceChangeHandlerStrand_ = strand_;
 		sessionServiceConfig.session_->reconnectTimeout(5000);
+		sessionServiceConfig.sessionServiceName_ = std::string("SessionService_") + UniqueId::createStringUniqueId();
+
 		serviceSetManager_.sessionService(sessionServiceConfig);
 		sessionService_ = serviceSetManager_.sessionService(sessionServiceConfig);
 
-
 		// create attribute service
 		AttributeServiceConfig attributeServiceConfig;
-		attributeServiceConfig.ioThreadName("GlobalIOThread");
+		attributeServiceConfig.ioThreadName(ioThread_->name());
+		attributeServiceConfig.attributeServiceName_ = std::string("AttributeService_") + UniqueId::createStringUniqueId();
 		attributeService_ = serviceSetManager_.attributeService(sessionService_, attributeServiceConfig);
 
 
 		// create subscriptions service
 		SubscriptionServiceConfig subscriptionServiceConfig;
-		subscriptionServiceConfig.ioThreadName("GlobalIOThread");
+		subscriptionServiceConfig.ioThreadName(ioThread_->name());
+		subscriptionServiceConfig.subscriptionServiceName_ = std::string("SubscriptionService_") + UniqueId::createStringUniqueId();
 		subscriptionServiceConfig.dataChangeNotificationHandler_ = [this](const MonitoredItemNotification::SPtr& monitoredItem) {
 			dataChangeNotification(monitoredItem);
 		};
@@ -120,7 +134,8 @@ namespace OpcUaWebServer
 
 		// create monitored item service
 		MonitoredItemServiceConfig monitoredItemServiceConfig;
-		monitoredItemServiceConfig.ioThreadName("GlobalIOThread");
+		monitoredItemServiceConfig.ioThreadName(ioThread_->name());
+		monitoredItemServiceConfig.monitoredItemServiceName_ = std::string("MonitoredItemService_") + UniqueId::createStringUniqueId();
 		monitoredItemService_ = serviceSetManager_.monitoredItemService(sessionService_, monitoredItemServiceConfig);
 
 
@@ -128,7 +143,7 @@ namespace OpcUaWebServer
 		sessionService_->asyncConnect();
 
 		slotTimerElement_ = boost::make_shared<SlotTimerElement>();
-		slotTimerElement_->timeoutCallback(boost::bind(&OpcUaClient::timerLoop, this));
+		slotTimerElement_->timeoutCallback(strand_, boost::bind(&OpcUaClient::timerLoop, this));
 		slotTimerElement_->expireTime(boost::posix_time::microsec_clock::local_time(), 900);
 		ioThread_->slotTimer()->start(slotTimerElement_);
 

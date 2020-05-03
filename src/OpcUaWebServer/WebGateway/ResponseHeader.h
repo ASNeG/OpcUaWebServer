@@ -1,5 +1,5 @@
 /*
-   Copyright 2019 Kai Huebl (kai@huebl-sgh.de)
+   Copyright 2019-2020 Kai Huebl (kai@huebl-sgh.de)
 
    Lizenziert gemäß Apache Licence Version 2.0 (die „Lizenz“); Nutzung dieser
    Datei nur in Übereinstimmung mit der Lizenz erlaubt.
@@ -21,8 +21,6 @@
 #include "OpcUaStackCore/BuildInTypes/OpcUaStatusCode.h"
 #include "OpcUaWebServer/WebGateway/RequestHeader.h"
 
-using namespace OpcUaStackCore;
-
 namespace OpcUaWebServer
 {
 
@@ -33,20 +31,20 @@ namespace OpcUaWebServer
 		ResponseHeader(void);
 		ResponseHeader(const RequestHeader& RequestHeader);
 		ResponseHeader(
-		    const OpcUaString& messageType,
-			const OpcUaString& clientHandle,
-			const OpcUaString& sessionId
+		    const OpcUaStackCore::OpcUaString& messageType,
+			const OpcUaStackCore::OpcUaString& clientHandle,
+			const OpcUaStackCore::OpcUaString& sessionId
 		);
 		virtual ~ResponseHeader(void);
 
-		OpcUaStatusCode& statusCode(void);
+		OpcUaStackCore::OpcUaStatusCode& statusCode(void);
 
       protected:
         bool jsonEncodeImpl(boost::property_tree::ptree& pt) const override;
         bool jsonDecodeImpl(const boost::property_tree::ptree& pt) override;
 
 	  private:
-		OpcUaStatusCode statusCode_;
+        OpcUaStackCore::OpcUaStatusCode statusCode_;
 	};
 
 }

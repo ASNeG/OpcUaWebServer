@@ -1,5 +1,5 @@
 /*
-   Copyright 2019 Kai Huebl (kai@huebl-sgh.de)
+   Copyright 2019-2020 Kai Huebl (kai@huebl-sgh.de)
 
    Lizenziert gemäß Apache Licence Version 2.0 (die „Lizenz“); Nutzung dieser
    Datei nur in Übereinstimmung mit der Lizenz erlaubt.
@@ -22,28 +22,26 @@
 #include <boost/property_tree/ptree.hpp>
 #include "OpcUaStackCore/BuildInTypes/OpcUaString.h"
 
-using namespace OpcUaStackCore;
-
 namespace OpcUaWebServer
 {
 
 	class RequestHeader
-	: public JsonFormatter
+	: public OpcUaStackCore::JsonFormatter
 	{
 	  public:
 		RequestHeader(void);
 		RequestHeader(const RequestHeader& RequestHeader);
 		RequestHeader(
-		    const OpcUaString& messageType,
-			const OpcUaString& clientHandle,
-			const OpcUaString& sessionId,
+		    const OpcUaStackCore::OpcUaString& messageType,
+			const OpcUaStackCore::OpcUaString& clientHandle,
+			const OpcUaStackCore::OpcUaString& sessionId,
 			uint32_t requestTimeout
 		);
 		virtual ~RequestHeader(void);
 
-		OpcUaString& messageType(void);
-		OpcUaString& clientHandle(void);
-		OpcUaString& sessionId(void);
+		OpcUaStackCore::OpcUaString& messageType(void);
+		OpcUaStackCore::OpcUaString& clientHandle(void);
+		OpcUaStackCore::OpcUaString& sessionId(void);
 		uint32_t requestTimeout(void) const;
 
       protected:
@@ -51,9 +49,9 @@ namespace OpcUaWebServer
         bool jsonDecodeImpl(const boost::property_tree::ptree& pt) override;
 
 	  private:
-        OpcUaString messageType_;
-        OpcUaString clientHandle_;
-        OpcUaString sessionId_;
+        OpcUaStackCore::OpcUaString messageType_;
+        OpcUaStackCore::OpcUaString clientHandle_;
+        OpcUaStackCore::OpcUaString sessionId_;
         uint32_t requestTimeout_;
 	};
 

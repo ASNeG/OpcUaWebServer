@@ -1,5 +1,5 @@
 /*
-   Copyright 2019 Kai Huebl (kai@huebl-sgh.de)
+   Copyright 2019-2020 Kai Huebl (kai@huebl-sgh.de)
 
    Lizenziert gemäß Apache Licence Version 2.0 (die „Lizenz“); Nutzung dieser
    Datei nur in Übereinstimmung mit der Lizenz erlaubt.
@@ -26,24 +26,23 @@
 #include "OpcUaWebServer/WebGateway/ClientManager.h"
 #include "OpcUaWebServer/WebGateway/WebGatewayConfig.h"
 
-using namespace OpcUaStackCore;
-
 namespace OpcUaWebServer
 {
 
 	class WebGateway
 	{
 	  public:
-		typedef std::function<void (bool error)> StartupCompleteCallback;
-		typedef std::function<void (bool error)> ShutdownCompleteCallback;
+		using StartupCompleteCallback = std::function<void (bool error)>;
+		using ShutdownCompleteCallback = std::function<void (bool error)>;
 
 		WebGateway(void);
 		virtual ~WebGateway(void);
 
 		void startup(
-			Config* config,
-			IOThread::SPtr ioThread,
-			CryptoManager::SPtr cryptoManager,
+			OpcUaStackCore::Config* config,
+			OpcUaStackCore::IOThread::SPtr ioThread,
+			OpcUaStackCore::MessageBus::SPtr messageBus,
+			OpcUaStackCore::CryptoManager::SPtr cryptoManager,
 			const StartupCompleteCallback& startupCompleteCallback
 		);
 		void shutdown(
@@ -54,9 +53,10 @@ namespace OpcUaWebServer
 
 	  private:
 		void startupStrand(
-			Config* config,
-			IOThread::SPtr ioThread,
-			CryptoManager::SPtr cryptoManager,
+			OpcUaStackCore::Config* config,
+			OpcUaStackCore::IOThread::SPtr ioThread,
+			OpcUaStackCore::MessageBus::SPtr messageBus,
+			OpcUaStackCore::CryptoManager::SPtr cryptoManager,
 			const StartupCompleteCallback& startupCompleteCallback
 		);
 		void shutdownStrand(

@@ -1,5 +1,5 @@
 /*
-   Copyright 2015-2019 Kai Huebl (kai@huebl-sgh.de)
+   Copyright 2015-2020 Kai Huebl (kai@huebl-sgh.de)
 
    Lizenziert gemäß Apache Licence Version 2.0 (die „Lizenz“); Nutzung dieser
    Datei nur in Übereinstimmung mit der Lizenz erlaubt.
@@ -54,12 +54,14 @@ namespace OpcUaWebServer
 		Config* config,
 		OpcUaClientManagerIf* opcUaClientManagerIf,
 		IOThread::SPtr ioThread,
+		MessageBus::SPtr& messageBus,
 		CryptoManager::SPtr& cryptoManager
 	)
 	{
 		config_ = config;
 		opcUaClientManagerIf_ = opcUaClientManagerIf;
 		ioThread_ = ioThread;
+		messageBus_ = messageBus;
 		cryptoManager_ = cryptoManager;
 
 		if (!readClientConfig()) return false;
@@ -500,7 +502,7 @@ namespace OpcUaWebServer
 			opcUaClient->opcUaClientConfig(it1->second);
 			opcUaClient->opcUaClientIf(this);
 
-			if (!opcUaClient->startup(opcUaClient, ioThread_, cryptoManager_)) return false;
+			if (!opcUaClient->startup(opcUaClient, ioThread_, messageBus_, cryptoManager_)) return false;
 
 			opcUaClientMap_.insert(std::make_pair(it1->first, opcUaClient));
 

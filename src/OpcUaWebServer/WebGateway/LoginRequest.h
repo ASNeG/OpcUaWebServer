@@ -1,5 +1,5 @@
 /*
-   Copyright 2019 Kai Huebl (kai@huebl-sgh.de)
+   Copyright 2019-2020 Kai Huebl (kai@huebl-sgh.de)
 
    Lizenziert gemäß Apache Licence Version 2.0 (die „Lizenz“); Nutzung dieser
    Datei nur in Übereinstimmung mit der Lizenz erlaubt.
@@ -23,8 +23,6 @@
 #include "OpcUaStackCore/StandardDataTypes/MessageSecurityMode.h"
 #include "OpcUaStackCore/BuildInTypes/SecurityPolicy.h"
 #include "OpcUaStackCore/BuildInTypes/JsonFormatter.h"
-
-using namespace OpcUaStackCore;
 
 namespace OpcUaWebServer
 {
@@ -57,15 +55,15 @@ namespace OpcUaWebServer
 
 
 	class LoginRequest
-	: public JsonFormatter
+	: public OpcUaStackCore::JsonFormatter
 	{
 	  public:
 		LoginRequest(void);
 		virtual ~LoginRequest(void);
 
-		OpcUaString& discoveryUrl(void);
-		MessageSecurityMode::Enum securityMode(void);
-		SecurityPolicy::Enum securityPolicy(void);
+		OpcUaStackCore::OpcUaString& discoveryUrl(void);
+		OpcUaStackCore::MessageSecurityMode::Enum securityMode(void);
+		OpcUaStackCore::SecurityPolicy::Enum securityPolicy(void);
 		UserAuthentication& userAuthentication(void);
 		void log(const std::string& message);
 
@@ -74,9 +72,9 @@ namespace OpcUaWebServer
 		bool jsonDecodeImpl(const boost::property_tree::ptree& pt) override;
 
 	  private:
-		OpcUaString discoveryUrl_;
-		MessageSecurityMode::Enum securityMode_;
-		SecurityPolicy::Enum securityPolicy_;
+		OpcUaStackCore::OpcUaString discoveryUrl_;
+		OpcUaStackCore::MessageSecurityMode::Enum securityMode_;
+		OpcUaStackCore::SecurityPolicy::Enum securityPolicy_;
 		UserAuthentication userAuthentication_;
 	};
 

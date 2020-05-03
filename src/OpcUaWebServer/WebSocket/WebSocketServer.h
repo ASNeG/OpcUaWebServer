@@ -1,5 +1,5 @@
 /*
-   Copyright 2015-2019 Kai Huebl (kai@huebl-sgh.de)
+   Copyright 2015-2020 Kai Huebl (kai@huebl-sgh.de)
 
    Lizenziert gemäß Apache Licence Version 2.0 (die „Lizenz“); Nutzung dieser
    Datei nur in Übereinstimmung mit der Lizenz erlaubt.
@@ -67,6 +67,8 @@ namespace OpcUaWebServer
 			const SendCompleteCallback& sendCompleteCallback
 		);
 		void handleShutdown(void);
+		void openWebSocketChannel(void);
+		void closeWebSocketChannel(void);
 
 		WebSocketChannel* createWebSocketChannel(void);
 		void accept(void);

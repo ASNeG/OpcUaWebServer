@@ -1,5 +1,5 @@
 /*
-   Copyright 2015 Kai Huebl (kai@huebl-sgh.de)
+   Copyright 2015-2020 Kai Huebl (kai@huebl-sgh.de)
 
    Lizenziert gemäß Apache Licence Version 2.0 (die „Lizenz“); Nutzung dieser
    Datei nur in Übereinstimmung mit der Lizenz erlaubt.
@@ -24,6 +24,7 @@
 #include "OpcUaStackCore/Utility/IOThread.h"
 #include "OpcUaStackCore/Certificate/CryptoManager.h"
 #include "OpcUaStackCore/StandardDataTypes/EventFieldList.h"
+#include "OpcUaStackCore/Component/MessageBus.h"
 #include "OpcUaStackClient/ServiceSet/ServiceSetManager.h"
 #include "OpcUaWebServer/OpcUaClient/RequestInfo.h"
 
@@ -46,12 +47,22 @@ namespace OpcUaWebServer
 		typedef std::function<void (OpcUaStatusCode statusCode, boost::property_tree::ptree& responseBody)> LogoutResponseCallback;
 		typedef std::function<void (OpcUaStatusCode statusCode, boost::property_tree::ptree& responseBody)> MessageResponseCallback;
 
+		class LogoutContext
+		{
+		  public:
+			using SPtr = boost::shared_ptr<LogoutContext>;
+
+			boost::property_tree::ptree requestBody_;
+			LogoutResponseCallback logoutResponseCallback_;
+		};
+
 		Client(void);
 		virtual ~Client(void);
 
 		std::string id(void);
-		//void ioThread(IOThread::SPtr& ioThread);
-		void cryptoManager(CryptoManager::SPtr& cryptoManager);
+		void cryptoManager(OpcUaStackCore::CryptoManager::SPtr& cryptoManager);
+	    void ioThread(OpcUaStackCore::IOThread::SPtr& ioThread);
+	    void messageBus(OpcUaStackCore::MessageBus::SPtr& messageBus);
 
 		//
 		// session service functions
@@ -132,6 +143,7 @@ namespace OpcUaWebServer
 		);
 
 	  private:
+		void logoutComplete(void);
 		bool initAttributeService(const MessageResponseCallback& messageResponseCallback);
 		bool initMethodService(const MessageResponseCallback& messageResponseCallback);
 		bool initSubscriptionService(const MessageResponseCallback& messageResponseCallback);
@@ -140,11 +152,18 @@ namespace OpcUaWebServer
 		static uint32_t gId_;
 		uint32_t id_;
 
+		LogoutContext::SPtr logoutContext_ = nullptr;
+		SessionServiceStateId sessionState_ = SessionServiceStateId::Disconnected;
+
+		boost::shared_ptr<boost::asio::io_service::strand> strand_ = nullptr;
+		OpcUaStackCore::MessageBus::SPtr messageBus_ = nullptr;
+		OpcUaStackCore::IOThread::SPtr ioThread_ = nullptr;
+
 		SessionStatusCallback sessionStatusCallback_;
 		SubscriptionStatusCallback subscriptionStatusCallback_;
 		DataChangeCallback dataChangeCallback_;
 		EventCallback eventCallback_;
-		LogoutResponseCallback logoutResponseCallback_;
+		LogoutResponseCallback logoutResponseCallback_; // FIXME: todo - muss weg
 
 		std::string sessionName_;
 
