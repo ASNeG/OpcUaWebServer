@@ -52,6 +52,10 @@ namespace OpcUaWebServer
 		HttpRequest httpRequest_;
 		HttpResponse httpResponse_;
 		boost::asio::ip::tcp::endpoint partner_;
+		bool shutdown_ = false;
+
+		bool asyncRead_ = false;
+		bool asyncWrite_ = false;
 
 	  private:
 		SocketIf::SPtr socketIf_ = nullptr;
