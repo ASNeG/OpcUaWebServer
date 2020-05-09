@@ -1,5 +1,5 @@
 /*
-   Copyright 2015-2019 Kai Huebl (kai@huebl-sgh.de)
+   Copyright 2015-2020 Kai Huebl (kai@huebl-sgh.de)
 
    Lizenziert gemäß Apache Licence Version 2.0 (die „Lizenz“); Nutzung dieser
    Datei nur in Übereinstimmung mit der Lizenz erlaubt.
@@ -95,6 +95,11 @@ namespace OpcUaWebServer
 				sendCompleteCallback(false);
 			}
 			webSocketChannel = it->second;
+		}
+
+		// check shutdown flag
+		if (webSocketChannel->shutdown_) {
+			return;
 		}
 
 		// send message to client
@@ -528,6 +533,7 @@ namespace OpcUaWebServer
 		webSocketChannel->asyncRead_ = false;
 
 		if (webSocketChannel->timeout_ || error || webSocketChannel->shutdown_) {
+			Log(Debug, "WebSocketServer handle receive message header timeout, error or shutdown");
 			closeWebSocketChannel(webSocketChannel);
 			return;
 		}
@@ -669,6 +675,7 @@ namespace OpcUaWebServer
 		webSocketChannel->asyncRead_ = false;
 
 		if (webSocketChannel->timeout_ || error || webSocketChannel->shutdown_) {
+			Log(Debug, "WebSocketServer handle receive message header length2 timeout, error or shutdown");
 			closeWebSocketChannel(webSocketChannel);
 			return;
 		}
@@ -719,6 +726,7 @@ namespace OpcUaWebServer
 		webSocketChannel->asyncRead_ = false;
 
 		if (webSocketChannel->timeout_ || error || webSocketChannel->shutdown_) {
+			Log(Debug, "WebSocketServer handle receive message header length8 timeout, error or shutdown");
 			closeWebSocketChannel(webSocketChannel);
 			return;
 		}
@@ -775,6 +783,7 @@ namespace OpcUaWebServer
 		webSocketChannel->asyncRead_ = false;
 
 		if (webSocketChannel->timeout_ || error || webSocketChannel->shutdown_) {
+			Log(Debug, "WebSocketServer handle receive message content timeout, error or shutdown");
 			closeWebSocketChannel(webSocketChannel);
 			return;
 		}

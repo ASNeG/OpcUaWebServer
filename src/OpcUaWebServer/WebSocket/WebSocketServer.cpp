@@ -43,6 +43,12 @@ namespace OpcUaWebServer
 		}
 	}
 
+	std::string
+	WebSocketServer::getPassword() const
+	{
+		return std::string("");
+	}
+
 	void
 	WebSocketServer::startup(const StartupCompleteCallback& startupCompleteCallback)
 	{
@@ -53,11 +59,6 @@ namespace OpcUaWebServer
 		);
 	}
 
-	std::string
-	WebSocketServer::getPassword() const
-	{
-		return std::string("");
-	}
 
 	void
 	WebSocketServer::startupStrand(const StartupCompleteCallback& startupCompleteCallback)

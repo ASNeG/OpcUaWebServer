@@ -71,9 +71,9 @@ namespace OpcUaWebServer
 		uint32_t maxPacketLength_ = 0;
 
 		// security settings
-		bool ssl_ = false;
-		std::string csrFile_ = "";
-		std::string keyFile_ = "";
+		bool ssl_ = false;				// activate or deactivate SSL security
+		std::string csrFile_ = "";		// server SSL certificate
+		std::string keyFile_ = "";		// server private key
 	};
 
 }
