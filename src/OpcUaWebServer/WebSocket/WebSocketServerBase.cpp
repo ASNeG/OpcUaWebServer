@@ -1003,8 +1003,8 @@ namespace OpcUaWebServer
 				.parameter("Port", webSocketChannel->partner_.port())
 				.parameter("ChannelId", webSocketChannel->id_);
 
-			closeWebSocketChannel(webSocketChannel);
 			sendCompleteCallback(false);
+			closeWebSocketChannel(webSocketChannel);
 			return;
 		}
 
