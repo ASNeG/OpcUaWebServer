@@ -56,7 +56,7 @@ namespace OpcUaWebServer
 
 		// create thread pool
 		ioThread_ = boost::make_shared<IOThread>();
-		ioThread_->name(std::string("OpcUaWebServer"));
+		ioThread_->name(std::string("ThrWeb"));
 		ioThread_->numberThreads(2);
 		if (!ioThread_->startup()) {
 			return false;
