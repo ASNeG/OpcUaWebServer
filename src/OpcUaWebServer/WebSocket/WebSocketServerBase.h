@@ -139,7 +139,7 @@ namespace OpcUaWebServer
 		);
 
 		WebSocketConfig* webSocketConfig_;
-		TCPAcceptor tcpAcceptor_;
+		OpcUaStackCore::TCPAcceptor tcpAcceptor_;
 
 		ReceiveMessageCallback receiveMessageCallback_;
 

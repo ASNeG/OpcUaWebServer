@@ -1,5 +1,5 @@
 /*
-   Copyright 2015-2019 Kai Huebl (kai@huebl-sgh.de)
+   Copyright 2015-2020 Kai Huebl (kai@huebl-sgh.de)
 
    Lizenziert gemäß Apache Licence Version 2.0 (die „Lizenz“); Nutzung dieser
    Datei nur in Übereinstimmung mit der Lizenz erlaubt.
@@ -24,8 +24,6 @@
 #include "OpcUaStackCore/BuildInTypes/OpcUaDataValue.h"
 #include "OpcUaWebServer/OpcUaClient/ValueInfo.h"
 
-using namespace OpcUaStackCore;
-
 namespace OpcUaWebServer
 {
 
@@ -37,8 +35,8 @@ namespace OpcUaWebServer
 
 		void variable(const std::string& variable);
 		std::string& variable(void);
-		void dataValue(OpcUaDataValue::SPtr dataValue);
-		OpcUaDataValue::SPtr dataValue(void);
+		void dataValue(OpcUaStackCore::OpcUaDataValue::SPtr dataValue);
+		OpcUaStackCore::OpcUaDataValue::SPtr dataValue(void);
 		void valueInfoEntry(const ValueInfoEntry::SPtr& valueInfoEntry);
 		ValueInfoEntry::SPtr& valueInfoEntry(void);
 
@@ -48,7 +46,7 @@ namespace OpcUaWebServer
 
 	  private:
 		std::string variable_;
-		OpcUaDataValue::SPtr dataValue_;
+		OpcUaStackCore::OpcUaDataValue::SPtr dataValue_;
 		ValueInfoEntry::SPtr valueInfoEntry_;
 	};
 

@@ -1,5 +1,5 @@
 /*
-   Copyright 2015 Kai Huebl (kai@huebl-sgh.de)
+   Copyright 2015-2020 Kai Huebl (kai@huebl-sgh.de)
 
    Lizenziert gemäß Apache Licence Version 2.0 (die „Lizenz“); Nutzung dieser
    Datei nur in Übereinstimmung mit der Lizenz erlaubt.
@@ -25,8 +25,6 @@
 #include "OpcUaWebServer/Messages/Message.h"
 #include "OpcUaWebServer/MessageServer/MessageServerIf.h"
 
-using namespace OpcUaStackCore;
-
 namespace OpcUaWebServer
 {
 
@@ -36,13 +34,13 @@ namespace OpcUaWebServer
 		MessageServer(void);
 		~MessageServer(void);
 
-		bool startup(Config* config, MessageServerIf* messageServerIf);
+		bool startup(OpcUaStackCore::Config* config, MessageServerIf* messageServerIf);
 		bool shutdown(void);
 		void receiveMessage(uint32_t channelId, const std::string& message);
 		void receiveMessage(Message::SPtr& message);
 
 	  private:
-		Config* config_;
+		OpcUaStackCore::Config* config_;
 		MessageServerIf* messageServerIf_;
 	};
 

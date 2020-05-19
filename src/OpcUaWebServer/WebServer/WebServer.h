@@ -1,5 +1,5 @@
 /*
-   Copyright 2015-2019 Kai Huebl (kai@huebl-sgh.de)
+   Copyright 2015-2020 Kai Huebl (kai@huebl-sgh.de)
 
    Lizenziert gemäß Apache Licence Version 2.0 (die „Lizenz“); Nutzung dieser
    Datei nur in Übereinstimmung mit der Lizenz erlaubt.
@@ -27,8 +27,6 @@
 #include "OpcUaWebServer/WebServer/HttpConfig.h"
 #include "OpcUaWebServer/WebServer/HttpContent.h"
 
-using namespace OpcUaStackCore;
-
 namespace OpcUaWebServer
 {
 
@@ -42,8 +40,8 @@ namespace OpcUaWebServer
 		~WebServer(void);
 
 		void startup(
-			Config* config,
-			const IOThread::SPtr& ioThread,
+			OpcUaStackCore::Config* config,
+			const OpcUaStackCore::IOThread::SPtr& ioThread,
 			const StartupCompleteCallback& startupCompleteCallback
 		);
 		void shutdown(
@@ -51,8 +49,8 @@ namespace OpcUaWebServer
 		);
 
 	  private:
-		bool getHttpConfig(Config* config);
-		bool getIPLoggerConfig(Config* config);
+		bool getHttpConfig(OpcUaStackCore::Config* config);
+		bool getIPLoggerConfig(OpcUaStackCore::Config* config);
 
 		HttpServer::SPtr httpServer_;
 		HttpContent::SPtr httpContent_;

@@ -25,14 +25,11 @@
 #include "OpcUaWebServer/OpcUaClient/OpcUaClientManager.h"
 #include "OpcUaWebServer/WebGateway/WebGateway.h"
 
-using namespace OpcUaStackCore;
-using namespace OpcUaStackServer;
-
 namespace OpcUaWebServer
 {
 
 	class Library
-	: public ApplicationIf
+	: public OpcUaStackServer::ApplicationIf
 	, public MessageServerIf
 	, public OpcUaClientManagerIf
 	{

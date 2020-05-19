@@ -25,8 +25,6 @@
 #include "OpcUaWebServer/WebServer/HttpRequest.h"
 #include "OpcUaWebServer/WebServer/HttpResponse.h"
 
-using namespace OpcUaStackCore;
-
 namespace OpcUaWebServer
 {
 

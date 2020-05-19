@@ -26,6 +26,9 @@
 #include <iostream>
 #include "BuildConfig.h"
 
+using namespace OpcUaStackCore;
+using namespace OpcUaStackServer;
+
 namespace OpcUaWebServer
 {
 

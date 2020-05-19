@@ -22,8 +22,6 @@
 #include <stdint.h>
 #include "OpcUaStackCore/Utility/IOThread.h"
 
-using namespace OpcUaStackCore;
-
 namespace OpcUaWebServer
 {
 
@@ -40,8 +38,8 @@ namespace OpcUaWebServer
 		std::string& address(void);
 		void port(uint32_t port);
 		uint32_t port(void);
-		void ioThread(const IOThread::SPtr& ioThread);
-		IOThread::SPtr& ioThread(void);
+		void ioThread(const OpcUaStackCore::IOThread::SPtr& ioThread);
+		OpcUaStackCore::IOThread::SPtr& ioThread(void);
 		void strand(const boost::shared_ptr<boost::asio::io_service::strand>& strand);
 		boost::shared_ptr<boost::asio::io_service::strand>& strand(void);
 		void webDirectory(const std::string& webDirectory);
@@ -75,7 +73,7 @@ namespace OpcUaWebServer
 		// http channel configuration
 		std::string address_;
 		uint32_t port_;
-		IOThread::SPtr ioThread_;
+		OpcUaStackCore::IOThread::SPtr ioThread_;
 		boost::shared_ptr<boost::asio::io_service::strand> strand_;
 		std::string webDirectory_;
 		uint32_t requestTimeout_;

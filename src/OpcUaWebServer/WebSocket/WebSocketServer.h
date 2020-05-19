@@ -22,14 +22,12 @@
 #include <boost/asio/ssl.hpp>
 #include "OpcUaWebServer/WebSocket/WebSocketServerBase.h"
 
-using namespace OpcUaStackCore;
-
 namespace OpcUaWebServer
 {
 
 	class WebSocketServer
 	: public WebSocketServerBase
-	, public Object
+	, public OpcUaStackCore::Object
 	{
 	  public:
 		typedef std::function<void (bool error)> StartupCompleteCallback;

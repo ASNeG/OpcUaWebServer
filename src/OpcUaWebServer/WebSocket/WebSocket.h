@@ -1,5 +1,5 @@
 /*
-   Copyright 2015-2019 Kai Huebl (kai@huebl-sgh.de)
+   Copyright 2015-2020 Kai Huebl (kai@huebl-sgh.de)
 
    Lizenziert gemäß Apache Licence Version 2.0 (die „Lizenz“); Nutzung dieser
    Datei nur in Übereinstimmung mit der Lizenz erlaubt.
@@ -24,8 +24,6 @@
 #include "OpcUaWebServer/WebSocket/WebSocketServer.h"
 #include "OpcUaWebServer/WebSocket/WebSocketConfig.h"
 
-using namespace OpcUaStackCore;
-
 namespace OpcUaWebServer
 {
 
@@ -40,8 +38,8 @@ namespace OpcUaWebServer
 		~WebSocket(void);
 
 		void startup(
-			Config* config,
-			const IOThread::SPtr& ioThread,
+			OpcUaStackCore::Config* config,
+			const OpcUaStackCore::IOThread::SPtr& ioThread,
 			const WebSocketServer::ReceiveMessageCallback& receiveMessageCallback,
 			const StartupCompleteCallback& startupCompleteCallback
 		);
@@ -55,8 +53,8 @@ namespace OpcUaWebServer
 
 	  private:
 		void startupStrand(
-			Config* config,
-			const IOThread::SPtr& ioThread,
+			OpcUaStackCore::Config* config,
+			const OpcUaStackCore::IOThread::SPtr& ioThread,
 			const WebSocketServer::ReceiveMessageCallback& receiveMessageCallback,
 			const StartupCompleteCallback& startupCompleteCallback
 		);
@@ -68,7 +66,7 @@ namespace OpcUaWebServer
 			const SendCompleteCallback& sendCompleteCallback
 		);
 
-		bool getWebSocketConfig(Config* config);
+		bool getWebSocketConfig(OpcUaStackCore::Config* config);
 
 		boost::shared_ptr<boost::asio::io_service::strand> strand_ = nullptr;
 		StartupCompleteCallback startupCompleteCallback_;
