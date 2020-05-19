@@ -21,8 +21,6 @@
 #include <boost/property_tree/ptree.hpp>
 #include "OpcUaStackCore/BuildInTypes/OpcUaString.h"
 
-using namespace OpcUaStackCore;
-
 namespace OpcUaWebServer
 {
 

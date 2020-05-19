@@ -1,5 +1,5 @@
 /*
-   Copyright 2015-2019 Kai Huebl (kai@huebl-sgh.de)
+   Copyright 2015-20120 Kai Huebl (kai@huebl-sgh.de)
 
    Lizenziert gemäß Apache Licence Version 2.0 (die „Lizenz“); Nutzung dieser
    Datei nur in Übereinstimmung mit der Lizenz erlaubt.
@@ -27,13 +27,11 @@
 #include "OpcUaStackCore/BuildInTypes/OpcUaType.h"
 #include "OpcUaWebServer/OpcUaClient/OpcUaClientConfig.h"
 
-using namespace OpcUaStackCore;
-
 namespace OpcUaWebServer
 {
 
 	class ValueInfoEntry
-	: public Object
+	: public OpcUaStackCore::Object
 	{
 	  public:
 		typedef boost::shared_ptr<ValueInfoEntry> SPtr;
@@ -45,8 +43,8 @@ namespace OpcUaWebServer
 		// entry info
 		uint32_t id_;
 		std::string valueName_;
-		OpcUaNodeId nodeId_;
-		OpcUaBuildInType type_;
+		OpcUaStackCore::OpcUaNodeId nodeId_;
+		OpcUaStackCore::OpcUaBuildInType type_;
 		bool array_;
 		boost::property_tree::ptree metaData_;
 
@@ -60,7 +58,7 @@ namespace OpcUaWebServer
 		ValueInfo(void);
 		~ValueInfo(void);
 
-		bool addClientConfig(OpcUaClientConfig::SPtr& opcUaClientConfig, const Object::SPtr& object);
+		bool addClientConfig(OpcUaClientConfig::SPtr& opcUaClientConfig, const OpcUaStackCore::Object::SPtr& object);
 		ValueInfoEntry::Map& valueInfoEntryMap(void);
 
 		void valueNameVec(std::vector<std::string>& valueNameVec);

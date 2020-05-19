@@ -85,7 +85,7 @@ namespace OpcUaWebServer
 		void cleanupHttpChannel(HttpChannel* httpChannel);
 
 		HttpConfig* httpConfig_;
-		TCPAcceptor tcpAcceptor_;
+		OpcUaStackCore::TCPAcceptor tcpAcceptor_;
 
 		typedef std::map<std::string, HttpServerIf*> HttpServerIfMap;
 		HttpServerIfMap httpServerIfMap_;

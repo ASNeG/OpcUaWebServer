@@ -38,14 +38,11 @@
 #include "OpcUaWebServer/OpcUaClient/HistoricalReadResponseData.h"
 #include "OpcUaWebServer/Messages/Message.h"
 
-using namespace OpcUaStackCore;
-using namespace OpcUaStackClient;
-
 namespace OpcUaWebServer
 {
 
 	class OpcUaClient
-	: public Object
+	: public OpcUaStackCore::Object
 	{
 	  public:
 		typedef boost::shared_ptr<OpcUaClient> SPtr;
@@ -61,43 +58,43 @@ namespace OpcUaWebServer
 
 		bool startup(
 			const OpcUaClient::SPtr& opcUaClient,
-			IOThread::SPtr& ioThread,
-			MessageBus::SPtr& messageBus,
-			CryptoManager::SPtr& cryptoManager
+			OpcUaStackCore::IOThread::SPtr& ioThread,
+			OpcUaStackCore::MessageBus::SPtr& messageBus,
+			OpcUaStackCore::CryptoManager::SPtr& cryptoManager
 		);
 		bool shutdown(void);
 
-		void config(Config* config);
+		void config(OpcUaStackCore::Config* config);
 		void opcUaClientConfig(OpcUaClientConfig::SPtr opcUaClientConfig);
 		void opcUaClientIf(OpcUaClientIf* opcUaClientIf);
 
 		//- SessionServiceIf --------------------------------------------------
-		void sessionStateUpdate(SessionBase& session, SessionServiceStateId sessionState);
+		void sessionStateUpdate(OpcUaStackClient::SessionBase& session, OpcUaStackClient::SessionServiceStateId sessionState);
 		//- SessionServiceIf --------------------------------------------------
 
 		//- AttributeServiceIf ------------------------------------------------
-		void attributeServiceReadResponse(ServiceTransactionRead::SPtr serviceTransactionRead);
-		void attributeServiceWriteResponse(ServiceTransactionWrite::SPtr serviceTransactionWrite);
-		void attributeServiceHistoryReadResponse(ServiceTransactionHistoryRead::SPtr serviceTransactionHistoryRead);
-		void attributeServiceHistoryUpdateResponse(ServiceTransactionHistoryUpdate::SPtr serviceTransactionHistoryUpdate);
+		void attributeServiceReadResponse(OpcUaStackCore::ServiceTransactionRead::SPtr serviceTransactionRead);
+		void attributeServiceWriteResponse(OpcUaStackCore::ServiceTransactionWrite::SPtr serviceTransactionWrite);
+		void attributeServiceHistoryReadResponse(OpcUaStackCore::ServiceTransactionHistoryRead::SPtr serviceTransactionHistoryRead);
+		void attributeServiceHistoryUpdateResponse(OpcUaStackCore::ServiceTransactionHistoryUpdate::SPtr serviceTransactionHistoryUpdate);
 		//- AttributeServuceIf ------------------------------------------------
 
 		//- SubscriptionServiceIf ---------------------------------------------
-	    void subscriptionServiceCreateSubscriptionResponse(ServiceTransactionCreateSubscription::SPtr serviceTransactionCreateSubscription);
-	    void subscriptionServiceModifySubscriptionResponse(ServiceTransactionModifySubscription::SPtr serviceTransactionModifySubscription);
-	    void subscriptionServiceTransferSubscriptionsResponse(ServiceTransactionTransferSubscriptions::SPtr serviceTransactionTransferSubscriptions);
-	    void subscriptionServiceDeleteSubscriptionsResponse(ServiceTransactionDeleteSubscriptions::SPtr serviceTransactionDeleteSubscriptions);
+	    void subscriptionServiceCreateSubscriptionResponse(OpcUaStackCore::ServiceTransactionCreateSubscription::SPtr serviceTransactionCreateSubscription);
+	    void subscriptionServiceModifySubscriptionResponse(OpcUaStackCore::ServiceTransactionModifySubscription::SPtr serviceTransactionModifySubscription);
+	    void subscriptionServiceTransferSubscriptionsResponse(OpcUaStackCore::ServiceTransactionTransferSubscriptions::SPtr serviceTransactionTransferSubscriptions);
+	    void subscriptionServiceDeleteSubscriptionsResponse(OpcUaStackCore::ServiceTransactionDeleteSubscriptions::SPtr serviceTransactionDeleteSubscriptions);
 
-		void dataChangeNotification(const MonitoredItemNotification::SPtr& monitoredItem);
-		void subscriptionStateUpdate(SubscriptionState subscriptionState, uint32_t subscriptionId);
+		void dataChangeNotification(const OpcUaStackCore::MonitoredItemNotification::SPtr& monitoredItem);
+		void subscriptionStateUpdate(OpcUaStackClient::SubscriptionState subscriptionState, uint32_t subscriptionId);
 		//- SubscriptionServiceIf ---------------------------------------------
 
 		//- MonitoredItemServiceIf --------------------------------------------
-	    void monitoredItemServiceCreateMonitoredItemsResponse(ServiceTransactionCreateMonitoredItems::SPtr serviceTransactionCreateMonitoredItems);
-	    void monitoredItemServiceDeleteMonitoredItemsResponse(ServiceTransactionDeleteMonitoredItems::SPtr serviceTransactionDeleteMonitoredItems);
-	    void monitoredItemServiceModifyMonitoredItemsResponse(ServiceTransactionModifyMonitoredItems::SPtr serviceTransactionModifyMonitoredItems);
-	    void monitoredItemServiceSetMonitoringModeResponse(ServiceTransactionSetMonitoringMode::SPtr serviceTransactionSetMonitoringMode);
-	    void monitoredItemServiceSetTriggeringResponse(ServiceTransactionSetTriggering::SPtr serviceTransactionSetTriggering);
+	    void monitoredItemServiceCreateMonitoredItemsResponse(OpcUaStackCore::ServiceTransactionCreateMonitoredItems::SPtr serviceTransactionCreateMonitoredItems);
+	    void monitoredItemServiceDeleteMonitoredItemsResponse(OpcUaStackCore::ServiceTransactionDeleteMonitoredItems::SPtr serviceTransactionDeleteMonitoredItems);
+	    void monitoredItemServiceModifyMonitoredItemsResponse(OpcUaStackCore::ServiceTransactionModifyMonitoredItems::SPtr serviceTransactionModifyMonitoredItems);
+	    void monitoredItemServiceSetMonitoringModeResponse(OpcUaStackCore::ServiceTransactionSetMonitoringMode::SPtr serviceTransactionSetMonitoringMode);
+	    void monitoredItemServiceSetTriggeringResponse(OpcUaStackCore::ServiceTransactionSetTriggering::SPtr serviceTransactionSetTriggering);
 		//- MonitoredItemServiceIf --------------------------------------------
 
 		ValueInfoEntry::Map& valueInfoEntryMap(void);
@@ -116,19 +113,19 @@ namespace OpcUaWebServer
 		void createMonitoredItems(void);
 		void createMonitoredItems(MonitorItem::Vec& monitorItemVec);
 		void deleteMonitoredItems(MonitorItem::Vec& monitorItemVec);
-		void handleNamespaceArray(ServiceTransactionRead::SPtr serviceTransactionRead);
-		void readRequestError(uint32_t channelId, const std::string& clientHandle, OpcUaStatusCode statusCode);
+		void handleNamespaceArray(OpcUaStackCore::ServiceTransactionRead::SPtr serviceTransactionRead);
+		void readRequestError(uint32_t channelId, const std::string& clientHandle, OpcUaStackCore::OpcUaStatusCode statusCode);
 		void readResponse(ServiceTransactionClientRead::SPtr serviceTransactionRead);
 		void readResponse1(ServiceTransactionClientRead::SPtr serviceTransactionRead);
-		void writeRequestError(uint32_t channelId, const std::string& clientHandle, OpcUaStatusCode statusCode);
+		void writeRequestError(uint32_t channelId, const std::string& clientHandle, OpcUaStackCore::OpcUaStatusCode statusCode);
 		void writeResponse(ServiceTransactionClientWrite::SPtr serviceTransactionWrite);
-		void monitorStartRequestError(uint32_t channelId, const std::string& clientHandle, OpcUaStatusCode statusCode);
-		void monitorStopRequestError(uint32_t channelId, const std::string& clientHandle, OpcUaStatusCode statusCode);
+		void monitorStartRequestError(uint32_t channelId, const std::string& clientHandle, OpcUaStackCore::OpcUaStatusCode statusCode);
+		void monitorStopRequestError(uint32_t channelId, const std::string& clientHandle, OpcUaStackCore::OpcUaStatusCode statusCode);
 		void timerLoop(void);
 		void polling(void);
 
 		bool polling_;
-		Config* config_;
+		OpcUaStackCore::Config* config_;
 		OpcUaClientIf* opcUaClientIf_;
 		OpcUaClientConfig::SPtr opcUaClientConfig_;
 
@@ -140,11 +137,11 @@ namespace OpcUaWebServer
 		typedef std::map<uint32_t, uint32_t> NamespaceMap;
 		NamespaceMap namespaceMap_;
 
-		ServiceSetManager serviceSetManager_;
-		SessionService::SPtr sessionService_;
-		AttributeService::SPtr attributeService_;
-		SubscriptionService::SPtr subscriptionService_;
-		MonitoredItemService::SPtr monitoredItemService_;
+		OpcUaStackClient::ServiceSetManager serviceSetManager_;
+		OpcUaStackClient::SessionService::SPtr sessionService_;
+		OpcUaStackClient::AttributeService::SPtr attributeService_;
+		OpcUaStackClient::SubscriptionService::SPtr subscriptionService_;
+		OpcUaStackClient::MonitoredItemService::SPtr monitoredItemService_;
 
 		uint32_t reconnectTimeout_;
 		uint32_t subscriptionId_;
@@ -152,7 +149,7 @@ namespace OpcUaWebServer
 		ValueInfo valueInfo_;
 		MonitorManager monitorManager_;
 
-		SlotTimerElement::SPtr slotTimerElement_;
+		OpcUaStackCore::SlotTimerElement::SPtr slotTimerElement_;
 	};
 
 }

@@ -24,6 +24,8 @@
 using boost::lexical_cast;
 using boost::bad_lexical_cast;
 
+using namespace OpcUaStackCore;
+
 namespace OpcUaWebServer
 {
 

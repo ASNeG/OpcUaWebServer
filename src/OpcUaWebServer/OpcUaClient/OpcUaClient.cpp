@@ -21,6 +21,7 @@
 #include "OpcUaWebServer/OpcUaClient/OpcUaClient.h"
 
 using namespace OpcUaStackCore;
+using namespace OpcUaStackClient;
 
 namespace OpcUaWebServer
 {

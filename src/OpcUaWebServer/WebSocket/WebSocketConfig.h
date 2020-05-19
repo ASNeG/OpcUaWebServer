@@ -1,5 +1,5 @@
 /*
-   Copyright 2015-2019 Kai Huebl (kai@huebl-sgh.de)
+   Copyright 2015-2020 Kai Huebl (kai@huebl-sgh.de)
 
    Lizenziert gemäß Apache Licence Version 2.0 (die „Lizenz“); Nutzung dieser
    Datei nur in Übereinstimmung mit der Lizenz erlaubt.
@@ -22,8 +22,6 @@
 #include <stdint.h>
 #include <OpcUaStackCore/Utility/IOThread.h>
 
-using namespace OpcUaStackCore;
-
 namespace OpcUaWebServer
 {
 
@@ -43,8 +41,8 @@ namespace OpcUaWebServer
 		uint32_t requestTimeout(void);
 		void idleTimeout(uint32_t requestTimeout);
 		uint32_t idleTimeout(void);
-		void ioThread(const IOThread::SPtr& ioThread);
-		IOThread::SPtr& ioThread(void);
+		void ioThread(const OpcUaStackCore::IOThread::SPtr& ioThread);
+		OpcUaStackCore::IOThread::SPtr& ioThread(void);
 		void strand(const boost::shared_ptr<boost::asio::io_service::strand>& strand);
 		boost::shared_ptr<boost::asio::io_service::strand>& strand(void);
 		void maxConnections(uint32_t maxConnections);
@@ -65,7 +63,7 @@ namespace OpcUaWebServer
 		uint32_t port_;
 		uint32_t requestTimeout_;
 		uint32_t idleTimeout_;
-		IOThread::SPtr ioThread_;
+		OpcUaStackCore::IOThread::SPtr ioThread_;
 		boost::shared_ptr<boost::asio::io_service::strand> strand_;
 		uint32_t maxConnections_ = 0;
 		uint32_t maxPacketLength_ = 0;

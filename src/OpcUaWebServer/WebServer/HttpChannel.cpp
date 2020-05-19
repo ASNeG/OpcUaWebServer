@@ -19,6 +19,8 @@
 #include <boost/make_shared.hpp>
 #include "OpcUaWebServer/WebServer/HttpChannel.h"
 
+using namespace OpcUaStackCore;
+
 namespace OpcUaWebServer
 {
 

@@ -23,6 +23,8 @@
 #include "OpcUaWebServer/Socket/SocketSSL.h"
 #include "OpcUaWebServer/WebServer/HttpServer.h"
 
+using namespace OpcUaStackCore;
+
 namespace OpcUaWebServer
 {
 

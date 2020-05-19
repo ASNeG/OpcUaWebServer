@@ -23,8 +23,6 @@
 #include "OpcUaWebServer/WebServer/HttpServerBase.h"
 #include "OpcUaWebServer/WebServer/IPLogger.h"
 
-using namespace OpcUaStackCore;
-
 namespace OpcUaWebServer
 {
 
