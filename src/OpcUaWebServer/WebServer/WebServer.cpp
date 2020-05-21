@@ -93,14 +93,19 @@ namespace OpcUaWebServer
 			return;
 		}
 
-		httpServer_->shutdown(
-			[this, shutdownCompleteCallback](bool error) {
-				httpContent_->shutdown();
-				httpServer_.reset();
-				httpContent_.reset();
-				shutdownCompleteCallback(error);
-			}
-		);
+		shutdownCompleteCallback_ = shutdownCompleteCallback;
+		httpServer_->shutdown([this](bool error) {
+			shutdownComplete(error);
+		});
+	}
+
+	void
+	WebServer::shutdownComplete(bool error)
+	{
+		httpContent_->shutdown();
+		httpServer_.reset();
+		httpContent_.reset();
+		shutdownCompleteCallback_(error);
 	}
 
 	bool
