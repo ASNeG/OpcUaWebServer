@@ -49,9 +49,11 @@ namespace OpcUaWebServer
 		);
 
 	  private:
+		void shutdownComplete(bool error);
 		bool getHttpConfig(OpcUaStackCore::Config* config);
 		bool getIPLoggerConfig(OpcUaStackCore::Config* config);
 
+		ShutdownCompleteCallback shutdownCompleteCallback_;
 		HttpServer::SPtr httpServer_;
 		HttpContent::SPtr httpContent_;
 		HttpConfig httpConfig_;

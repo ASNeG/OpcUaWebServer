@@ -209,10 +209,11 @@ namespace OpcUaWebServer
 
 		std::promise<bool> prom;
 		auto future = prom.get_future();
-		auto shutdownCompleteCallback = [&prom](bool error) {
-			prom.set_value(error);
-		};
-		webServer_.shutdown(shutdownCompleteCallback);
+		webServer_.shutdown(
+			[&prom] (bool error) {
+				prom.set_value(error);
+			}
+		);
 
 		future.wait();
 		if (!future.get()) {
@@ -229,10 +230,11 @@ namespace OpcUaWebServer
 
 		std::promise<bool> prom;
 		auto future = prom.get_future();
-		auto shutdownCompleteCallback = [&prom](bool error) {
-			prom.set_value(error);
-		};
-		webSocket_.shutdown(shutdownCompleteCallback);
+		webSocket_.shutdown(
+			[&prom] (bool error) {
+				prom.set_value(error);
+			}
+		);
 
 		future.wait();
 		if (!future.get()) {
@@ -249,10 +251,11 @@ namespace OpcUaWebServer
 
 		std::promise<bool> prom;
 		auto future = prom.get_future();
-		auto shutdownCompleteCallback = [&prom](bool error) {
-			prom.set_value(error);
-		};
-		webGateway_.shutdown(shutdownCompleteCallback);
+		webGateway_.shutdown(
+			[&prom](bool error) {
+				prom.set_value(error);
+			}
+		);
 
 		future.wait();
 		if (!future.get()) {

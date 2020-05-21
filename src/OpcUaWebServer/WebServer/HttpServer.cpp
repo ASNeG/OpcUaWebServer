@@ -201,7 +201,12 @@ namespace OpcUaWebServer
 	HttpServer::handleAccept(const boost::system::error_code& error, HttpChannel* httpChannel)
 	{
 		if (error || shutdownFlag_) {
-			Log(Error, "HttpServer error");
+			if (shutdownFlag_) {
+				Log(Debug, "handle http server acceptor shutdown");
+			}
+			else {
+				Log(Error, "handle http server acceptor error");
+			}
 
 			active_ = false;
 			delete httpChannel;
