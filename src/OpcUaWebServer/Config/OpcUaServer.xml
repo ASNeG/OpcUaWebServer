@@ -94,6 +94,13 @@
     <ServerName>OpcUaWebServer@@HOSTNAME@</ServerName>
   </ServerInfo>
   
+  <Server>
+      <ServerThreadPool>
+          <Name>ThrSrv</Name>
+          <NumberThreads>4</NumberThreads>
+      </ServerThreadPool>
+  </Server>
+  
   <ApplicationCertificate>
   
       <Folder>
