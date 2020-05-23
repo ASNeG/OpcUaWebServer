@@ -40,6 +40,7 @@ namespace OpcUaWebServer
 		void receiveMessage(Message::SPtr& message);
 
 	  private:
+		bool shutdown_ = false;
 		OpcUaStackCore::Config* config_;
 		MessageServerIf* messageServerIf_;
 	};
