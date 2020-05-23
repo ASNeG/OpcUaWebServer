@@ -65,8 +65,8 @@ namespace OpcUaWebServer
 			const SendCompleteCallback& sendCompleteCallback
 		);
 		void handleShutdown(void);
-		void openWebSocketChannel(void);
-		void closeWebSocketChannel(void);
+		void openWebSocketAcceptor(void);
+		void closeWebSocketAcceptor(void);
 
 		WebSocketChannel* createWebSocketChannel(void);
 		void accept(void);

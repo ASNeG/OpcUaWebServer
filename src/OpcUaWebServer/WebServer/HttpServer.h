@@ -61,6 +61,10 @@ namespace OpcUaWebServer
 		void accept(void);
 		void handleAccept(const boost::system::error_code& error, HttpChannel* httpChannel);
 		void handleAccept1(const boost::system::error_code& error){}
+		void closeHttpChannel(void);
+
+		void openHttpAcceptor(void);
+	    void closeHttpAcceptor(void);
 
 		bool ssl_ = false;
 		bool active_ = true;
