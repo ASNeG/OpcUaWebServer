@@ -49,12 +49,17 @@ namespace OpcUaWebServer
 	bool
 	MessageServer::shutdown(void)
 	{
+		shutdown_ = true;
 		return true;
 	}
 
 	void
 	MessageServer::receiveMessage(uint32_t channelId, const std::string& message)
 	{
+		if (shutdown_) {
+			return;
+		}
+
 		boost::property_tree::ptree pt;
 		std::stringstream ss;
 
