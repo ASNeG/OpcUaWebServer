@@ -60,40 +60,7 @@ namespace OpcUaWebServer
 		const StartupCompleteCallback& startupCompleteCallback
 	)
 	{
-		Log(Info, "open http listener socket")
-			.parameter("Address", httpConfig_->address())
-			.parameter("Port", httpConfig_->port());
-
-		tcpAcceptor_.listen(128);
-
-		// set ssl configuration parameter if exist
-		ssl_ = httpConfig_->ssl();
-		auto csrFile = Environment::confDir() + std::string("/ssl/crt/websocket.crt");
-		auto keyFile = Environment::confDir() + std::string("/ssl/key/websocket.pem");
-
-		if (ssl_) {
-			Log(Info, "use https protocol")
-		    	.parameter("CsrFile", csrFile)
-				.parameter("KeyFile", keyFile);
-		}
-		else {
-			Log(Info, "use http protocol");
-		}
-
-		if (ssl_) {
-			// create context and add certificate and private key to context
-			context_ = new boost::asio::ssl::context(
-				boost::asio::ssl::context::sslv23
-			);
-			context_->set_options(
-				boost::asio::ssl::context::default_workarounds |
-				boost::asio::ssl::context::no_sslv2 |
-				boost::asio::ssl::context::single_dh_use
-			);
-			context_->set_password_callback(boost::bind(&HttpServer::getPassword, this));
-			context_->use_certificate_chain_file(csrFile);
-			context_->use_private_key_file(keyFile, boost::asio::ssl::context::pem);
-		}
+		openHttpAcceptor();
 
 		accept();
 
@@ -128,10 +95,7 @@ namespace OpcUaWebServer
 
 		// shutdown listener socket
 		if (active_) {
-			Log(Debug, "close http listener socket")
-				.parameter("Address", httpConfig_->address())
-				.parameter("Port", httpConfig_->port());
-		    tcpAcceptor_.close();
+			closeHttpAcceptor();
 		}
 
 		// close channels
@@ -248,6 +212,7 @@ namespace OpcUaWebServer
 				.parameter("Address", httpConfig_->address())
 				.parameter("Port", httpConfig_->port())
 				.parameter("MaxConnections", count);
+			closeHttpAcceptor();
 			active_ = false;
 		}
 	}
@@ -271,8 +236,71 @@ namespace OpcUaWebServer
 				.parameter("MaxConnections", count);
 
 			active_ = true;
+			tcpAcceptor_.reopen();
+			openHttpAcceptor();
 			accept();
 		}
 	}
+
+	void
+	HttpServer::closeHttpChannel(void)
+	{
+		Log(Debug, "close http listener socket")
+			.parameter("Address", httpConfig_->address())
+			.parameter("Port", httpConfig_->port());
+
+		tcpAcceptor_.close();
+		delete context_;
+		context_ = nullptr;
+	}
+
+	void
+	HttpServer::openHttpAcceptor(void)
+	{
+		Log(Info, "open http listener socket")
+			.parameter("Address", httpConfig_->address())
+			.parameter("Port", httpConfig_->port());
+
+		tcpAcceptor_.listen(128);
+
+		// set ssl configuration parameter if exist
+		ssl_ = httpConfig_->ssl();
+		auto csrFile = Environment::confDir() + std::string("/ssl/crt/websocket.crt");
+		auto keyFile = Environment::confDir() + std::string("/ssl/key/websocket.pem");
+
+		if (ssl_) {
+			Log(Info, "use https protocol")
+		    	.parameter("CsrFile", csrFile)
+				.parameter("KeyFile", keyFile);
+
+			// create context and add certificate and private key to context
+			context_ = new boost::asio::ssl::context(
+				boost::asio::ssl::context::sslv23
+			);
+			context_->set_options(
+				boost::asio::ssl::context::default_workarounds |
+				boost::asio::ssl::context::no_sslv2 |
+				boost::asio::ssl::context::single_dh_use
+			);
+			context_->set_password_callback(boost::bind(&HttpServer::getPassword, this));
+			context_->use_certificate_chain_file(csrFile);
+			context_->use_private_key_file(keyFile, boost::asio::ssl::context::pem);
+		}
+		else {
+			Log(Info, "use http protocol");
+		}
+	}
+
+    void
+	HttpServer::closeHttpAcceptor(void)
+    {
+		Log(Debug, "close http listener socket")
+			.parameter("Address", httpConfig_->address())
+			.parameter("Port", httpConfig_->port());
+
+		tcpAcceptor_.close();
+		delete context_;
+		context_ = nullptr;
+    }
 
 }

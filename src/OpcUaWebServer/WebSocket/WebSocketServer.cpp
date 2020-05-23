@@ -67,34 +67,7 @@ namespace OpcUaWebServer
 			.parameter("Address", webSocketConfig_->address())
 			.parameter("Port", webSocketConfig_->port());
 
-		tcpAcceptor_.listen();
-
-		// set ssl configuration parameter if exist
-		wss_ = webSocketConfig_->ssl();
-		auto csrFile = webSocketConfig_->csrFile();
-		auto keyFile = webSocketConfig_->keyFile();
-
-		if (wss_) {
-			Log(Info, "use wss protocol")
-		    	.parameter("CsrFile", csrFile)
-				.parameter("KeyFile", keyFile);
-
-			// create context and add certificate and private key to context
-			context_ = new boost::asio::ssl::context(
-				boost::asio::ssl::context::sslv23
-			);
-			context_->set_options(
-				boost::asio::ssl::context::default_workarounds |
-				boost::asio::ssl::context::no_sslv2 |
-				boost::asio::ssl::context::single_dh_use
-			);
-			context_->set_password_callback(boost::bind(&WebSocketServer::getPassword, this));
-			context_->use_certificate_chain_file(csrFile);
-			context_->use_private_key_file(keyFile, boost::asio::ssl::context::pem);
-		}
-		else {
-			Log(Info, "use ws protocol");
-		}
+		openWebSocketAcceptor();
 
 		accept();
 
@@ -120,7 +93,7 @@ namespace OpcUaWebServer
 
 		// close listener socket
 		if (active_) {
-			closeWebSocketChannel();
+			closeWebSocketAcceptor();
 		}
 
 		// close channels
@@ -262,7 +235,7 @@ namespace OpcUaWebServer
 				.parameter("Address", webSocketConfig_->address())
 				.parameter("Port", webSocketConfig_->port())
 				.parameter("ActConnections", count);
-			closeWebSocketChannel();
+			closeWebSocketAcceptor();
 			active_ = false;
 		}
 	}
@@ -288,13 +261,13 @@ namespace OpcUaWebServer
 
 			active_ = true;
 			tcpAcceptor_.reopen();
-			openWebSocketChannel();
+			openWebSocketAcceptor();
 			accept();
 		}
 	}
 
 	void
-	WebSocketServer::openWebSocketChannel(void)
+	WebSocketServer::openWebSocketAcceptor(void)
 	{
 		Log(Info, "open websocket listener socket")
 			.parameter("Address", webSocketConfig_->address())
@@ -331,7 +304,7 @@ namespace OpcUaWebServer
 	}
 
 	void
-	WebSocketServer::closeWebSocketChannel(void)
+	WebSocketServer::closeWebSocketAcceptor(void)
 	{
 		Log(Debug, "close websocket listener socket")
 			.parameter("Address", webSocketConfig_->address())
