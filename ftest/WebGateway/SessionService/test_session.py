@@ -135,7 +135,6 @@ class TestSession(WebGatewayTestCase):
         self.assertEqual(res['Header']['SessionId'], sessionId)
         self.assertEqual(res['Header']['StatusCode'], "0")
 
-    @unittest.skip("fix cert issue before")
     def test_username(self):
         #
         # send login request to open opc ua session
