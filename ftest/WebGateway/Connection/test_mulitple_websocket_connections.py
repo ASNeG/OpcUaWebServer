@@ -1,14 +1,15 @@
 import json
 import os
 import unittest
+import ssl
 from websocket import create_connection
 
 class TestMultipleWebSocketConnections(unittest.TestCase):
 
-    @unittest.skip("fix synchronization of response and notify")
     def test_multiple_websocket_connections(self):
         self.ws = []
         self.sessionId = []
+        self.WSS_GATEWAY_URL = os.getenv('WSS_GATEWAY_URL', "wss://127.0.0.1:8082")
         self.WS_GATEWAY_URL = os.getenv('WS_GATEWAY_URL', "ws://127.0.0.1:8082")
         self.OPC_SERVER_URL = os.getenv('OPC_SERVER_URL', "opc.tcp://127.0.0.1:8889")
 
@@ -17,11 +18,26 @@ class TestMultipleWebSocketConnections(unittest.TestCase):
         #
         print("open 5 connections")
         for idx in range(0, 5, 1):
-            try:
-                local_ws = create_connection(self.WS_GATEWAY_URL, timeout=1)
-            except:
-                print("timeout error")
-                self.assertTrue(False)
+            if self.WSS_GATEWAY_URL:
+                try:
+                    local_ws = create_connection(
+                        self.WSS_GATEWAY_URL,
+                        sslopt={
+                            "cert_reqs" : ssl.CERT_NONE,
+                            "check_hostname" : False,
+                            "ssl_version" : ssl.PROTOCOL_TLSv1 
+                        }
+                    )
+                except:
+                    print("wss timeout error ", idx)
+                    self.assertTrue(False)
+            else:
+                try:
+                    local_ws = create_connection(self.WS_GATEWAY_URL, timeout=1)
+                except:
+                    print("ws timeout error", idx)
+                    self.assertTrue(False)
+                
             self.ws.append(local_ws);
             print("CONNECT: ", idx, self.ws[idx])
 
