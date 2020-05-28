@@ -101,8 +101,8 @@ namespace OpcUaWebServer
 		SessionServiceConfig sessionServiceConfig;
 		sessionServiceConfig.secureChannelClient_->endpointUrl(opcUaClientConfig_->opcUaClientEndpoint_.serverUri_); // FIXME: use discoveryUrl?
 		sessionServiceConfig.secureChannelClient_->cryptoManager(cryptoManager);
-		//sessionServiceConfig.secureChannelClient_->securityMode(opcUaClientConfig_->securityMode); // FIXME: add security
-		//sessionServiceConfig.secureChannelClient_->securityPolicy(opcUaClientConfig_->securityPolicy); // FIXME: add security
+		sessionServiceConfig.secureChannelClient_->securityMode(opcUaClientConfig_->opcUaClientEndpoint_.securityMode_);
+		sessionServiceConfig.secureChannelClient_->securityPolicy(opcUaClientConfig_->opcUaClientEndpoint_.securityPolicy_);
 		sessionServiceConfig.session_->sessionName("ASNeGWebServer");
 		sessionServiceConfig.ioThreadName(ioThread_->name());
 		sessionServiceConfig.sessionServiceChangeHandler_ = sessionStateUpdateCallback;

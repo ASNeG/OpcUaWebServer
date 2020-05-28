@@ -274,6 +274,27 @@ namespace OpcUaWebServer
 				existServerUri = true;
 			}
 
+			else if (it->first == "SecurityPolicyUri") {
+				if (!SecurityPolicy::exist(it->second.data())) {
+					Log(Error, "security policy uri invalid in client configuration")
+						.parameter("Name", name_)
+						.parameter("NodePath", "OpcUaClient.SecurityPolicyUri")
+						.parameter("SecurityPolicyUri", it->second.data())
+						.parameter("ConfigurationFileName", clientConfigFile_);
+					return false;
+				}
+				opcUaClientEndpoint_.securityPolicy_ = SecurityPolicy::str2Enum(it->second.data());
+			}
+
+			else if (it->first == "MessageSecurityMode") {
+				Log(Error, "message security mode invalid in client configuration")
+					.parameter("Name", name_)
+					.parameter("NodePath", "OpcUaClient.MessageSecurityMode")
+					.parameter("MessageSecurityMode", it->second.data())
+					.parameter("ConfigurationFileName", clientConfigFile_);
+				opcUaClientEndpoint_.securityMode_ = MessageSecurityMode::str2Enum(it->second.data());
+			}
+
 			else {
 				Log(Warning, "found invalid node in client configuration")
 					.parameter("NodePath", "OpcUaClient.Endpoint")

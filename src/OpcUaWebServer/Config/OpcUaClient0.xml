@@ -24,6 +24,11 @@
 	
 	<NamespaceUri>
 		<Uri>http://ASNeG-Demo.de/Test-Server-Lib/</Uri>
+		<!-- <SecurityPolicyUri>http://opcfoundation.org/UA/SecurityPolicy#None</SecurityPolicyUri> -->
+	    <!-- <MessageSecurityMode>None</MessageSecurityMode> -->
+	    
+	    <SecurityPolicyUri>http://opcfoundation.org/UA/SecurityPolicy#Basic128Rsa15</SecurityPolicyUri>
+	    <MessageSecurityMode>SignAndEncrypt</MessageSecurityMode>
 	</NamespaceUri>
 	
 	<NodeList>

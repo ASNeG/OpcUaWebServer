@@ -20,6 +20,11 @@
 
 	<Endpoint>
 	    <ServerUri>opc.tcp://127.0.0.1:8889</ServerUri>
+	    <!-- <SecurityPolicyUri>http://opcfoundation.org/UA/SecurityPolicy#None</SecurityPolicyUri> -->
+	    <!-- <MessageSecurityMode>None</MessageSecurityMode> -->
+	    
+	    <SecurityPolicyUri>http://opcfoundation.org/UA/SecurityPolicy#Basic128Rsa15</SecurityPolicyUri>
+	    <MessageSecurityMode>SignAndEncrypt</MessageSecurityMode>
 	</Endpoint>
 	
 	<NamespaceUri>
