@@ -25,6 +25,8 @@
 #include <map>
 #include "OpcUaStackCore/BuildInTypes/OpcUaNodeId.h"
 #include "OpcUaStackCore/BuildInTypes/OpcUaType.h"
+#include "OpcUaStackCore/StandardDataTypes/MessageSecurityMode.h"
+#include "OpcUaStackCore/BuildInTypes/SecurityPolicy.h"
 
 namespace OpcUaWebServer
 {
@@ -36,6 +38,8 @@ namespace OpcUaWebServer
 		~OpcUaClientEndpoint(void);
 
 		std::string serverUri_;
+		OpcUaStackCore::MessageSecurityMode::Enum securityMode_ = OpcUaStackCore::MessageSecurityMode::EnumNone;
+		OpcUaStackCore::SecurityPolicy::Enum securityPolicy_ = OpcUaStackCore::SecurityPolicy::EnumNone;
 	};
 
 
