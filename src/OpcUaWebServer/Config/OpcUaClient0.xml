@@ -19,7 +19,7 @@
 <OpcUaClient Name="ASNeG-Demo_0" xmlns="http://ASNeG/OpcUaClient.xsd">
 
 	<Endpoint>
-	    <ServerUri>opc.tcp://127.0.0.1:8889</ServerUri>
+	    <EndpointUri>opc.tcp://127.0.0.1:8889</EndpointUri>
 	</Endpoint>
 	
 	<NamespaceUri>

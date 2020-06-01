@@ -1,5 +1,5 @@
 /*
-   Copyright 2015-2017 Kai Huebl (kai@huebl-sgh.de)
+   Copyright 2015-2020 Kai Huebl (kai@huebl-sgh.de)
 
    Lizenziert gemäß Apache Licence Version 2.0 (die „Lizenz“); Nutzung dieser
    Datei nur in Übereinstimmung mit der Lizenz erlaubt.
@@ -35,7 +35,6 @@ namespace OpcUaWebServer
 	// ------------------------------------------------------------------------
 	// ------------------------------------------------------------------------
 	OpcUaClientEndpoint::OpcUaClientEndpoint(void)
-	: serverUri_("")
 	{
 	}
 
@@ -257,21 +256,21 @@ namespace OpcUaWebServer
 	bool
 	OpcUaClientConfig::decodeEndpoint(boost::property_tree::ptree& pt)
 	{
-		bool existServerUri = false;
+		bool existEndpointUri = false;
 
 		boost::property_tree::ptree::iterator it;
 		for (it = pt.begin(); it != pt.end(); it++) {
-			if (it->first == "ServerUri") {
-				if (existServerUri) {
-					Log(Error, "duplicate Uri found in client configuration")
+			if (it->first == "EndpointUri") {
+				if (existEndpointUri) {
+					Log(Error, "duplicate endpoint Uri found in client configuration")
 						.parameter("Name", name_)
 						.parameter("NodePath", "OpcUaClient.Endpoint")
 						.parameter("ConfigurationFileName", clientConfigFile_);
 					return false;
 				}
 
-				opcUaClientEndpoint_.serverUri_ = it->second.data();
-				existServerUri = true;
+				opcUaClientEndpoint_.endpointUri_ = it->second.data();
+				existEndpointUri = true;
 			}
 
 			else if (it->first == "SecurityPolicyUri") {
@@ -303,8 +302,8 @@ namespace OpcUaWebServer
 			}
 		}
 
-		if (!existServerUri) {
-			Log(Error, "ServerUri not exist in client configuration")
+		if (!existEndpointUri) {
+			Log(Error, "EndpointUri not exist in client configuration")
 				.parameter("Name", name_)
 				.parameter("NodePath", "OpcUaClient.Endpoint")
 				.parameter("ConfigurationFileName", clientConfigFile_);

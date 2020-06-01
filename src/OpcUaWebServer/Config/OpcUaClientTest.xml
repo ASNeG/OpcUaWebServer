@@ -19,7 +19,7 @@
 <OpcUaClient Name="TestTags" xmlns="http://ASNeG/OpcUaClient.xsd">
 
 	<Endpoint>
-	    <ServerUri>opc.tcp://127.0.0.1:8889</ServerUri>
+	    <EndpointUri>opc.tcp://127.0.0.1:8889</EndpointUri>
 	    <!-- <SecurityPolicyUri>http://opcfoundation.org/UA/SecurityPolicy#None</SecurityPolicyUri> -->
 	    <!-- <MessageSecurityMode>None</MessageSecurityMode> -->
 	    
