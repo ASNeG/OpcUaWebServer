@@ -37,7 +37,8 @@ namespace OpcUaWebServer
 		OpcUaClientEndpoint(void);
 		~OpcUaClientEndpoint(void);
 
-		std::string serverUri_;
+		std::string endpointUri_ = "";
+		std::string applicationUri_ = "";
 		OpcUaStackCore::MessageSecurityMode::Enum securityMode_ = OpcUaStackCore::MessageSecurityMode::EnumNone;
 		OpcUaStackCore::SecurityPolicy::Enum securityPolicy_ = OpcUaStackCore::SecurityPolicy::EnumNone;
 	};

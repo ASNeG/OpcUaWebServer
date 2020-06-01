@@ -79,7 +79,8 @@ namespace OpcUaWebServer
 		CryptoManager::SPtr& cryptoManager
 	)
 	{
-		std::cout << "client startup " << opcUaClientConfig_->opcUaClientEndpoint_.serverUri_ << std::endl;
+		Log(Info, "client startup")
+			.parameter("EndpointUri", opcUaClientConfig_->opcUaClientEndpoint_.endpointUri_);
 
 		ioThread_ = ioThread;
 		messageBus_ = messageBus;
@@ -99,7 +100,7 @@ namespace OpcUaWebServer
 
 		// create session service
 		SessionServiceConfig sessionServiceConfig;
-		sessionServiceConfig.secureChannelClient_->endpointUrl(opcUaClientConfig_->opcUaClientEndpoint_.serverUri_); // FIXME: use discoveryUrl?
+		sessionServiceConfig.secureChannelClient_->endpointUrl(opcUaClientConfig_->opcUaClientEndpoint_.endpointUri_);
 		sessionServiceConfig.secureChannelClient_->cryptoManager(cryptoManager);
 		sessionServiceConfig.secureChannelClient_->securityMode(opcUaClientConfig_->opcUaClientEndpoint_.securityMode_);
 		sessionServiceConfig.secureChannelClient_->securityPolicy(opcUaClientConfig_->opcUaClientEndpoint_.securityPolicy_);
@@ -594,7 +595,7 @@ namespace OpcUaWebServer
 		// get namespace array
 		std::map<std::string, uint32_t> namespaceMap;
 		Log(Debug, "read namespace array from server")
-		    .parameter("ServerUri", opcUaClientConfig_->opcUaClientEndpoint_.serverUri_);
+		    .parameter("EndpointUri", opcUaClientConfig_->opcUaClientEndpoint_.endpointUri_);
 		for (int32_t idx=0; idx < variant->arrayLength(); idx++) {
 			std::string uri = variant->variant()[idx].variantSPtr<OpcUaString>()->value();
 			Log(Debug, "")
@@ -612,7 +613,7 @@ namespace OpcUaWebServer
 			auto it = namespaceMap.find(namespaceName);
 			if (it == namespaceMap.end()) {
 				Log(Error, "namespace name not exist on server")
-				    .parameter("ServerUri", opcUaClientConfig_->opcUaClientEndpoint_.serverUri_)
+				    .parameter("EndpointUri", opcUaClientConfig_->opcUaClientEndpoint_.endpointUri_)
 				    .parameter("NamespaceName", namespaceName);
 				return;
 			}
