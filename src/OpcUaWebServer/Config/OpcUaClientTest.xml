@@ -48,6 +48,14 @@
 	   
 	    <DiscoveryUrl>opc.tcp://127.0.0.1:8889</DiscoveryUrl>
 	    
+	    <Authentication>
+	        <TokenType>Username<TokenType>
+	        <PolicyId>OpcUaStack6</PolicyId>
+	        <Username>user1</Username>
+	        <Password>password1</Password>
+	        <SecurityPolicyUri>http://opcfoundation.org/UA/SecurityPolicy#None</SecurityPolicyUri>
+	    </Authentication>
+	    
 	</Endpoint>
 	
 	<NamespaceUri>

@@ -26,10 +26,24 @@
 #include "OpcUaStackCore/BuildInTypes/OpcUaNodeId.h"
 #include "OpcUaStackCore/BuildInTypes/OpcUaType.h"
 #include "OpcUaStackCore/StandardDataTypes/MessageSecurityMode.h"
+#include "OpcUaStackCore/StandardDataTypes/UserTokenType.h"
 #include "OpcUaStackCore/BuildInTypes/SecurityPolicy.h"
 
 namespace OpcUaWebServer
 {
+
+    class OpcUaClientAuthentication
+	{
+	  public:
+    	OpcUaClientAuthentication(void);
+    	~OpcUaClientAuthentication(void);
+
+    	OpcUaStackCore::UserTokenType::Enum userTokenType_ = OpcUaStackCore::UserTokenType::EnumAnonymous;
+    	std::string policyId_ = "";
+    	std::string userName_ = "";
+    	std::string password_ = "";
+    	OpcUaStackCore::SecurityPolicy::Enum securityPolicy_ = OpcUaStackCore::SecurityPolicy::EnumNone;
+	};
 
 	class OpcUaClientEndpoint
 	{
@@ -42,6 +56,8 @@ namespace OpcUaWebServer
 		std::string applicationUri_ = "";
 		OpcUaStackCore::MessageSecurityMode::Enum securityMode_ = OpcUaStackCore::MessageSecurityMode::EnumNone;
 		OpcUaStackCore::SecurityPolicy::Enum securityPolicy_ = OpcUaStackCore::SecurityPolicy::EnumNone;
+
+		OpcUaClientAuthentication authentication_;
 	};
 
 
