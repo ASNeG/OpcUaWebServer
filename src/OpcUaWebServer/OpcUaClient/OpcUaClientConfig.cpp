@@ -262,6 +262,10 @@ namespace OpcUaWebServer
 				opcUaClientEndpoint_.endpointUrl_ = it->second.data();
 			}
 
+			else if (it->first == "DiscoveryUrl") {
+				opcUaClientEndpoint_.discoveryUrl_ = it->second.data();
+			}
+
 			else if (it->first == "ApplicationUri") {
 				opcUaClientEndpoint_.applicationUri_ = it->second.data();
 			}
@@ -312,8 +316,11 @@ namespace OpcUaWebServer
 				}
 			}
 		}
+		else if (!opcUaClientEndpoint_.discoveryUrl_.empty()) {
+			// nothing to check
+		}
 		else {
-			Log(Error, "EndpointUri not exist in client configuration")
+			Log(Error, "EndpointUrl or DiscoveryUrl not exist in client configuration")
 				.parameter("Name", name_)
 				.parameter("NodePath", "OpcUaClient.Endpoint")
 				.parameter("ConfigurationFileName", clientConfigFile_);

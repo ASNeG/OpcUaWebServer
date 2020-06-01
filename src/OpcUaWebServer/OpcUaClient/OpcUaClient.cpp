@@ -80,8 +80,11 @@ namespace OpcUaWebServer
 	)
 	{
 		Log(Info, "client startup")
+			.parameter("DiscoveryUrl", opcUaClientConfig_->opcUaClientEndpoint_.discoveryUrl_)
 			.parameter("EndpointUrl", opcUaClientConfig_->opcUaClientEndpoint_.endpointUrl_)
-			.parameter("ApplicationUri", opcUaClientConfig_->opcUaClientEndpoint_.applicationUri_);
+			.parameter("ApplicationUri", opcUaClientConfig_->opcUaClientEndpoint_.applicationUri_)
+			.parameter("SecurityMode", MessageSecurityMode::enum2Str(opcUaClientConfig_->opcUaClientEndpoint_.securityMode_))
+			.parameter("SecurityPolicy", SecurityPolicy::enum2Str(opcUaClientConfig_->opcUaClientEndpoint_.securityPolicy_));
 
 		ioThread_ = ioThread;
 		messageBus_ = messageBus;
@@ -101,6 +104,7 @@ namespace OpcUaWebServer
 
 		// create session service
 		SessionServiceConfig sessionServiceConfig;
+		sessionServiceConfig.secureChannelClient_->discoveryUrl(opcUaClientConfig_->opcUaClientEndpoint_.discoveryUrl_);
 		sessionServiceConfig.secureChannelClient_->endpointUrl(opcUaClientConfig_->opcUaClientEndpoint_.endpointUrl_);
 		sessionServiceConfig.secureChannelClient_->applicationUri(opcUaClientConfig_->opcUaClientEndpoint_.applicationUri_);
 		sessionServiceConfig.secureChannelClient_->cryptoManager(cryptoManager);

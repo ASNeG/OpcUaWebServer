@@ -19,13 +19,35 @@
 <OpcUaClient Name="TestTags" xmlns="http://ASNeG/OpcUaClient.xsd">
 
 	<Endpoint>
-	    <EndpointUrl>opc.tcp://127.0.0.1:8889</EndpointUrl>
-	    <ApplicationUri>urn:127.0.0.1:ASNeG:ASNeG-Demo</ApplicationUri>
+	    <!-- 
+	      Example 1: Direct connect to server without security
+	      
+	        <EndpointUrl>opc.tcp://127.0.0.1:8889</EndpointUrl>
+	      
+	      Example 2: Direct connect to server with security 
+	                 A trusted certificat must be exist from partner.
+	      
+	        <EndpointUrl>opc.tcp://127.0.0.1:8889</EndpointUrl>
+	        <ApplicationUri>urn:127.0.0.1:ASNeG:ASNeG-Demo</ApplicationUri>
+	        <SecurityPolicyUri>http://opcfoundation.org/UA/SecurityPolicy#Basic128Rsa15</SecurityPolicyUri>
+	        <MessageSecurityMode>SignAndEncrypt</MessageSecurityMode>
+	        
+	      Example 3: Indirect get endpoint connect without security
+	      
+	        <DiscoveryUrl>opc.tcp://127.0.0.1:8889</DiscoveryUrl>
+	        
+	      Example 4: Indirect get endpoint connect with security
+	                 The certificates are exchanged between opc ua client and 
+	                 opc ua server. The certificates must then be trusted.
+	      
+	        <DiscoveryUrl>opc.tcp://127.0.0.1:8889</DiscoveryUrl>
+	        <SecurityPolicyUri>http://opcfoundation.org/UA/SecurityPolicy#Basic128Rsa15</SecurityPolicyUri>
+	        <MessageSecurityMode>SignAndEncrypt</MessageSecurityMode>
+	      
+	    -->
+	   
+	    <DiscoveryUrl>opc.tcp://127.0.0.1:8889</DiscoveryUrl>
 	    
-	    <!-- <SecurityPolicyUri>http://opcfoundation.org/UA/SecurityPolicy#None</SecurityPolicyUri> -->
-	    <!-- <MessageSecurityMode>None</MessageSecurityMode> -->
-	    <SecurityPolicyUri>http://opcfoundation.org/UA/SecurityPolicy#Basic128Rsa15</SecurityPolicyUri>
-	    <MessageSecurityMode>SignAndEncrypt</MessageSecurityMode>
 	</Endpoint>
 	
 	<NamespaceUri>
