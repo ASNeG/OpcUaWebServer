@@ -256,21 +256,14 @@ namespace OpcUaWebServer
 	bool
 	OpcUaClientConfig::decodeEndpoint(boost::property_tree::ptree& pt)
 	{
-		bool existEndpointUri = false;
-
 		boost::property_tree::ptree::iterator it;
 		for (it = pt.begin(); it != pt.end(); it++) {
-			if (it->first == "EndpointUri") {
-				if (existEndpointUri) {
-					Log(Error, "duplicate endpoint Uri found in client configuration")
-						.parameter("Name", name_)
-						.parameter("NodePath", "OpcUaClient.Endpoint")
-						.parameter("ConfigurationFileName", clientConfigFile_);
-					return false;
-				}
+			if (it->first == "EndpointUrl") {
+				opcUaClientEndpoint_.endpointUrl_ = it->second.data();
+			}
 
-				opcUaClientEndpoint_.endpointUri_ = it->second.data();
-				existEndpointUri = true;
+			else if (it->first == "ApplicationUri") {
+				opcUaClientEndpoint_.applicationUri_ = it->second.data();
 			}
 
 			else if (it->first == "SecurityPolicyUri") {
@@ -286,12 +279,14 @@ namespace OpcUaWebServer
 			}
 
 			else if (it->first == "MessageSecurityMode") {
-				Log(Error, "message security mode invalid in client configuration")
-					.parameter("Name", name_)
-					.parameter("NodePath", "OpcUaClient.MessageSecurityMode")
-					.parameter("MessageSecurityMode", it->second.data())
-					.parameter("ConfigurationFileName", clientConfigFile_);
-				opcUaClientEndpoint_.securityMode_ = MessageSecurityMode::str2Enum(it->second.data());
+				if (!MessageSecurityMode::exist(it->second.data())) {
+				    Log(Error, "message security mode invalid in client configuration")
+					    .parameter("Name", name_)
+					    .parameter("NodePath", "OpcUaClient.MessageSecurityMode")
+					    .parameter("MessageSecurityMode", it->second.data())
+					    .parameter("ConfigurationFileName", clientConfigFile_);
+				    }
+				    opcUaClientEndpoint_.securityMode_ = MessageSecurityMode::str2Enum(it->second.data());
 			}
 
 			else {
@@ -302,7 +297,22 @@ namespace OpcUaWebServer
 			}
 		}
 
-		if (!existEndpointUri) {
+		if (!opcUaClientEndpoint_.endpointUrl_.empty()) {
+			// if we use the endpoint url configuration mode the application uri must
+			// be exist. However, this is only neccessary if a certificate is required.
+			if (opcUaClientEndpoint_.applicationUri_.empty()) {
+				if (opcUaClientEndpoint_.securityMode_ != OpcUaStackCore::MessageSecurityMode::EnumNone ||
+					opcUaClientEndpoint_.securityPolicy_ != OpcUaStackCore::SecurityPolicy::EnumNone
+				) {
+				    Log(Error, "ApplicationUri not exist in client configuration (endpoint configuration mode)")
+					    .parameter("Name", name_)
+					    .parameter("NodePath", "OpcUaClient.Endpoint")
+					    .parameter("ConfigurationFileName", clientConfigFile_);
+				    return false;
+				}
+			}
+		}
+		else {
 			Log(Error, "EndpointUri not exist in client configuration")
 				.parameter("Name", name_)
 				.parameter("NodePath", "OpcUaClient.Endpoint")
