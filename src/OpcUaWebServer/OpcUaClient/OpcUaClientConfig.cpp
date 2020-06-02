@@ -42,6 +42,63 @@ namespace OpcUaWebServer
 	{
 	}
 
+	bool
+	OpcUaClientAuthentication::decode(boost::property_tree::ptree& pt)
+	{
+		for (auto it = pt.begin(); it != pt.end(); it++) {
+
+			// ignore comments
+			if (it->first == "<xmlcomment>") {
+				continue;
+			}
+
+			// decode TokenType
+			else if (it->first == "TokenType") {
+				if (!UserTokenType::exist(it->second.data())) {
+					Log(Error, "found invalid parameter in client configuration")
+						.parameter("ParameterName", it->first)
+						.parameter("ParameterValue", it->second.data());
+					return false;
+				}
+				userTokenType_ = UserTokenType::str2Enum(it->second.data());
+			}
+
+			// decode PolicyId
+			else if (it->first == "PolicyId") {
+				policyId_ = it->second.data();
+			}
+
+			// decode UserName
+			else if (it->first == "UserName") {
+				userName_ = it->second.data();
+			}
+
+			// decode password
+			else if (it->first == "Password") {
+				password_ = it->second.data();
+			}
+
+			// decode security policy
+			else if (it->first == "SecurityPolicyUri") {
+				if (!SecurityPolicy::exist(it->second.data())) {
+					Log(Error, "found invalid parameter in client configuration")
+						.parameter("ParameterName", it->first)
+						.parameter("ParameterValue", it->second.data());
+					return false;
+				}
+				securityPolicy_ = SecurityPolicy::str2Enum(it->second.data());
+			}
+
+			else {
+				Log(Error, "found unknown parameter in client configuration")
+					.parameter("ParameterName", it->first);
+				return false;
+			}
+		}
+
+		return true;
+	}
+
 	// -----------------------------------------------------------------------
 	// -----------------------------------------------------------------------
 	//
@@ -273,7 +330,12 @@ namespace OpcUaWebServer
 	{
 		boost::property_tree::ptree::iterator it;
 		for (it = pt.begin(); it != pt.end(); it++) {
-			if (it->first == "EndpointUrl") {
+			// ignore comments
+			if (it->first == "<xmlcomment>") {
+				continue;
+			}
+
+			else if (it->first == "EndpointUrl") {
 				opcUaClientEndpoint_.endpointUrl_ = it->second.data();
 			}
 
@@ -306,6 +368,16 @@ namespace OpcUaWebServer
 					    .parameter("ConfigurationFileName", clientConfigFile_);
 				    }
 				    opcUaClientEndpoint_.securityMode_ = MessageSecurityMode::str2Enum(it->second.data());
+			}
+
+			else if (it->first == "Authentication") {
+				if (!opcUaClientEndpoint_.authentication_.decode(it->second)) {
+					Log(Error, "parameter error in client configuration")
+						.parameter("Name", name_)
+					    .parameter("NodePath", "OpcUaClient.Endpoint.Authentication")
+					    .parameter("ConfigurationFileName", clientConfigFile_);
+					return false;
+				}
 			}
 
 			else {

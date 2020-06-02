@@ -38,6 +38,8 @@ namespace OpcUaWebServer
     	OpcUaClientAuthentication(void);
     	~OpcUaClientAuthentication(void);
 
+    	bool decode(boost::property_tree::ptree& pt);
+
     	OpcUaStackCore::UserTokenType::Enum userTokenType_ = OpcUaStackCore::UserTokenType::EnumAnonymous;
     	std::string policyId_ = "";
     	std::string userName_ = "";
