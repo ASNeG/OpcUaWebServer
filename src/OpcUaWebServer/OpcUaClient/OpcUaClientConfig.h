@@ -53,6 +53,8 @@ namespace OpcUaWebServer
 		OpcUaClientEndpoint(void);
 		~OpcUaClientEndpoint(void);
 
+		bool decode(boost::property_tree::ptree& pt);
+
 		std::string discoveryUrl_ = "";
 		std::string endpointUrl_ = "";
 		std::string applicationUri_ = "";
@@ -69,6 +71,8 @@ namespace OpcUaWebServer
 		NamespaceUri(void);
 		~NamespaceUri(void);
 
+		bool decode(boost::property_tree::ptree& pt);
+
 		std::vector<std::string> uriVec_;
 	};
 
@@ -80,6 +84,8 @@ namespace OpcUaWebServer
 
 		NodeEntry(void);
 		~NodeEntry(void);
+
+		bool decode(boost::property_tree::ptree& pt);
 
 		std::string valueName_;
 		OpcUaStackCore::OpcUaNodeId nodeId_;
@@ -94,6 +100,8 @@ namespace OpcUaWebServer
 	  public:
 		NodeList(void);
 		~NodeList(void);
+
+		bool decode(boost::property_tree::ptree& pt);
 
 		NodeEntry::Vec nodeEntryVec_;
 	};
@@ -119,10 +127,6 @@ namespace OpcUaWebServer
 		NodeList nodeList_;
 
 	  private:
-		bool decodeEndpoint(boost::property_tree::ptree& pt);
-		bool decodeNamespaceUri(boost::property_tree::ptree& pt);
-		bool decodeNodeList(boost::property_tree::ptree& pt);
-
 		std::string clientConfigFile_;
 	};
 
