@@ -114,6 +114,84 @@ namespace OpcUaWebServer
 	{
 	}
 
+	bool
+	OpcUaClientEndpoint::decode(boost::property_tree::ptree& pt)
+	{
+		for (auto it = pt.begin(); it != pt.end(); it++) {
+			// ignore comments
+			if (it->first == "<xmlcomment>") {
+				continue;
+			}
+
+			else if (it->first == "EndpointUrl") {
+				endpointUrl_ = it->second.data();
+			}
+
+			else if (it->first == "DiscoveryUrl") {
+				discoveryUrl_ = it->second.data();
+			}
+
+			else if (it->first == "ApplicationUri") {
+				applicationUri_ = it->second.data();
+			}
+
+			else if (it->first == "SecurityPolicyUri") {
+				if (!SecurityPolicy::exist(it->second.data())) {
+					Log(Error, "found invalid parameter in client configuration")
+						.parameter("ParameterName", it->first)
+						.parameter("ParameterValue", it->second.data());
+					return false;
+				}
+				securityPolicy_ = SecurityPolicy::str2Enum(it->second.data());
+			}
+
+			else if (it->first == "MessageSecurityMode") {
+				if (!MessageSecurityMode::exist(it->second.data())) {
+					Log(Error, "found invalid parameter in client configuration")
+						.parameter("ParameterName", it->first)
+						.parameter("ParameterValue", it->second.data());
+					return false;
+				}
+				securityMode_ = MessageSecurityMode::str2Enum(it->second.data());
+			}
+
+			else if (it->first == "Authentication") {
+				if (!authentication_.decode(it->second)) {
+					Log(Error, "parameter error in client configuration")
+						.parameter("ParameterName", it->first);
+					return false;
+				}
+			}
+
+			else {
+				Log(Error, "found unknown parameter in client configuration")
+					.parameter("ParameterName", it->first);
+				return false;
+			}
+		}
+
+		if (!endpointUrl_.empty()) {
+			// if we use the endpoint url configuration mode the application uri must
+			// be exist. However, this is only neccessary if a certificate is required.
+			if (applicationUri_.empty()) {
+				if (securityMode_ != OpcUaStackCore::MessageSecurityMode::EnumNone ||
+					securityPolicy_ != OpcUaStackCore::SecurityPolicy::EnumNone
+				) {
+				    Log(Error, "ApplicationUri not exist in client configuration (endpoint configuration mode)");
+				    return false;
+				}
+			}
+		}
+		else if (!discoveryUrl_.empty()) {
+			// nothing to check
+		}
+		else {
+			Log(Error, "EndpointUrl or DiscoveryUrl not exist in client configuration");
+			return false;
+		}
+
+		return true;
+	}
 
 	// ------------------------------------------------------------------------
 	// ------------------------------------------------------------------------
@@ -129,6 +207,31 @@ namespace OpcUaWebServer
 
 	NamespaceUri::~NamespaceUri(void)
 	{
+	}
+
+	bool
+	NamespaceUri::decode(boost::property_tree::ptree& pt)
+	{
+		bool existUri = false;
+
+		for (auto it = pt.begin(); it != pt.end(); it++) {
+			if (it->first == "Uri") {
+				uriVec_.push_back(it->second.data());
+				existUri = true;
+			}
+
+			else {
+				Log(Error, "found unknown parameter in client configuration")
+					.parameter("ParameterName", it->first);
+			}
+		}
+
+		if (!existUri) {
+			Log(Error, "Uri not exist in client configuration");
+			return false;
+		}
+
+		return true;
 	}
 
 
@@ -151,6 +254,69 @@ namespace OpcUaWebServer
 	{
 	}
 
+	bool
+	NodeEntry::decode(boost::property_tree::ptree& pt)
+	{
+		// get ValueName
+		boost::optional<std::string> valueName = pt.get_optional<std::string>("<xmlattr>.ValueName");
+		if (!valueName) {
+			Log(Error, "attribute not exist in client configuration")
+				.parameter("AttributeName", "ValueName");
+			return false;
+		}
+		valueName_ = *valueName;
+
+		// get NodeId
+		boost::optional<std::string> nodeId = pt.get_optional<std::string>("<xmlattr>.NodeId");
+		if (!nodeId) {
+			Log(Error, "attribute not exist in client configuration")
+				.parameter("ValueName", valueName_)
+				.parameter("AttributeName", "NodeId");
+			return false;
+		}
+		if (!nodeId_.fromString(*nodeId)) {
+			Log(Error, "invalid attribute value in client configuration")
+				.parameter("ValueName", valueName_)
+				.parameter("ParameterValue", *nodeId)
+				.parameter("AttributeName", "NodeId");
+			return false;
+		}
+
+		// get NodeType
+		boost::optional<std::string> nodeType = pt.get_optional<std::string>("<xmlattr>.NodeType");
+		if (!nodeId) {
+			Log(Error, "attribute not exist in client configuration")
+				.parameter("ValueName", valueName_)
+				.parameter("AttributeName", "NodeId");
+			return false;
+		}
+		type_ = OpcUaBuildInTypeMap::string2BuildInType(*nodeType);
+		if (type_ == OpcUaBuildInType_Unknown) {
+			Log(Error, "invalid attribute value in client configuration")
+				.parameter("ValueName", valueName_)
+				.parameter("ParameterValue", *nodeType)
+				.parameter("AttributeName", "NodeId");
+			return false;
+		}
+
+		// get Array (optional)
+		boost::optional<std::string> array = pt.get_optional<std::string>("<xmlattr>.Array");
+		if (array && *array == "1") array_ = true;
+
+		// get meta data (optional)
+		boost::optional<boost::property_tree::ptree&> metaData;
+		metaData = pt.get_child_optional("MetaData");
+
+		if (metaData) {
+			boost::property_tree::ptree json;
+			PtreeConverter ptreeConverter;
+			ptreeConverter.xml2Json(*metaData, json);
+			metaData_ = json;
+		}
+
+		return true;
+	}
+
 
 	// ------------------------------------------------------------------------
 	// ------------------------------------------------------------------------
@@ -166,6 +332,29 @@ namespace OpcUaWebServer
 
 	NodeList::~NodeList(void)
 	{
+	}
+
+	bool
+	NodeList::decode(boost::property_tree::ptree& pt)
+	{
+		for (auto it = pt.begin(); it != pt.end(); it++) {
+			if (it->first == "Node") {
+				NodeEntry nodeEntry;
+				if (!nodeEntry.decode(it->second)) {
+					Log(Error, "error in client configuration")
+						.parameter("ParameterName", it->second.data());
+					return false;
+				}
+				nodeEntryVec_.push_back(nodeEntry);
+			}
+
+			else {
+				Log(Warning, "found unknown parameter in client configuration")
+					.parameter("ParameterName", it->first);
+			}
+		}
+
+		return true;
 	}
 
 	// ------------------------------------------------------------------------
@@ -241,47 +430,40 @@ namespace OpcUaWebServer
 		bool existNamespaceUri = false;
 		bool existNodeList = false;
 
-		boost::property_tree::ptree::iterator it;
-		for (it = client->begin(); it != client->end(); it++) {
+		for (auto it = client->begin(); it != client->end(); it++) {
 			// decode Endpoint
 			if (it->first == "Endpoint") {
-				if (existEndpoint) {
-					Log(Error, "duplicate Endpoint found in client configuration")
+				if (!opcUaClientEndpoint_.decode(it->second)) {
+					Log(Error, "error in client configuration")
 						.parameter("Name", name_)
-						.parameter("NodePath", "OpcUaClient")
+						.parameter("ParameterName", "OpcUaClient.Endpoint")
 						.parameter("ConfigurationFileName", clientConfigFile_);
 					return false;
 				}
-
-				if (!decodeEndpoint(it->second)) return true;
 				existEndpoint = true;
 			}
 
 			// decode NamespaceUri
 			else if (it->first == "NamespaceUri") {
-				if (existNamespaceUri) {
-					Log(Error, "duplicate NamespaceUri found in client configuration")
+				if (!namespaceUri_.decode(it->second)) {
+					Log(Error, "error in client configuration")
 						.parameter("Name", name_)
-						.parameter("NodePath", "OpcUaClient")
+						.parameter("ParameterName", "OpcUaClient.NamespaceUri")
 						.parameter("ConfigurationFileName", clientConfigFile_);
 					return false;
 				}
-
-				if (!decodeNamespaceUri(it->second)) return false;
 				existNamespaceUri = true;
 			}
 
 			// decode NodeList
 			else if (it->first == "NodeList") {
-				if (existNodeList) {
-					Log(Error, "duplicate NodeList found in client configuration")
+				if (!nodeList_.decode(it->second)) {
+					Log(Error, "error in client configuration")
 						.parameter("Name", name_)
-						.parameter("NodePath", "OpcUaClient")
+						.parameter("ParameterName", "OpcUaClient.NodeList")
 						.parameter("ConfigurationFileName", clientConfigFile_);
 					return false;
 				}
-
-				if (!decodeNodeList(it->second)) return false;
 				existNodeList = true;
 			}
 
@@ -320,218 +502,6 @@ namespace OpcUaWebServer
 				.parameter("NodePath", "OpcUaClient")
 				.parameter("ConfigurationFileName", clientConfigFile_);
 			return false;
-		}
-
-		return true;
-	}
-
-	bool
-	OpcUaClientConfig::decodeEndpoint(boost::property_tree::ptree& pt)
-	{
-		boost::property_tree::ptree::iterator it;
-		for (it = pt.begin(); it != pt.end(); it++) {
-			// ignore comments
-			if (it->first == "<xmlcomment>") {
-				continue;
-			}
-
-			else if (it->first == "EndpointUrl") {
-				opcUaClientEndpoint_.endpointUrl_ = it->second.data();
-			}
-
-			else if (it->first == "DiscoveryUrl") {
-				opcUaClientEndpoint_.discoveryUrl_ = it->second.data();
-			}
-
-			else if (it->first == "ApplicationUri") {
-				opcUaClientEndpoint_.applicationUri_ = it->second.data();
-			}
-
-			else if (it->first == "SecurityPolicyUri") {
-				if (!SecurityPolicy::exist(it->second.data())) {
-					Log(Error, "security policy uri invalid in client configuration")
-						.parameter("Name", name_)
-						.parameter("NodePath", "OpcUaClient.SecurityPolicyUri")
-						.parameter("SecurityPolicyUri", it->second.data())
-						.parameter("ConfigurationFileName", clientConfigFile_);
-					return false;
-				}
-				opcUaClientEndpoint_.securityPolicy_ = SecurityPolicy::str2Enum(it->second.data());
-			}
-
-			else if (it->first == "MessageSecurityMode") {
-				if (!MessageSecurityMode::exist(it->second.data())) {
-				    Log(Error, "message security mode invalid in client configuration")
-					    .parameter("Name", name_)
-					    .parameter("NodePath", "OpcUaClient.MessageSecurityMode")
-					    .parameter("MessageSecurityMode", it->second.data())
-					    .parameter("ConfigurationFileName", clientConfigFile_);
-				    }
-				    opcUaClientEndpoint_.securityMode_ = MessageSecurityMode::str2Enum(it->second.data());
-			}
-
-			else if (it->first == "Authentication") {
-				if (!opcUaClientEndpoint_.authentication_.decode(it->second)) {
-					Log(Error, "parameter error in client configuration")
-						.parameter("Name", name_)
-					    .parameter("NodePath", "OpcUaClient.Endpoint.Authentication")
-					    .parameter("ConfigurationFileName", clientConfigFile_);
-					return false;
-				}
-			}
-
-			else {
-				Log(Warning, "found invalid node in client configuration")
-					.parameter("NodePath", "OpcUaClient.Endpoint")
-					.parameter("NodeName", it->first)
-					.parameter("ConfigurationFileName", clientConfigFile_);
-			}
-		}
-
-		if (!opcUaClientEndpoint_.endpointUrl_.empty()) {
-			// if we use the endpoint url configuration mode the application uri must
-			// be exist. However, this is only neccessary if a certificate is required.
-			if (opcUaClientEndpoint_.applicationUri_.empty()) {
-				if (opcUaClientEndpoint_.securityMode_ != OpcUaStackCore::MessageSecurityMode::EnumNone ||
-					opcUaClientEndpoint_.securityPolicy_ != OpcUaStackCore::SecurityPolicy::EnumNone
-				) {
-				    Log(Error, "ApplicationUri not exist in client configuration (endpoint configuration mode)")
-					    .parameter("Name", name_)
-					    .parameter("NodePath", "OpcUaClient.Endpoint")
-					    .parameter("ConfigurationFileName", clientConfigFile_);
-				    return false;
-				}
-			}
-		}
-		else if (!opcUaClientEndpoint_.discoveryUrl_.empty()) {
-			// nothing to check
-		}
-		else {
-			Log(Error, "EndpointUrl or DiscoveryUrl not exist in client configuration")
-				.parameter("Name", name_)
-				.parameter("NodePath", "OpcUaClient.Endpoint")
-				.parameter("ConfigurationFileName", clientConfigFile_);
-			return false;
-		}
-
-		return true;
-	}
-
-	bool
-	OpcUaClientConfig::decodeNamespaceUri(boost::property_tree::ptree& pt)
-	{
-		bool existUri = false;
-
-		boost::property_tree::ptree::iterator it;
-		for (it = pt.begin(); it != pt.end(); it++) {
-			if (it->first == "Uri") {
-				namespaceUri_.uriVec_.push_back(it->second.data());
-				existUri = true;
-			}
-
-			else {
-				Log(Warning, "found invalid node in client configuration")
-					.parameter("NodePath", "OpcUaClient.NamespaceUri")
-					.parameter("NodeName", it->first)
-					.parameter("ConfigurationFileName", clientConfigFile_);
-			}
-		}
-
-		if (!existUri) {
-			Log(Error, "Uri not exist in client configuration")
-				.parameter("Name", name_)
-				.parameter("NodePath", "OpcUaClient.NamespaceUri")
-				.parameter("ConfigurationFileName", clientConfigFile_);
-			return false;
-		}
-
-		return true;
-	}
-
-	bool
-	OpcUaClientConfig::decodeNodeList(boost::property_tree::ptree& pt)
-	{
-		boost::property_tree::ptree::iterator it;
-		for (it = pt.begin(); it != pt.end(); it++) {
-			if (it->first == "Node") {
-				NodeEntry nodeEntry;
-
-				// get ValueName
-				boost::optional<std::string> valueName = it->second.get_optional<std::string>("<xmlattr>.ValueName");
-				if (!valueName) {
-					Log(Error, "attribute not exist in client configuration")
-						.parameter("NodePath", "OpcUaClient.NodeList.Node")
-						.parameter("AttributeName", "ValueName")
-						.parameter("ConfigurationFileName", clientConfigFile_);
-					return false;
-				}
-				nodeEntry.valueName_ = *valueName;
-
-				// get NodeId
-				boost::optional<std::string> nodeId = it->second.get_optional<std::string>("<xmlattr>.NodeId");
-				if (!nodeId) {
-					Log(Error, "attribute not exist in client configuration")
-						.parameter("NodePath", "OpcUaClient.NodeList.Node")
-						.parameter("ValueName", nodeEntry.valueName_)
-						.parameter("AttributeName", "NodeId")
-						.parameter("ConfigurationFileName", clientConfigFile_);
-					return false;
-				}
-				if (!nodeEntry.nodeId_.fromString(*nodeId)) {
-					Log(Error, "invalid attribute value in client configuration")
-						.parameter("NodePath", "OpcUaClient.NodeList.Node")
-						.parameter("ValueName", nodeEntry.valueName_)
-						.parameter("AttributeName", "NodeId")
-						.parameter("NodeId", *nodeId)
-						.parameter("ConfigurationFileName", clientConfigFile_);
-					return false;
-				}
-
-				// get NodeType
-				boost::optional<std::string> nodeType = it->second.get_optional<std::string>("<xmlattr>.NodeType");
-				if (!nodeId) {
-					Log(Error, "attribute not exist in client configuration")
-						.parameter("NodePath", "OpcUaClient.NodeList.Node")
-						.parameter("ValueName", nodeEntry.valueName_)
-						.parameter("AttributeName", "NodeType")
-						.parameter("ConfigurationFileName", clientConfigFile_);
-					return false;
-				}
-				nodeEntry.type_ = OpcUaBuildInTypeMap::string2BuildInType(*nodeType);
-				if (nodeEntry.type_ == OpcUaBuildInType_Unknown) {
-					Log(Error, "invalid attribute value in client configuration")
-						.parameter("NodePath", "OpcUaClient.NodeList.Node")
-						.parameter("ValueName", nodeEntry.valueName_)
-						.parameter("AttributeName", "NodeType")
-						.parameter("NodeType", *nodeType)
-						.parameter("ConfigurationFileName", clientConfigFile_);
-					return false;
-				}
-
-				// get Array (optional)
-				boost::optional<std::string> array = it->second.get_optional<std::string>("<xmlattr>.Array");
-				if (array && *array == "1") nodeEntry.array_ = true;
-
-				// get meta data (optional)
-				boost::optional<boost::property_tree::ptree&> metaData;
-				metaData = it->second.get_child_optional("MetaData");
-
-				if (metaData) {
-					boost::property_tree::ptree json;
-					PtreeConverter ptreeConverter;
-					ptreeConverter.xml2Json(*metaData, json);
-					nodeEntry.metaData_ = json;
-				}
-
-				nodeList_.nodeEntryVec_.push_back(nodeEntry);
-			}
-
-			else {
-				Log(Warning, "found invalid node in client configuration")
-					.parameter("NodePath", "OpcUaClient.NodeList")
-					.parameter("NodeName", it->first)
-					.parameter("ConfigurationFileName", clientConfigFile_);
-			}
 		}
 
 		return true;
