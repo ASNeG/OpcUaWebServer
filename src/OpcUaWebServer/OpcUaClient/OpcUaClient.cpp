@@ -79,12 +79,16 @@ namespace OpcUaWebServer
 		CryptoManager::SPtr& cryptoManager
 	)
 	{
+		OpcUaClientAuthentication& authentication = opcUaClientConfig_->opcUaClientEndpoint_.authentication_;
+
 		Log(Info, "client startup")
 			.parameter("DiscoveryUrl", opcUaClientConfig_->opcUaClientEndpoint_.discoveryUrl_)
 			.parameter("EndpointUrl", opcUaClientConfig_->opcUaClientEndpoint_.endpointUrl_)
 			.parameter("ApplicationUri", opcUaClientConfig_->opcUaClientEndpoint_.applicationUri_)
 			.parameter("SecurityMode", MessageSecurityMode::enum2Str(opcUaClientConfig_->opcUaClientEndpoint_.securityMode_))
-			.parameter("SecurityPolicy", SecurityPolicy::enum2Str(opcUaClientConfig_->opcUaClientEndpoint_.securityPolicy_));
+			.parameter("SecurityPolicy", SecurityPolicy::enum2Str(opcUaClientConfig_->opcUaClientEndpoint_.securityPolicy_))
+			.parameter("AuthMode", UserTokenType::enum2Str(authentication.userTokenType_))
+			.parameter("AuthSecurityPolicy", SecurityPolicy::enum2Str(authentication.securityPolicy_));
 
 		ioThread_ = ioThread;
 		messageBus_ = messageBus;
@@ -116,6 +120,14 @@ namespace OpcUaWebServer
 		sessionServiceConfig.sessionServiceChangeHandlerStrand_ = strand_;
 		sessionServiceConfig.session_->reconnectTimeout(5000);
 		sessionServiceConfig.sessionServiceName_ = std::string("SessionService_") + UniqueId::createStringUniqueId();
+		if (authentication.userTokenType_ == UserTokenType::EnumUserName) {
+				sessionServiceConfig.session_->authenticationUserName(
+					authentication.policyId_,
+					authentication.userName_,
+					authentication.password_,
+					SecurityPolicy::enum2Str(authentication.securityPolicy_)
+				);
+		}
 
 		serviceSetManager_.sessionService(sessionServiceConfig);
 		sessionService_ = serviceSetManager_.sessionService(sessionServiceConfig);
