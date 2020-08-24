@@ -38,9 +38,11 @@ namespace OpcUaWebServer
 		virtual ~Library(void);
 
 		//- ApplicationIf -----------------------------------------------------
-		virtual bool startup(void);
-		virtual bool shutdown(void);
-		virtual std::string version(void);
+		bool startup(void) override;
+		bool shutdown(void) override;
+		std::string version(void) override;
+		std::string gitCommit(void) override;
+		std::string gitBranch(void) override;
 		//- ApplicationIf -----------------------------------------------------
 
 		//- MessageServerIf ---------------------------------------------------
