@@ -61,6 +61,12 @@ pipeline {
       slackSend(color:'#FF9FA1', message:"Build Failed - ${env.JOB_NAME} ${env.BUILD_NUMBER} (<${env.BUILD_URL}|Open>)")
     }
 
+    always {
+      sh 'docker ps -a'
+      sh 'docker cp $(docker ps -a -q -f "name=asneg-demo${BUILD_TAG}"):/var/log/OpcUaStack/ASNeG-Demo/OpcUaServer.log . || true'
+      archiveArtifacts artifacts: 'OpcUaServer.log', fingerprint: true
+    }
+
     cleanup {
       sh 'docker-compose down --volumes --rmi local --remove-orphans'
       deleteDir()
