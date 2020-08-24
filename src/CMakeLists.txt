@@ -44,6 +44,8 @@ endif ()
 # -----------------------------------------------------------------------------
 message(STATUS "Version info")
 message(STATUS "  product version: ${VERSION_MAJOR}.${VERSION_MINOR}.${VERSION_PATCH}")
+message(STATUS "  git commit: ${GIT_COMMIT}")
+message(STATUS "  git branch: ${GIT_BRANCH}")
 
 message(STATUS "Dependency info")
 message(STATUS "  opcuastack version: ${OPCUASTACK_VERSION_MAJOR}.${OPCUASTACK_VERSION_MINOR}.${OPCUASTACK_VERSION_PATCH}")

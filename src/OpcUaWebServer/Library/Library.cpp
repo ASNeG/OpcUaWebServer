@@ -274,6 +274,18 @@ namespace OpcUaWebServer
 		return version.str();
 	}
 
+	std::string
+	Library::gitCommit(void)
+	{
+		return LIBRARY_GIT_COMMIT;
+	}
+
+	std::string
+	Library::gitBranch(void)
+	{
+		return LIBRARY_GIT_BRANCH;
+	}
+
 	// ------------------------------------------------------------------------
 	// ------------------------------------------------------------------------
 	//

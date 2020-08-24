@@ -90,7 +90,9 @@ build_local()
         cmake ../src \
               "${CMAKE_GENERATOR_LOCAL}" \
               -DOPCUASTACK_INSTALL_PREFIX="${STACK_PREFIX}" \
-              -DCMAKE_BUILD_TYPE="${BUILD_TYPE}" 
+              -DCMAKE_BUILD_TYPE="${BUILD_TYPE}" \
+	      -DGIT_COMMIT="${GIT_COMMIT}" \
+              -DGIT_BRANCH="${GIT_BRANCH}"
         RESULT=$?
         set +x
         if [ ${RESULT} -ne 0 ] ;
@@ -171,6 +173,8 @@ build_deb()
             "${CMAKE_GENERATOR_LOCAL}" \
             -DOPCUASTACK_INSTALL_PREFIX="${STACK_PREFIX}" \
             -DCMAKE_BUILD_TYPE="${BUILD_TYPE}" \
+            -DGIT_COMMIT="${GIT_COMMIT}" \
+            -DGIT_BRANCH="${GIT_BRANCH}" \
             "-DCPACK_BINARY_DEB=1" \
             "-DCPACK_BINARY_RPM=0" \
 	    "-DCPACK_BINARY_STGZ=0" \
@@ -248,6 +252,8 @@ build_rpm()
             "${CMAKE_GENERATOR_LOCAL}" \
             -DOPCUASTACK_INSTALL_PREFIX="${STACK_PREFIX}" \
             -DCMAKE_BUILD_TYPE="${BUILD_TYPE}" \
+	    -DGIT_COMMIT="${GIT_COMMIT}" \
+            -DGIT_BRANCH="${GIT_BRANCH}" \
             "-DCPACK_BINARY_DEB=0" \
             "-DCPACK_BINARY_RPM=1" \
   	    "-DCPACK_BINARY_STGZ=0" \
@@ -315,7 +321,9 @@ build_tst()
         cmake ../tst \
   	     "${CMAKE_GENERATOR_LOCAL}" \
 	     -DOPCUASTACK_INSTALL_PREFIX="${STACK_PREFIX}" \
-         -DCMAKE_BUILD_TYPE="${BUILD_TYPE}"
+             -DCMAKE_BUILD_TYPE="${BUILD_TYPE}" \
+             -DGIT_COMMIT="${GIT_COMMIT}" \
+             -DGIT_BRANCH="${GIT_BRANCH}"
         RESULT=$?
         if [ ${RESULT} -ne 0 ] ;
         then
@@ -402,6 +410,8 @@ INSTALL_PREFIX="${HOME}/.ASNeG"
 STACK_PREFIX="/"
 JOBS=1
 BUILD_TYPE="Debug"
+GIT_COMMIT=`git rev-parse HEAD`
+GIT_BRANCH=`git rev-parse --abbrev-ref HEAD`
 
 while [ $# -gt 0 ];
 do
