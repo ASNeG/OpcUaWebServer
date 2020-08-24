@@ -2,6 +2,8 @@
 
 SCRIPT_PATH=$1
 
+sh environment.sh
+
 if [ -z "${SCRIPT_PATH}" ]
 then
     nosetests -s -v $@
