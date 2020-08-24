@@ -7,7 +7,7 @@ services:
     expose:
       - "8889"
     volumes:
-      - server_pki:/etc/OpcUaStack/ASNeG-Demo/pki
+      - demo_server_pki:/etc/OpcUaStack/ASNeG-Demo/pki
 
   webserver:
     container_name: webserver${BUILD_TAG}
@@ -19,7 +19,7 @@ services:
       - SSH_AUTH_SOCK=/ssh-agent
     build: .
     volumes:
-      - server_pki:/tmp/etc/OpcUaStack/ASNeG-Demo/pki
+      - web_server_pki:/tmp/etc/OpcUaStack/OpcUaWebServer/pki
       - .:/code
     command: >-
       bash -c "sed -i 's/127.0.0.1:8889/asneg-demo:8889/' /etc/OpcUaStack/OpcUaWebServer/OpcUaClient0.xml
@@ -40,10 +40,15 @@ services:
       - WSS_SERVER_URL=wss://webserver:8081
       - WS_SERVER_URL=ws://webserver:8081
       - OPC_SERVER_URL=opc.tcp://asneg-demo:8889
-    command: echo "Test client is ready"
+      - DOCKER_ENABLE=YES
+    command: >-
+      bash -c "sh /code/ftest/environment.sh
+      && echo \"Test client is ready\""
     volumes:
-      - server_pki:/tmp/etc/OpcUaStack/ASNeG-Demo/pki
+      - web_server_pki:/tmp/etc/OpcUaStack/OpcUaWebServer/pki
+      - demo_server_pki:/tmp/etc/OpcUaStack/ASNeG-Demo/pki
       - .:/code
 
 volumes:
-  server_pki:
+  demo_server_pki:
+  web_server_pki:
