@@ -20,7 +20,7 @@ pipeline {
 
         stage('build_windows') {
           when {
-               branch 'master'
+               branch 'masterx'
           }
           steps {
             script {
