@@ -19,6 +19,7 @@
 #include "OpcUaStackCore/Base/Log.h"
 
 using namespace OpcUaStackCore;
+using namespace OpcUaStackClient;
 
 namespace OpcUaWebServer
 {
@@ -110,6 +111,12 @@ namespace OpcUaWebServer
 		return discoveryUrl_;
 	}
 
+	SessionMode
+	LoginRequest::sessionMode(void)
+	{
+		return sessionMode_;
+	}
+
 	MessageSecurityMode::Enum
 	LoginRequest::securityMode(void)
 	{
@@ -160,7 +167,7 @@ namespace OpcUaWebServer
 				securityPolicy_ = SecurityPolicy::str2Enum(*securityPolicyUri);
 			}
 			else {
-				Log(Error, "LoginRequest decode error, because unknown security polocy uri")
+				Log(Error, "LoginRequest decode error, because unknown security policy uri")
 					.parameter("Element", "SecurityPolicyUri")
 					.parameter("Value", *securityPolicyUri);
 				return false;
@@ -168,6 +175,24 @@ namespace OpcUaWebServer
 		}
 		else {
 			securityPolicy_ = SecurityPolicy::EnumNone;
+		}
+
+		// get session mode
+		auto sessionMode = pt.get_optional<std::string>("SessionMode");
+		if (sessionMode)
+		{
+			if (*sessionMode == "SecureChannelAndSession") {
+				sessionMode_ = SessionMode::SecureChannelAndSession;
+			}
+			else if (*sessionMode == "SecureChannel") {
+				sessionMode_ = SessionMode::SecureChannel;
+			}
+			else {
+				Log(Error, "LoginRequest decode error, because unknown session mode")
+					.parameter("Element", "SessionMode")
+					.parameter("Value", *sessionMode);
+				return false;
+			}
 		}
 
 		// get security mode

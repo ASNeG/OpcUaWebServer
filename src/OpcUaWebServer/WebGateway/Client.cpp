@@ -138,7 +138,7 @@ namespace OpcUaWebServer
 		sessionServiceConfig.secureChannelClient_->securityPolicy(loginRequest.securityPolicy());
 		sessionServiceConfig.session_->sessionName(sessionName_);
 		sessionServiceConfig.ioThreadName(ioThread_->name());
-		//sessionServiceConfig.sessionMode_ = SessionMode::SecureChannel;
+		sessionServiceConfig.sessionMode_ = loginRequest.sessionMode();
 		sessionServiceConfig.sessionServiceChangeHandler_ = sessionStateUpdate;
 		sessionServiceConfig.sessionServiceChangeHandlerStrand_ = strand_;
 		sessionServiceConfig.session_->reconnectTimeout(0);

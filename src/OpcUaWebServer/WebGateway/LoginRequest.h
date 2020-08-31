@@ -23,6 +23,7 @@
 #include "OpcUaStackCore/StandardDataTypes/MessageSecurityMode.h"
 #include "OpcUaStackCore/BuildInTypes/SecurityPolicy.h"
 #include "OpcUaStackCore/BuildInTypes/JsonFormatter.h"
+#include "OpcUaStackClient/ServiceSet/SessionMode.h"
 
 namespace OpcUaWebServer
 {
@@ -62,9 +63,11 @@ namespace OpcUaWebServer
 		virtual ~LoginRequest(void);
 
 		OpcUaStackCore::OpcUaString& discoveryUrl(void);
+		OpcUaStackClient::SessionMode sessionMode(void);
 		OpcUaStackCore::MessageSecurityMode::Enum securityMode(void);
 		OpcUaStackCore::SecurityPolicy::Enum securityPolicy(void);
 		UserAuthentication& userAuthentication(void);
+
 		void log(const std::string& message);
 
 	  protected:
@@ -72,6 +75,7 @@ namespace OpcUaWebServer
 		bool jsonDecodeImpl(const boost::property_tree::ptree& pt) override;
 
 	  private:
+		OpcUaStackClient::SessionMode sessionMode_ = OpcUaStackClient::SessionMode::SecureChannelAndSession;
 		OpcUaStackCore::OpcUaString discoveryUrl_;
 		OpcUaStackCore::MessageSecurityMode::Enum securityMode_;
 		OpcUaStackCore::SecurityPolicy::Enum securityPolicy_;
