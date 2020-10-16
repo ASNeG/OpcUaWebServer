@@ -88,6 +88,7 @@ namespace OpcUaWebServer
 			.parameter("SecurityMode", MessageSecurityMode::enum2Str(opcUaClientConfig_->opcUaClientEndpoint_.securityMode_))
 			.parameter("SecurityPolicy", SecurityPolicy::enum2Str(opcUaClientConfig_->opcUaClientEndpoint_.securityPolicy_))
 			.parameter("AuthMode", UserTokenType::enum2Str(authentication.userTokenType_))
+			.parameter("PolicyId", authentication.policyId_)
 			.parameter("AuthSecurityPolicy", SecurityPolicy::enum2Str(authentication.securityPolicy_));
 
 		ioThread_ = ioThread;
@@ -120,7 +121,10 @@ namespace OpcUaWebServer
 		sessionServiceConfig.sessionServiceChangeHandlerStrand_ = strand_;
 		sessionServiceConfig.session_->reconnectTimeout(5000);
 		sessionServiceConfig.sessionServiceName_ = std::string("SessionService_") + UniqueId::createStringUniqueId();
-		if (authentication.userTokenType_ == UserTokenType::EnumUserName) {
+		if (authentication.userTokenType_ == UserTokenType::EnumAnonymous) {
+				sessionServiceConfig.session_->authenticationAnonymous(
+						authentication.policyId_);
+		} else if (authentication.userTokenType_ == UserTokenType::EnumUserName) {
 				sessionServiceConfig.session_->authenticationUserName(
 					authentication.policyId_,
 					authentication.userName_,
@@ -128,7 +132,6 @@ namespace OpcUaWebServer
 					SecurityPolicy::enum2Str(authentication.securityPolicy_)
 				);
 		}
-
 		serviceSetManager_.sessionService(sessionServiceConfig);
 		sessionService_ = serviceSetManager_.sessionService(sessionServiceConfig);
 
