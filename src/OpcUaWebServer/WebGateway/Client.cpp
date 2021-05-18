@@ -1,5 +1,5 @@
 /*
-   Copyright 2019-2020 Kai Huebl (kai@huebl-sgh.de)
+   Copyright 2019-2021 Kai Huebl (kai@huebl-sgh.de)
 
    Lizenziert gemäß Apache Licence Version 2.0 (die „Lizenz“); Nutzung dieser
    Datei nur in Übereinstimmung mit der Lizenz erlaubt.
@@ -519,6 +519,130 @@ namespace OpcUaWebServer
 			}
 		);
 		attributeService_->asyncSend(trx);
+	}
+
+	// ------------------------------------------------------------------------
+	// ------------------------------------------------------------------------
+	//
+	// view service
+	//
+	// ------------------------------------------------------------------------
+	// ------------------------------------------------------------------------
+	bool
+	Client::initViewService(const MessageResponseCallback& messageResponseCallback)
+	{
+		if (!viewService_) {
+			ViewServiceConfig viewServiceConfig;
+			viewServiceConfig.ioThreadName(ioThread_->name());
+			viewServiceConfig.viewServiceName_ = std::string("ViewService_") + UniqueId::createStringUniqueId();
+			viewService_ = serviceSetManager_.viewService(sessionService_, viewServiceConfig);
+			if (!viewService_) {
+				Log(Error, "view service error")
+					.parameter("Id", id_);
+				boost::property_tree::ptree responseBody;
+				messageResponseCallback(BadResourceUnavailable, responseBody);
+				return false;
+			}
+		}
+		return true;
+	}
+
+	void
+	Client::browse(
+		const RequestInfo& requestInfo,
+		boost::property_tree::ptree& requestBody,
+		const MessageResponseCallback& messageResponseCallback
+	)
+	{
+		Log(Debug, "receive browse request")
+			.parameter("Id", id_);
+
+		// create attribute service if not exist
+		if (!initViewService(messageResponseCallback)) return;
+
+		// decode browse request from web socket
+		auto trx = boost::make_shared<ServiceTransactionBrowse>();
+		trx->requestTimeout(requestInfo.requestTimeout());
+		auto req = trx->request();
+		if (!req->jsonDecode(requestBody)) {
+			Log(Error, "decode browse request error")
+				.parameter("Id", id_);
+			boost::property_tree::ptree responseBody;
+			messageResponseCallback(BadInvalidArgument, responseBody);
+			return;
+		}
+
+		// send browse request to opc ua server
+		trx->resultHandler(
+			[this, messageResponseCallback](ServiceTransactionBrowse::SPtr& trx) {
+				boost::property_tree::ptree responseBody;
+
+				// check status code
+				if (trx->statusCode() != Success) {
+					messageResponseCallback(trx->statusCode(), responseBody);
+					return;
+				}
+
+				// encode request response
+				auto res = trx->response();
+				if (!res->jsonEncode(responseBody)) {
+					messageResponseCallback(BadDeviceFailure, responseBody);
+					return;
+				}
+
+				messageResponseCallback(Success, responseBody);
+			}
+		);
+		viewService_->asyncSend(trx);
+	}
+
+	void
+	Client::browseNext(
+		const RequestInfo& requestInfo,
+		boost::property_tree::ptree& requestBody,
+		const MessageResponseCallback& messageResponseCallback
+	)
+	{
+		Log(Debug, "receive browse next request")
+			.parameter("Id", id_);
+
+		// create attribute service if not exist
+		if (!initViewService(messageResponseCallback)) return;
+
+		// decode browse request from web socket
+		auto trx = boost::make_shared<ServiceTransactionBrowseNext>();
+		trx->requestTimeout(requestInfo.requestTimeout());
+		auto req = trx->request();
+		if (!req->jsonDecode(requestBody)) {
+			Log(Error, "decode browse next request error")
+				.parameter("Id", id_);
+			boost::property_tree::ptree responseBody;
+			messageResponseCallback(BadInvalidArgument, responseBody);
+			return;
+		}
+
+		// send browse request to opc ua server
+		trx->resultHandler(
+			[this, messageResponseCallback](ServiceTransactionBrowseNext::SPtr& trx) {
+				boost::property_tree::ptree responseBody;
+
+				// check status code
+				if (trx->statusCode() != Success) {
+					messageResponseCallback(trx->statusCode(), responseBody);
+					return;
+				}
+
+				// encode request response
+				auto res = trx->response();
+				if (!res->jsonEncode(responseBody)) {
+					messageResponseCallback(BadDeviceFailure, responseBody);
+					return;
+				}
+
+				messageResponseCallback(Success, responseBody);
+			}
+		);
+		viewService_->asyncSend(trx);
 	}
 
 	// ------------------------------------------------------------------------
