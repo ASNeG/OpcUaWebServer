@@ -451,6 +451,16 @@ namespace OpcUaWebServer
 		}
 
 		//
+		// view service
+		//
+		else if (messageType == "GW_BrowseRequest") {
+			client->browse(requestInfo, requestBody, messageResponseCallback);
+		}
+		else if (messageType == "GW_BrowseNextRequest") {
+			client->browseNext(requestInfo, requestBody, messageResponseCallback);
+		}
+
+		//
 		// method service
 		//
 		else if (messageType == "GW_CallRequest") {

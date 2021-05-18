@@ -1,5 +1,5 @@
 /*
-   Copyright 2015-2020 Kai Huebl (kai@huebl-sgh.de)
+   Copyright 2015-2021 Kai Huebl (kai@huebl-sgh.de)
 
    Lizenziert gemäß Apache Licence Version 2.0 (die „Lizenz“); Nutzung dieser
    Datei nur in Übereinstimmung mit der Lizenz erlaubt.
@@ -97,6 +97,20 @@ namespace OpcUaWebServer
 		);
 
 		//
+		// view service functions
+		//
+		void browse(
+			const RequestInfo& requestInfo,
+			boost::property_tree::ptree& requestBody,
+			const MessageResponseCallback& messageResponseCallback
+		);
+		void browseNext(
+			const RequestInfo& requestInfo,
+			boost::property_tree::ptree& requestBody,
+			const MessageResponseCallback& messageResponseCallback
+		);
+
+		//
 		// method service
 		//
 		void call(
@@ -144,6 +158,7 @@ namespace OpcUaWebServer
 
 	  private:
 		void logoutComplete(void);
+		bool initViewService(const MessageResponseCallback& messageResponseCallback);
 		bool initAttributeService(const MessageResponseCallback& messageResponseCallback);
 		bool initMethodService(const MessageResponseCallback& messageResponseCallback);
 		bool initSubscriptionService(const MessageResponseCallback& messageResponseCallback);
@@ -168,12 +183,13 @@ namespace OpcUaWebServer
 		std::string sessionName_;
 
 		CryptoManager::SPtr cryptoManager_;
-		ServiceSetManager serviceSetManager_;
-		SessionService::SPtr sessionService_;
-		AttributeService::SPtr attributeService_;
-		MethodService::SPtr methodService_;
-		SubscriptionService::SPtr subscriptionService_;
-		MonitoredItemService::SPtr monitoredItemService_;
+		OpcUaStackClient::ServiceSetManager serviceSetManager_;
+		OpcUaStackClient::SessionService::SPtr sessionService_;
+		OpcUaStackClient::AttributeService::SPtr attributeService_;
+		OpcUaStackClient::ViewService::SPtr viewService_;
+		OpcUaStackClient::MethodService::SPtr methodService_;
+		OpcUaStackClient::SubscriptionService::SPtr subscriptionService_;
+		OpcUaStackClient::MonitoredItemService::SPtr monitoredItemService_;
 	};
 
 }
