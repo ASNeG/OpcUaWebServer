@@ -109,6 +109,11 @@ namespace OpcUaWebServer
 			boost::property_tree::ptree& requestBody,
 			const MessageResponseCallback& messageResponseCallback
 		);
+		void translateBrowsePathsToNodeIds(
+			const RequestInfo& requestInfo,
+			boost::property_tree::ptree& requestBody,
+			const MessageResponseCallback& messageResponseCallback
+		);
 
 		//
 		// method service

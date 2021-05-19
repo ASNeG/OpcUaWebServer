@@ -645,6 +645,55 @@ namespace OpcUaWebServer
 		viewService_->asyncSend(trx);
 	}
 
+	void
+	Client::translateBrowsePathsToNodeIds(
+		const RequestInfo& requestInfo,
+		boost::property_tree::ptree& requestBody,
+		const MessageResponseCallback& messageResponseCallback
+	)
+	{
+		Log(Debug, "receive translate browse paths to node id request")
+			.parameter("Id", id_);
+
+		// create attribute service if not exist
+		if (!initViewService(messageResponseCallback)) return;
+
+		// decode browse request from web socket
+		auto trx = boost::make_shared<ServiceTransactionTranslateBrowsePathsToNodeIds>();
+		trx->requestTimeout(requestInfo.requestTimeout());
+		auto req = trx->request();
+		if (!req->jsonDecode(requestBody)) {
+			Log(Error, "decode translate browse paths to node ids request error")
+				.parameter("Id", id_);
+			boost::property_tree::ptree responseBody;
+			messageResponseCallback(BadInvalidArgument, responseBody);
+			return;
+		}
+
+		// send browse request to opc ua server
+		trx->resultHandler(
+			[this, messageResponseCallback](ServiceTransactionTranslateBrowsePathsToNodeIds::SPtr& trx) {
+				boost::property_tree::ptree responseBody;
+
+				// check status code
+				if (trx->statusCode() != Success) {
+					messageResponseCallback(trx->statusCode(), responseBody);
+					return;
+				}
+
+				// encode request response
+				auto res = trx->response();
+				if (!res->jsonEncode(responseBody)) {
+					messageResponseCallback(BadDeviceFailure, responseBody);
+					return;
+				}
+
+				messageResponseCallback(Success, responseBody);
+			}
+		);
+		viewService_->asyncSend(trx);
+	}
+
 	// ------------------------------------------------------------------------
 	// ------------------------------------------------------------------------
 	//

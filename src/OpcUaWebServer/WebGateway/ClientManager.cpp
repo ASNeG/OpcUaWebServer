@@ -459,6 +459,9 @@ namespace OpcUaWebServer
 		else if (messageType == "GW_BrowseNextRequest") {
 			client->browseNext(requestInfo, requestBody, messageResponseCallback);
 		}
+		else if (messageType == "GW_TranslateBrowsePathsToNodeIdsRequest") {
+			client->translateBrowsePathsToNodeIds(requestInfo, requestBody, messageResponseCallback);
+		}
 
 		//
 		// method service
