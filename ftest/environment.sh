@@ -20,8 +20,9 @@ fi
 #
 # trust  ASNeG-Demo certificate
 #
-echo "trust ASNeG-Demo certificate"
-echo "============================"
+echo ""
+echo "OpcUaWebServer: trust ASNeG-Demo certificate"
+echo "============================================"
 echo "OpcUaCtrl4 appl_cert get ASNeG-Demo demo_server_cert.der demo_server_key.pem"
 OpcUaCtrl4 appl_cert get ASNeG-Demo demo_server_cert.der demo_server_key.pem
 echo "OpcUaCtrl4 cert del OpcUaWebServer all"
@@ -32,8 +33,9 @@ OpcUaCtrl4 cert add OpcUaWebServer demo_server_cert.der
 #
 # trust OpcUaWebServer certificate
 #
-echo "trust OpcUaWebServer certificate"
-echo "=============================="
+echo ""
+echo "ASNeG-Demo: trust OpcUaWebServer certificate"
+echo "============================================"
 echo "OpcUaCtrl4 appl_cert get OpcUaWebServer web_server_cert.der web_server_key.pem"
 OpcUaCtrl4 appl_cert get OpcUaWebServer web_server_cert.der web_server_key.pem
 echo "OpcUaCtrl4 cert del ASNeG-Demo all"
@@ -44,6 +46,7 @@ OpcUaCtrl4 cert add ASNeG-Demo web_server_cert.der
 #
 # show application info
 #
+echo ""
 echo "show application info"
 echo "====================="
 

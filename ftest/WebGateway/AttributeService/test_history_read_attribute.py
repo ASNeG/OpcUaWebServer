@@ -12,7 +12,6 @@ class TestHistoryReadAttribute(WebGatewayTestCase):
         WebGatewayTestCase.tearDown(self)
 
     def test_history_read(self):
-        """A client should read historical data"""
         #
         # send history read request to the opc ua server
         #

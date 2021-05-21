@@ -37,7 +37,7 @@ pipeline {
     stage('test_linux') {
       steps {
         timeout(time: 5, unit: "MINUTES") {
-          sh 'docker-compose run test_client bash -c "cd /code/ftest/ && sh environment.sh && nosetests -s -vvvv --with-xunit"'
+          sh 'docker-compose run test_client bash -c "cd /code/ftest/ && sh environment.sh && nosetests -s -v --with-xunit"'
         }
 
         junit(testResults: 'ftest/nosetests.xml')
@@ -63,8 +63,12 @@ pipeline {
 
     always {
       sh 'docker ps -a'
-      sh 'docker cp $(docker ps -a -q -f "name=asneg-demo${BUILD_TAG}"):/var/log/OpcUaStack/ASNeG-Demo/OpcUaServer.log . || true'
-      archiveArtifacts artifacts: 'OpcUaServer.log', fingerprint: true
+     
+      sh 'docker cp $(docker ps -a -q -f "name=asneg-demo${BUILD_TAG}"):/var/log/OpcUaStack/ASNeG-Demo/OpcUaServer.log ASNeG-Demo.log || true'
+      archiveArtifacts artifacts: 'ASNeG-Demo.log', fingerprint: true
+
+      sh 'docker cp $(docker ps -a -q -f "name=webserver${BUILD_TAG}"):/var/log/OpcUaStack/OpcUaWebServer/OpcUaServer.log webserver.log || true' 
+      archiveArtifacts artifacts: 'webserver.log', fingerprint: true
     }
 
     cleanup {

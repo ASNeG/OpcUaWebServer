@@ -3,6 +3,7 @@ import unittest
 import json
 import time
 import ssl
+import datetime
 from websocket import create_connection
 
 class WebGatewayTestCase(unittest.TestCase):
@@ -16,6 +17,13 @@ class WebGatewayTestCase(unittest.TestCase):
         self.SERVER_PKI_ROOT_DIR = os.path.join(os.getenv('SERVER_PKI_ROOT_DIR', '/tmp/'), 'etc/OpcUaStack/ASNeG-Demo/pki')
 
         # TODO: Here the certs of client and server should be exchanged
+
+        # show time on display
+        now = datetime.datetime.now()
+        print("")
+        print("*************************************************")
+        print(self._testMethodName)
+        print(now.strftime('%H:%M:%S'))
 
         #
         # open web socket connection
