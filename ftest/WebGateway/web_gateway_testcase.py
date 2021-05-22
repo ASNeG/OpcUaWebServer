@@ -16,8 +16,6 @@ class WebGatewayTestCase(unittest.TestCase):
         self.OPC_SERVER_URL = os.getenv('OPC_SERVER_URL', "opc.tcp://127.0.0.1:8889")
         self.SERVER_PKI_ROOT_DIR = os.path.join(os.getenv('SERVER_PKI_ROOT_DIR', '/tmp/'), 'etc/OpcUaStack/ASNeG-Demo/pki')
 
-        # TODO: Here the certs of client and server should be exchanged
-
         # show time on display
         now = datetime.datetime.now()
         print("")
