@@ -161,6 +161,30 @@ namespace OpcUaWebServer
 			const MessageResponseCallback& messageResponseCallback
 		);
 
+		//
+		// node management service
+		//
+		void addNodes(
+			const RequestInfo& requestInfo,
+			boost::property_tree::ptree& requestBody,
+			const MessageResponseCallback& messageResponseCallback
+		);
+		void addReferences(
+			const RequestInfo& requestInfo,
+			boost::property_tree::ptree& requestBody,
+			const MessageResponseCallback& messageResponseCallback
+		);
+		void deleteNodes(
+			const RequestInfo& requestInfo,
+			boost::property_tree::ptree& requestBody,
+			const MessageResponseCallback& messageResponseCallback
+		);
+		void deleteReferences(
+			const RequestInfo& requestInfo,
+			boost::property_tree::ptree& requestBody,
+			const MessageResponseCallback& messageResponseCallback
+		);
+
 	  private:
 		void logoutComplete(void);
 		bool initViewService(const MessageResponseCallback& messageResponseCallback);
@@ -168,6 +192,7 @@ namespace OpcUaWebServer
 		bool initMethodService(const MessageResponseCallback& messageResponseCallback);
 		bool initSubscriptionService(const MessageResponseCallback& messageResponseCallback);
 		bool initMonitoredItemService(const MessageResponseCallback& messageResponseCallback);
+		bool initNodeManagementService(const MessageResponseCallback& messageResponseCallback);
 
 		static uint32_t gId_;
 		uint32_t id_;
@@ -195,6 +220,7 @@ namespace OpcUaWebServer
 		OpcUaStackClient::MethodService::SPtr methodService_;
 		OpcUaStackClient::SubscriptionService::SPtr subscriptionService_;
 		OpcUaStackClient::MonitoredItemService::SPtr monitoredItemService_;
+		OpcUaStackClient::NodeManagementService::SPtr nodeManagementService_;
 	};
 
 }

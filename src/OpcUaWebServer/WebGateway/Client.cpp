@@ -1078,4 +1078,226 @@ namespace OpcUaWebServer
 		monitoredItemService_->asyncSend(trx);
 	}
 
+	// ------------------------------------------------------------------------
+	// ------------------------------------------------------------------------
+	//
+	// node management service
+	//
+	// ------------------------------------------------------------------------
+	// ------------------------------------------------------------------------
+	bool
+	Client::initNodeManagementService(const MessageResponseCallback& messageResponseCallback)
+	{
+		if (!nodeManagementService_) {
+			NodeManagementServiceConfig nodeManagementServiceConfig;
+			nodeManagementServiceConfig.ioThreadName(ioThread_->name());
+			nodeManagementServiceConfig.nodeManagementServiceName_ = std::string("NodeManagementService_") + UniqueId::createStringUniqueId();
+			nodeManagementService_ = serviceSetManager_.nodeManagementService(sessionService_, nodeManagementServiceConfig);
+			if (!nodeManagementService_) {
+				Log(Error, "node management service error")
+					.parameter("Id", id_);
+				boost::property_tree::ptree responseBody;
+				messageResponseCallback(BadResourceUnavailable, responseBody);
+				return false;
+			}
+		}
+		return true;
+	}
+
+	void
+	Client::addNodes(
+		const RequestInfo& requestInfo,
+		boost::property_tree::ptree& requestBody,
+		const MessageResponseCallback& messageResponseCallback
+	)
+	{
+		Log(Debug, "receive add nodes request")
+				.parameter("Id", id_);
+
+		// create node management service if not exist
+		if (!initNodeManagementService(messageResponseCallback)) return;
+
+		// decode add nodes request from web socket
+		auto trx = boost::make_shared<ServiceTransactionAddNodes>();
+		trx->requestTimeout(requestInfo.requestTimeout());
+		auto req = trx->request();
+		if (!req->jsonDecode(requestBody)) {
+			Log(Error, "decode add nodes request error")
+				.parameter("Id", id_);
+			boost::property_tree::ptree responseBody;
+			messageResponseCallback(BadInvalidArgument, responseBody);
+			return;
+		}
+
+		// send add nodes request to opc ua server
+		trx->resultHandler(
+			[this, messageResponseCallback](ServiceTransactionAddNodes::SPtr& trx) {
+				boost::property_tree::ptree responseBody;
+
+				// check status code
+				if (trx->statusCode() != Success) {
+					messageResponseCallback(trx->statusCode(), responseBody);
+					return;
+				}
+
+				// encode call response
+				auto res = trx->response();
+				if (!res->jsonEncode(responseBody)) {
+					messageResponseCallback(BadDeviceFailure, responseBody);
+					return;
+				}
+
+				messageResponseCallback(Success, responseBody);
+			}
+		);
+		nodeManagementService_->asyncSend(trx);
+	}
+
+	void
+	Client::addReferences(
+		const RequestInfo& requestInfo,
+		boost::property_tree::ptree& requestBody,
+		const MessageResponseCallback& messageResponseCallback
+	)
+	{
+		Log(Debug, "receive add references request")
+				.parameter("Id", id_);
+
+		// create node management service if not exist
+		if (!initNodeManagementService(messageResponseCallback)) return;
+
+		// decode add references request from web socket
+		auto trx = boost::make_shared<ServiceTransactionAddReferences>();
+		trx->requestTimeout(requestInfo.requestTimeout());
+		auto req = trx->request();
+		if (!req->jsonDecode(requestBody)) {
+			Log(Error, "decode add references request error")
+				.parameter("Id", id_);
+			boost::property_tree::ptree responseBody;
+			messageResponseCallback(BadInvalidArgument, responseBody);
+			return;
+		}
+
+		// send add references request to opc ua server
+		trx->resultHandler(
+			[this, messageResponseCallback](ServiceTransactionAddReferences::SPtr& trx) {
+				boost::property_tree::ptree responseBody;
+
+				// check status code
+				if (trx->statusCode() != Success) {
+					messageResponseCallback(trx->statusCode(), responseBody);
+					return;
+				}
+
+				// encode call response
+				auto res = trx->response();
+				if (!res->jsonEncode(responseBody)) {
+					messageResponseCallback(BadDeviceFailure, responseBody);
+					return;
+				}
+
+				messageResponseCallback(Success, responseBody);
+			}
+		);
+		nodeManagementService_->asyncSend(trx);
+	}
+
+	void
+	Client::deleteNodes(
+		const RequestInfo& requestInfo,
+		boost::property_tree::ptree& requestBody,
+		const MessageResponseCallback& messageResponseCallback
+	)
+	{
+		Log(Debug, "receive delete nodes request")
+				.parameter("Id", id_);
+
+		// create node management service if not exist
+		if (!initNodeManagementService(messageResponseCallback)) return;
+
+		// decode delete nodes request from web socket
+		auto trx = boost::make_shared<ServiceTransactionDeleteNodes>();
+		trx->requestTimeout(requestInfo.requestTimeout());
+		auto req = trx->request();
+		if (!req->jsonDecode(requestBody)) {
+			Log(Error, "decode delete nodes request error")
+				.parameter("Id", id_);
+			boost::property_tree::ptree responseBody;
+			messageResponseCallback(BadInvalidArgument, responseBody);
+			return;
+		}
+
+		// send delete nodes request to opc ua server
+		trx->resultHandler(
+			[this, messageResponseCallback](ServiceTransactionDeleteNodes::SPtr& trx) {
+				boost::property_tree::ptree responseBody;
+
+				// check status code
+				if (trx->statusCode() != Success) {
+					messageResponseCallback(trx->statusCode(), responseBody);
+					return;
+				}
+
+				// encode call response
+				auto res = trx->response();
+				if (!res->jsonEncode(responseBody)) {
+					messageResponseCallback(BadDeviceFailure, responseBody);
+					return;
+				}
+
+				messageResponseCallback(Success, responseBody);
+			}
+		);
+		nodeManagementService_->asyncSend(trx);
+	}
+
+	void
+	Client::deleteReferences(
+		const RequestInfo& requestInfo,
+		boost::property_tree::ptree& requestBody,
+		const MessageResponseCallback& messageResponseCallback
+	)
+	{
+		Log(Debug, "receive add nodes request")
+				.parameter("Id", id_);
+
+		// create node management service if not exist
+		if (!initNodeManagementService(messageResponseCallback)) return;
+
+		// decode delete references request from web socket
+		auto trx = boost::make_shared<ServiceTransactionDeleteReferences>();
+		trx->requestTimeout(requestInfo.requestTimeout());
+		auto req = trx->request();
+		if (!req->jsonDecode(requestBody)) {
+			Log(Error, "decode delete references request error")
+				.parameter("Id", id_);
+			boost::property_tree::ptree responseBody;
+			messageResponseCallback(BadInvalidArgument, responseBody);
+			return;
+		}
+
+		// send delete references request to opc ua server
+		trx->resultHandler(
+			[this, messageResponseCallback](ServiceTransactionDeleteReferences::SPtr& trx) {
+				boost::property_tree::ptree responseBody;
+
+				// check status code
+				if (trx->statusCode() != Success) {
+					messageResponseCallback(trx->statusCode(), responseBody);
+					return;
+				}
+
+				// encode call response
+				auto res = trx->response();
+				if (!res->jsonEncode(responseBody)) {
+					messageResponseCallback(BadDeviceFailure, responseBody);
+					return;
+				}
+
+				messageResponseCallback(Success, responseBody);
+			}
+		);
+		nodeManagementService_->asyncSend(trx);
+	}
+
 }

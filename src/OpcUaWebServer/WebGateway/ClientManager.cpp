@@ -1,5 +1,5 @@
 /*
-   Copyright 2019-2020 Kai Huebl (kai@huebl-sgh.de)
+   Copyright 2019-2021 Kai Huebl (kai@huebl-sgh.de)
 
    Lizenziert gemäß Apache Licence Version 2.0 (die „Lizenz“); Nutzung dieser
    Datei nur in Übereinstimmung mit der Lizenz erlaubt.
@@ -488,6 +488,22 @@ namespace OpcUaWebServer
 		}
 		else if (messageType == "GW_DeleteMonitoredItemsRequest") {
 			client->deleteMonitoredItems(requestInfo, requestBody, messageResponseCallback);
+		}
+
+		//
+		// node management service
+		//
+		else if (messageType == "GW_AddNodesRequest") {
+			client->addNodes(requestInfo, requestBody, messageResponseCallback);
+		}
+		else if (messageType == "GW_AddReferencesRequest") {
+			client->addReferences(requestInfo, requestBody, messageResponseCallback);
+		}
+		else if (messageType == "GW_DeleteNodesRequest") {
+			client->deleteNodes(requestInfo, requestBody, messageResponseCallback);
+		}
+		else if (messageType == "GW_DeleteReferencesRequest") {
+			client->deleteReferences(requestInfo, requestBody, messageResponseCallback);
 		}
 
 		//
